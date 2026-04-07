@@ -47,8 +47,8 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          <Link to="/" className="font-black text-lg neural-gradient-text">
-            Cruzi AI
+          <Link to="/" className="font-black text-lg text-primary">
+            Cruzi
           </Link>
           <Button
             variant="ghost"
