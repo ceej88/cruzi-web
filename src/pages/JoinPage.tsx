@@ -93,22 +93,24 @@ const JoinPage: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="h-8 w-8 text-destructive" />
+      <div className="min-h-screen bg-background overflow-y-auto">
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center">
+            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-black text-foreground mb-2">Link Invalid</h1>
+            <p className="text-muted-foreground mb-6">{error}</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Ask your instructor for a new link or enter their PIN manually when signing up.
+            </p>
+            <Button
+              onClick={() => navigate('/auth?role=student')}
+              className="w-full"
+            >
+              Go to Sign Up
+            </Button>
           </div>
-          <h1 className="text-2xl font-black text-foreground mb-2">Link Invalid</h1>
-          <p className="text-muted-foreground mb-6">{error}</p>
-          <p className="text-sm text-muted-foreground mb-6">
-            Ask your instructor for a new link or enter their PIN manually when signing up.
-          </p>
-          <Button
-            onClick={() => navigate('/auth?role=student')}
-            className="w-full"
-          >
-            Go to Sign Up
-          </Button>
         </div>
       </div>
     );
@@ -118,8 +120,8 @@ const JoinPage: React.FC = () => {
   const instructorFirst = inviteData?.instructor_name?.split(' ')[0] || 'your instructor';
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-5">
+    <div className="bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="max-w-md mx-auto px-4 py-10 space-y-5">
 
         {/* Header */}
         <div className="text-center">
