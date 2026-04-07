@@ -7,9 +7,6 @@
         ],
         "components": [
           {
-            "/": "/join*"
-          },
-          {
             "/": "/parent/*"
           },
           {
