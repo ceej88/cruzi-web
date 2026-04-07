@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type InstructorTier = 'lite' | 'elite';
+export type InstructorTier = 'lite' | 'elite' | 'premium' | 'pro';
 
 interface UseInstructorTierReturn {
   tier: InstructorTier;
@@ -43,7 +43,9 @@ export function useInstructorTier(): UseInstructorTierReturn {
         return 'lite';
       }
 
-      return (subscription.tier as InstructorTier) || 'lite';
+      const raw = (subscription.tier as InstructorTier) || 'lite';
+      // Map 'premium'/'pro' → 'elite' for display
+      return (raw === 'premium' || raw === 'pro') ? 'elite' : raw;
     },
     enabled: !!user?.id,
     staleTime: 30000, // 30 seconds

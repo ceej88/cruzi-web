@@ -81,12 +81,11 @@ const Index: React.FC = () => {
         <div className="max-w-3xl mx-auto text-center">
           <motion.div {...fadeIn}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-4">
-              The smarter way to manage your{" "}
-              <span className="text-primary">driving school</span>
+              Increase Student Engagement{" "}
+              <span className="text-primary">&amp; Automate Your Admin</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
-              Diary, pupil progress, lesson plans and payments — all in one app.
-              Built for independent ADIs across the UK.
+              Built for UK driving instructors. Free 30-day trial.
             </p>
           </motion.div>
 
@@ -142,6 +141,24 @@ const Index: React.FC = () => {
         </div>
       </section>
 
+      {/* DEMO VIDEO */}
+      <section className="pb-14 px-4 sm:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div {...fadeIn} transition={{ duration: 0.6, delay: 0.2 }}>
+            <div className="rounded-2xl overflow-hidden shadow-2xl border border-border bg-black">
+              <video
+                src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-demo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full"
+              />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* SOCIAL PROOF */}
       <section className="py-8 border-y border-border bg-muted/30">
         <div className="max-w-5xl mx-auto px-4 sm:px-8">
@@ -185,24 +202,28 @@ const Index: React.FC = () => {
                 title: "Diary & Scheduling",
                 desc: "Manage your week at a glance. Drag lessons, block time off, colour-code by student.",
                 img: featureCalendar,
+                video: null,
               },
               {
                 icon: ClipboardCheck,
                 title: "Pupil Progress",
                 desc: "Score all 27 DVSA competencies on the official 1–5 scale. Share progress with students and parents.",
                 img: featureConfidence,
+                video: null,
               },
               {
                 icon: Mic,
                 title: "Voice Scribe",
                 desc: "Dictate lesson notes hands-free after each session. Cruzi formats them into professional records.",
                 img: featureNotes,
+                video: null,
               },
               {
                 icon: Smartphone,
                 title: "Student App",
                 desc: "Your students track their progress, book lessons, and study theory — all from their phone.",
-                img: featureSteering,
+                img: null,
+                video: "https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-mobile.mp4",
               },
             ].map((feature, i) => (
               <motion.div
@@ -211,14 +232,23 @@ const Index: React.FC = () => {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
-                {feature.img && (
+                {feature.video ? (
+                  <video
+                    src={feature.video}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-40 object-cover"
+                  />
+                ) : feature.img ? (
                   <img
                     src={feature.img}
                     alt={feature.title}
                     className="w-full h-40 object-cover"
                     loading="lazy"
                   />
-                )}
+                ) : null}
                 <div className="p-6">
                   <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                     <feature.icon className="h-5 w-5 text-primary" />
@@ -230,6 +260,42 @@ const Index: React.FC = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* MOCK TEST DEMO */}
+      <section className="py-16 px-4 sm:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <motion.div {...fadeIn}>
+              <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
+                Built-in mock test recording
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Record faults against all 26 DVSA categories during a mock test drive. Generate a professional debrief report instantly — no paper, no clipboard.
+              </p>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {["All 26 DVSA fault categories", "Driver and serious fault tracking", "One-tap report sharing with students", "Stored in pupil history automatically"].map(item => (
+                  <li key={item} className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+            <motion.div {...fadeIn} transition={{ duration: 0.5, delay: 0.2 }}>
+              <div className="rounded-2xl overflow-hidden shadow-xl border border-border bg-black">
+                <video
+                  src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full"
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

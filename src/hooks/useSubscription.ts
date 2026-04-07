@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type SubscriptionTier = 'lite' | 'elite';
+export type SubscriptionTier = 'lite' | 'elite' | 'premium' | 'pro';
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due';
 
 export interface Subscription {
@@ -135,7 +135,10 @@ export function useSubscription(): UseSubscriptionReturn {
     return data === true;
   }, [user?.id, queryClient]);
 
-  const tier = (subscription?.tier || 'lite') as SubscriptionTier;
+  const rawTier = (subscription?.tier || 'lite') as SubscriptionTier;
+  // Map Supabase tier names → internal display tier
+  // 'premium' and 'pro' from mobile/Stripe map to 'elite' for web display
+  const tier: SubscriptionTier = (rawTier === 'premium' || rawTier === 'pro') ? 'elite' : rawTier;
   const isLiteTier = tier === 'lite';
   const isEliteTier = tier === 'elite';
   const studentLimit = isEliteTier ? Infinity : LITE_STUDENT_LIMIT;
