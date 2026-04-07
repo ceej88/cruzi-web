@@ -45,7 +45,7 @@ const ParentInvitePage: React.FC = () => {
           .eq('user_id', data.student_id)
           .single();
 
-        setStudentInfo({ student_name: profile?.full_name || 'your child' });
+        setStudentInfo({ student_name: profile?.full_name || '' });
       } catch {
         setError('Unable to validate invite link. Please try again.');
       } finally {
@@ -92,8 +92,14 @@ const ParentInvitePage: React.FC = () => {
           role: 'parent',
         }, { onConflict: 'user_id' });
 
+        // claim-parent-token requires an authenticated session which doesn't exist
+        // until email is confirmed — catch and ignore, the claim will complete on first login
         if (token) {
-          await supabase.functions.invoke('claim-parent-token', { body: { token } });
+          try {
+            await supabase.functions.invoke('claim-parent-token', { body: { token } });
+          } catch {
+            // non-fatal
+          }
         }
       }
 
@@ -125,6 +131,10 @@ const ParentInvitePage: React.FC = () => {
       setFormLoading(false);
     }
   };
+
+  // Derive display names — guard against empty/missing student name
+  const studentFullName = studentInfo?.student_name || '';
+  const firstName = studentFullName ? studentFullName.split(' ')[0] : '';
 
   if (isValidating) {
     return (
@@ -169,7 +179,10 @@ const ParentInvitePage: React.FC = () => {
 
           <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
             <p className="text-sm font-semibold text-foreground">
-              Once verified, download Cruzi to follow {studentInfo?.student_name?.split(' ')[0] || 'your child'}'s progress
+              {firstName
+                ? `Once verified, download Cruzi to follow ${firstName}'s progress`
+                : "Once verified, download Cruzi to follow your child's progress"
+              }
             </p>
             <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="block">
               <img
@@ -199,8 +212,6 @@ const ParentInvitePage: React.FC = () => {
     );
   }
 
-  const firstName = studentInfo?.student_name?.split(' ')[0] || 'your child';
-
   return (
     <div className="bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="max-w-md mx-auto px-4 py-10 space-y-5">
@@ -210,17 +221,23 @@ const ParentInvitePage: React.FC = () => {
             <Users className="h-10 w-10 text-green-600" />
           </div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">
-            Follow {firstName}'s driving journey
+            {firstName ? `Follow ${firstName}'s driving journey` : "Follow your child's driving journey"}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {studentInfo?.student_name} has invited you to follow their driving lessons on Cruzi.
+            {studentFullName
+              ? `${studentFullName} has invited you to follow their driving lessons on Cruzi.`
+              : 'Your child has invited you to follow their driving lessons on Cruzi.'
+            }
           </p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6">
           <h3 className="text-lg font-bold text-foreground mb-1">Create your account</h3>
           <p className="text-sm text-muted-foreground mb-5">
-            Set up your account to follow {firstName}'s lessons and progress.
+            {firstName
+              ? `Set up your account to follow ${firstName}'s lessons and progress.`
+              : "Set up your account to follow your child's lessons and progress."
+            }
           </p>
 
           {formError && (
