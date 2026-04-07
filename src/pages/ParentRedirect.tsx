@@ -108,7 +108,7 @@ const ParentRedirect: React.FC = () => {
 
       // Insert role + profile in parallel
       const [roleResult, profileResult] = await Promise.allSettled([
-        supabase.from('user_roles').insert({ user_id: userId, role: 'parent' as const }),
+        supabase.from('user_roles').insert({ user_id: userId, role: 'parent' as any }),
         supabase.from('profiles').insert({ user_id: userId, email, full_name: fullName }),
       ]);
 

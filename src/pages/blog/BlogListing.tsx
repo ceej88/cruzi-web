@@ -43,12 +43,12 @@ const BlogListing: React.FC = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('blog_posts')
         .select('id, title, slug, excerpt, content, published_at, author, cover_image_url')
         .eq('status', 'published')
         .order('published_at', { ascending: false });
-      setPosts(data || []);
+      setPosts((data as BlogPost[]) || []);
       setLoading(false);
     };
     fetchPosts();

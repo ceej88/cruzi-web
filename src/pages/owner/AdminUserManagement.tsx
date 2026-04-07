@@ -38,7 +38,7 @@ const AdminUserManagement: React.FC = () => {
 
   const fetchUsers = useCallback(async (p: number = 1) => {
     setLoading(true);
-    const { data, error } = await supabase.rpc('admin_search_users', {
+    const { data, error } = await (supabase as any).rpc('admin_search_users', {
       _search: search,
       _page: p,
       _per_page: perPage,
@@ -61,13 +61,13 @@ const AdminUserManagement: React.FC = () => {
 
     try {
       if (type === 'suspend') {
-        await supabase.rpc('admin_update_user_status', { _user_id: user.user_id, _status: 'SUSPENDED' });
+        await (supabase as any).rpc('admin_update_user_status', { _user_id: user.user_id, _status: 'SUSPENDED' });
         toast.success(`${user.full_name || user.email} suspended`);
       } else if (type === 'activate') {
-        await supabase.rpc('admin_update_user_status', { _user_id: user.user_id, _status: 'ACTIVE' });
+        await (supabase as any).rpc('admin_update_user_status', { _user_id: user.user_id, _status: 'ACTIVE' });
         toast.success(`${user.full_name || user.email} activated`);
       } else if (type === 'reset') {
-        await supabase.rpc('admin_reset_onboarding', { _user_id: user.user_id });
+        await (supabase as any).rpc('admin_reset_onboarding', { _user_id: user.user_id });
         toast.success(`Onboarding reset for ${user.full_name || user.email}`);
       } else if (type === 'delete') {
         const { error } = await supabase.functions.invoke('delete-user-account', {

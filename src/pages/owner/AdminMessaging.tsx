@@ -27,8 +27,8 @@ const AdminMessaging: React.FC = () => {
 
   useEffect(() => {
     const loadInstructors = async () => {
-      const { data, error } = await supabase.rpc('admin_list_instructors');
-      if (!error && data) setInstructors(data as Instructor[]);
+      const { data, error } = await (supabase as any).rpc('admin_list_instructors');
+      if (!error && data) setInstructors(data as unknown as Instructor[]);
     };
     loadInstructors();
   }, []);
@@ -39,7 +39,7 @@ const AdminMessaging: React.FC = () => {
       return;
     }
     setSendingDirect(true);
-    const { error } = await supabase.rpc('admin_notify_instructor', {
+    const { error } = await (supabase as any).rpc('admin_notify_instructor', {
       _target_user_id: selectedInstructor,
       _title: directTitle.trim(),
       _message: directMessage.trim(),
@@ -61,7 +61,7 @@ const AdminMessaging: React.FC = () => {
       return;
     }
     setSendingBroadcast(true);
-    const { data, error } = await supabase.rpc('admin_broadcast_instructors', {
+    const { data, error } = await (supabase as any).rpc('admin_broadcast_instructors', {
       _title: broadcastTitle.trim(),
       _message: broadcastMessage.trim(),
     });

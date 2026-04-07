@@ -92,7 +92,7 @@ const SmsRemindersTab: React.FC = () => {
   const loadSettings = async () => {
     if (!user?.id) return;
     setIsLoading(true);
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('notification_settings')
       .select('*')
       .eq('instructor_id', user.id);
@@ -124,7 +124,7 @@ const SmsRemindersTab: React.FC = () => {
     if (!setting) return;
     setSavingType(type);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('notification_settings')
         .upsert({
           instructor_id: user.id,

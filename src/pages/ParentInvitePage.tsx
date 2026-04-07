@@ -31,7 +31,7 @@ const ParentInvitePage: React.FC = () => {
         return;
       }
       try {
-        const { data, error: dbError } = await supabase
+        const { data, error: dbError } = await (supabase as any)
           .from('parent_share_tokens')
           .select('student_id, expires_at')
           .eq('token', token)
@@ -77,7 +77,7 @@ const ParentInvitePage: React.FC = () => {
       const userId = data.user?.id;
       if (!userId) throw new Error('Sign up failed — please try again.');
       await supabase.from('profiles').upsert({ user_id: userId, full_name: name.trim(), email: email.trim() }, { onConflict: 'user_id' });
-      await supabase.from('user_roles').upsert({ user_id: userId, role: 'parent' }, { onConflict: 'user_id' });
+      await supabase.from('user_roles').upsert({ user_id: userId, role: 'parent' as any }, { onConflict: 'user_id' });
       if (token) {
         await supabase.functions.invoke('claim-parent-token', { body: { token } });
       }

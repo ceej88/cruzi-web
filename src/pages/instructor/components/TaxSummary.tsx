@@ -103,11 +103,11 @@ const TaxSummary: React.FC = () => {
         .eq('status', 'completed')
         .gte('created_at', yearStart)
         .lte('created_at', yearEnd + 'T23:59:59'),
-      supabase
+      (supabase as any)
         .from('expense_records')
         .select('amount, category, tax_quarter')
         .eq('instructor_id', user.id)
-        .eq('tax_year', taxYear) as any,
+        .eq('tax_year', taxYear),
     ]);
 
     // Group income by quarter

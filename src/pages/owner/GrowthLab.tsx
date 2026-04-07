@@ -318,7 +318,7 @@ const GrowthLab: React.FC = () => {
     setSaving(true);
     try {
       const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const { error } = await supabase.from('blog_posts').insert({
+      const { error } = await (supabase as any).from('blog_posts').insert({
         title,
         slug: `${slug}-${Date.now()}`,
         content,
@@ -370,7 +370,7 @@ const GrowthLab: React.FC = () => {
         status: 'draft' as const,
         author: 'Cruzi',
       }));
-      const { error } = await supabase.from('blog_posts').insert(inserts);
+      const { error } = await (supabase as any).from('blog_posts').insert(inserts);
       if (error) throw error;
       toast({ title: `${inserts.length} drafts saved`, description: 'Go to Blog Admin to review and publish.' });
     } catch (e: any) {

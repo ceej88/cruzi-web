@@ -30,7 +30,7 @@ const AdminSubscriptionOverview: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const { data, error } = await supabase.rpc('admin_subscription_overview');
+      const { data, error } = await (supabase as any).rpc('admin_subscription_overview');
       if (!error && data) {
         const parsed = data as unknown as { tiers: TierCount[]; recent_changes: RecentChange[] };
         setTiers(parsed.tiers || []);

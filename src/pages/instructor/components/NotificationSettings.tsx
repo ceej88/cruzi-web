@@ -116,7 +116,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onBack }) =
     if (!user?.id) return;
     setIsLoading(true);
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('notification_settings')
       .select('*')
       .eq('instructor_id', user.id);
@@ -152,7 +152,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onBack }) =
 
     try {
       for (const [type, setting] of Object.entries(settings)) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('notification_settings')
           .upsert({
             instructor_id: user.id,

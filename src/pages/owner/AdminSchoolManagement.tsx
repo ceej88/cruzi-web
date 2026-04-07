@@ -28,7 +28,7 @@ const AdminSchoolManagement: React.FC = () => {
 
   const fetch = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc('admin_list_schools');
+    const { data, error } = await (supabase as any).rpc('admin_list_schools');
     if (!error && data) setSchools((data as unknown as SchoolRow[]) || []);
     setLoading(false);
   };
@@ -37,7 +37,7 @@ const AdminSchoolManagement: React.FC = () => {
 
   const toggleActive = async (school: SchoolRow) => {
     const newActive = !school.is_active;
-    const { error } = await supabase.rpc('admin_suspend_school', { _school_id: school.id, _active: newActive });
+    const { error } = await (supabase as any).rpc('admin_suspend_school', { _school_id: school.id, _active: newActive });
     if (error) {
       toast.error('Failed to update school');
     } else {

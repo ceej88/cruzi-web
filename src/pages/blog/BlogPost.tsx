@@ -110,7 +110,7 @@ const BlogPost: React.FC = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (!slug) { setNotFound(true); setLoading(false); return; }
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('blog_posts')
         .select('*')
         .eq('slug', slug)

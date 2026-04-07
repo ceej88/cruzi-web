@@ -57,11 +57,11 @@ const AdminFeedback: React.FC = () => {
 
   const fetchFeedback = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('parent_feedback')
       .select('*')
       .order('created_at', { ascending: !sortNewest });
-    setFeedback((data as FeedbackRow[] | null) ?? []);
+    setFeedback((data as unknown as FeedbackRow[] | null) ?? []);
     setLoading(false);
   }, [sortNewest]);
 
@@ -79,7 +79,7 @@ const AdminFeedback: React.FC = () => {
     setSelected(row);
     setReplyText('');
     if (row.status === 'unread') {
-      await supabase.from('parent_feedback').update({ status: 'read' }).eq('id', row.id);
+      await (supabase as any).from('parent_feedback').update({ status: 'read' }).eq('id', row.id);
       setFeedback((prev) => prev.map((f) => f.id === row.id ? { ...f, status: 'read' } : f));
     }
   };
@@ -88,7 +88,7 @@ const AdminFeedback: React.FC = () => {
     if (!selected || !replyText.trim()) return;
     setSending(true);
     const now = new Date().toISOString();
-    await supabase
+    await (supabase as any)
       .from('parent_feedback')
       .update({ admin_reply: replyText, status: 'replied', replied_at: now })
       .eq('id', selected.id);

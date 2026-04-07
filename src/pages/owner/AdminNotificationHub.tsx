@@ -35,7 +35,7 @@ const AdminNotificationHub: React.FC = () => {
 
   const fetchHistory = async () => {
     setHistoryLoading(true);
-    const { data, error } = await supabase.rpc('admin_notification_history', { _limit: 50 });
+    const { data, error } = await (supabase as any).rpc('admin_notification_history', { _limit: 50 });
     if (!error && data) setHistory((data as unknown as NotifHistory[]) || []);
     setHistoryLoading(false);
   };
@@ -45,7 +45,7 @@ const AdminNotificationHub: React.FC = () => {
   const handleBroadcast = async () => {
     if (!title || !message) { toast.error('Title and message required'); return; }
     setSending(true);
-    const { data, error } = await supabase.rpc('admin_broadcast_all', {
+    const { data, error } = await (supabase as any).rpc('admin_broadcast_all', {
       _target: target,
       _title: title,
       _message: message,

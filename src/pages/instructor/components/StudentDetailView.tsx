@@ -391,7 +391,7 @@ const StudentDetailView: React.FC<Props> = ({ student, lessons, onBack }) => {
   const [tab, setTab] = useState<Tab>('lessons');
 
   const studentLessons = useMemo(
-    () => lessons.filter(l => l.student_id === student.user_id || l.manual_student_id === student.id),
+    () => lessons.filter(l => l.student_id === student.user_id || (l as any).manual_student_id === student.id),
     [lessons, student]
   );
 

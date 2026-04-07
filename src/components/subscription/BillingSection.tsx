@@ -9,11 +9,16 @@ import { format, differenceInDays } from 'date-fns';
 
 const BillingSection: React.FC = () => {
   const { user } = useAuth();
-  const {
-    tier, isFreeTier, isProTier, isPremiumTier,
-    studentCount, studentLimit, isSchoolCovered, schoolName,
-    isInTrial, trialEndsAt, subscription,
-  } = useSubscription();
+  const { tier, isLiteTier, isEliteTier, studentCount, studentLimit, subscription } = useSubscription();
+
+  // Derive display booleans — web app uses lite/elite; legacy names kept for JSX below
+  const isFreeTier = isLiteTier;
+  const isPremiumTier = isEliteTier;
+  const isProTier = false;
+  const isSchoolCovered = false;
+  const schoolName: string | null = null;
+  const isInTrial = false;
+  const trialEndsAt: string | null = null;
   const { toast } = useToast();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [loadingPortal, setLoadingPortal] = useState(false);
@@ -23,7 +28,7 @@ const BillingSection: React.FC = () => {
   const handleUpgrade = async (selectedTier: 'pro' | 'premium') => {
     setLoadingTier(selectedTier);
     try {
-      const { url } = await createCheckoutSession(selectedTier);
+      const { url } = await createCheckoutSession();
       if (url) window.open(url, '_blank');
     } catch (err: any) {
       toast({ title: 'Error', description: err.message || 'Failed to start checkout', variant: 'destructive' });

@@ -159,7 +159,7 @@ const EnquiryPage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!slug) { setNotFound(true); setLoading(false); return; }
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .rpc("get_public_enquiry_profile", { target_slug: slug });
       if (error || !data || (Array.isArray(data) && data.length === 0)) setNotFound(true);
       else {
@@ -205,7 +205,7 @@ const EnquiryPage = () => {
     }
 
     try {
-      const { error } = await supabase.from("instructor_enquiries").insert({
+      const { error } = await (supabase as any).from("instructor_enquiries").insert({
         instructor_id: instructor.user_id,
         name: formData.name.trim(),
         email: formData.email?.trim() || null,

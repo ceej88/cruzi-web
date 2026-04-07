@@ -41,7 +41,7 @@ const InstructorReports: React.FC = () => {
     const [lessonsRes, studentsRes, transactionsRes] = await Promise.all([
       supabase
         .from('lessons')
-        .select('id, scheduled_at, duration_minutes, status, student_id, manual_student_id')
+        .select('id, scheduled_at, duration_minutes, status, student_id')
         .eq('instructor_id', user.id)
         .gte('scheduled_at', since)
         .order('scheduled_at', { ascending: true }),

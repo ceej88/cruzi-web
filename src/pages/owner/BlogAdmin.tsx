@@ -50,7 +50,7 @@ const BlogAdmin: React.FC = () => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const fetchPosts = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false });
@@ -71,7 +71,7 @@ const BlogAdmin: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from('blog_posts').delete().eq('id', id);
+    await (supabase as any).from('blog_posts').delete().eq('id', id);
     toast({ title: 'Post deleted' });
     fetchPosts();
   };
@@ -97,9 +97,9 @@ const BlogAdmin: React.FC = () => {
     };
 
     if (editingPost.id) {
-      await supabase.from('blog_posts').update(payload).eq('id', editingPost.id);
+      await (supabase as any).from('blog_posts').update(payload).eq('id', editingPost.id);
     } else {
-      await supabase.from('blog_posts').insert(payload);
+      await (supabase as any).from('blog_posts').insert(payload);
     }
     toast({ title: editingPost.id ? 'Post updated' : 'Post created' });
     setSaving(false);

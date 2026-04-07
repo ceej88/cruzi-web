@@ -35,7 +35,7 @@ const AdminInstructorVerification: React.FC = () => {
 
   const fetch = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc('admin_list_pending_instructors');
+    const { data, error } = await (supabase as any).rpc('admin_list_pending_instructors');
     if (!error && data) {
       setInstructors((data as unknown as PendingInstructor[]) || []);
     }
@@ -47,7 +47,7 @@ const AdminInstructorVerification: React.FC = () => {
   const handleVerify = async () => {
     if (!actionModal) return;
     setProcessing(true);
-    const { error } = await supabase.rpc('admin_verify_instructor', {
+    const { error } = await (supabase as any).rpc('admin_verify_instructor', {
       _user_id: actionModal.instructor.user_id,
       _action: actionModal.action,
       _reason: reason || null,

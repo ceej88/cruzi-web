@@ -102,7 +102,7 @@ const ExpenseTracker: React.FC = () => {
   const loadExpenses = async () => {
     if (!user?.id) return;
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('expense_records')
       .select('*')
       .eq('instructor_id', user.id)
@@ -120,7 +120,7 @@ const ExpenseTracker: React.FC = () => {
     const date = new Date(expenseDate);
     const { taxYear, taxQuarter } = getTaxPeriod(date);
 
-    const { error } = await supabase.from('expense_records').insert({
+    const { error } = await (supabase as any).from('expense_records').insert({
       instructor_id: user.id,
       amount: parseFloat(amount),
       category,
@@ -146,7 +146,7 @@ const ExpenseTracker: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    const { error } = await supabase.from('expense_records').delete().eq('id', id);
+    const { error } = await (supabase as any).from('expense_records').delete().eq('id', id);
     if (!error) {
       setExpenses(prev => prev.filter(e => e.id !== id));
       toast({ title: 'Expense deleted' });

@@ -28,7 +28,7 @@ const AdminSupportAudit: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const { data, error } = await supabase.rpc('admin_audit_log', { _limit: 100 });
+      const { data, error } = await (supabase as any).rpc('admin_audit_log', { _limit: 100 });
       if (!error && data) setAuditLog((data as unknown as AuditRow[]) || []);
       setLoading(false);
     };
@@ -39,7 +39,7 @@ const AdminSupportAudit: React.FC = () => {
     const targetId = userId || exportUserId;
     if (!targetId) { toast.error('Enter a user ID'); return; }
     setExporting(true);
-    const { data, error } = await supabase.rpc('admin_export_user_data', { _user_id: targetId });
+    const { data, error } = await (supabase as any).rpc('admin_export_user_data', { _user_id: targetId });
     if (error) {
       toast.error('Export failed');
     } else {
