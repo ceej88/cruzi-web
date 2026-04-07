@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, Crown, Calendar, ClipboardCheck, Mic, Smartphone, ArrowRight, CheckCircle, PoundSterling } from "lucide-react";
 import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-driving.jpg";
 import featureCalendar from "@/assets/feature-calendar.jpg";
 import featureConfidence from "@/assets/feature-confidence.jpg";
 import featureNotes from "@/assets/feature-notes.jpg";
@@ -78,42 +77,68 @@ const Index: React.FC = () => {
       </nav>
 
       {/* HERO */}
-      <section className="pt-28 pb-16 md:pt-36 md:pb-24 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <section className="pt-24 pb-10 md:pt-32 md:pb-12 px-4 sm:px-8">
+        <div className="max-w-3xl mx-auto text-center">
           <motion.div {...fadeIn}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-4">
               The smarter way to manage your{" "}
               <span className="text-primary">driving school</span>
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
               Diary, pupil progress, lesson plans and payments — all in one app.
               Built for independent ADIs across the UK.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => handleSelectRole("instructor")}
-                className="min-h-[48px] px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-sm shadow-md hover:opacity-90 active:scale-95 transition-all"
+          </motion.div>
+
+          {/* ROLE CARDS */}
+          <div className="grid sm:grid-cols-3 gap-4 text-left">
+            {[
+              {
+                icon: Calendar,
+                label: "I'm a driving teacher",
+                desc: "Diary, pupils, finances and compliance — all in one place.",
+                cta: "Start Free Trial",
+                delay: 0.05,
+                onClick: () => handleSelectRole("instructor"),
+              },
+              {
+                icon: ClipboardCheck,
+                label: "I'm learning to drive",
+                desc: "Track your progress, book lessons and prepare for your test.",
+                cta: "Get the App",
+                delay: 0.1,
+                onClick: () => handleSelectRole("student"),
+              },
+              {
+                icon: Smartphone,
+                label: "I'm a parent",
+                desc: "Support your child's learning with guided Co-Pilot practice.",
+                cta: "Find Out More",
+                delay: 0.15,
+                onClick: () => handleSelectRole("student"),
+              },
+            ].map((card) => (
+              <motion.button
+                key={card.label}
+                {...fadeIn}
+                transition={{ duration: 0.4, delay: card.delay }}
+                onClick={card.onClick}
+                className="bg-card border border-border rounded-2xl p-6 text-left shadow-sm hover:shadow-md hover:border-primary/40 active:scale-[0.98] transition-all cursor-pointer group w-full"
                 style={{ touchAction: "manipulation" }}
               >
-                Start 30-Day Free Trial
-              </button>
-              <button
-                onClick={() => navigate("/savings")}
-                className="min-h-[48px] px-8 py-3 border border-border text-foreground rounded-full font-bold text-sm hover:bg-accent active:scale-95 transition-all"
-                style={{ touchAction: "manipulation" }}
-              >
-                See How Much You Save
-              </button>
-            </div>
-          </motion.div>
-          <motion.div {...fadeIn} transition={{ duration: 0.5, delay: 0.2 }}>
-            <img
-              src={heroImg}
-              alt="Driving instructor teaching a learner driver"
-              className="w-full rounded-3xl shadow-xl object-cover aspect-[4/3]"
-              loading="eager"
-            />
-          </motion.div>
+                <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                  <card.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="text-base font-black mb-1.5 leading-snug">{card.label}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                  {card.desc}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-primary font-bold text-sm group-hover:gap-2.5 transition-all">
+                  {card.cta} <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </motion.button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -264,57 +289,6 @@ const Index: React.FC = () => {
               <ArrowRight className="h-4 w-4" />
             </button>
           </motion.div>
-        </div>
-      </section>
-
-      {/* PORTALS */}
-      <section id="portals" className="py-20 px-4 sm:px-8 bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
-              Get started
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Instructor */}
-            <motion.div
-              {...fadeIn}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              onClick={() => handleSelectRole("instructor")}
-              className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
-            >
-              <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <Calendar className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-black mb-3">I'm an Instructor</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Diary, pupils, finances, compliance — everything an independent ADI needs, in one place.
-              </p>
-              <span className="inline-flex items-center gap-2 text-primary font-bold text-sm group-hover:gap-3 transition-all">
-                Start Free Trial <ArrowRight className="h-4 w-4" />
-              </span>
-            </motion.div>
-
-            {/* Student */}
-            <motion.div
-              {...fadeIn}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              onClick={() => handleSelectRole("student")}
-              className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
-            >
-              <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <ClipboardCheck className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-black mb-3">I'm a Student</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Track your progress on every DVSA competency. Your instructor will give you a PIN to get started.
-              </p>
-              <span className="inline-flex items-center gap-2 text-primary font-bold text-sm group-hover:gap-3 transition-all">
-                Enter Student Portal <ArrowRight className="h-4 w-4" />
-              </span>
-            </motion.div>
-          </div>
         </div>
       </section>
 
