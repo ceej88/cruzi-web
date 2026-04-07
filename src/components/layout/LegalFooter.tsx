@@ -11,11 +11,11 @@ const LegalFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link to="/" className="font-black text-xl neural-gradient-text">
-              Cruzi AI
+            <Link to="/" className="font-black text-xl text-primary">
+              Cruzi
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              The neural ecosystem for elite driving instruction.
+              The smarter way to manage driving instruction.
             </p>
           </div>
 
@@ -100,7 +100,7 @@ const LegalFooter: React.FC = () => {
             </h4>
             <ul className="space-y-2">
               <li className="text-sm text-muted-foreground">
-                support@cruzi.app
+                support@cruzi.co.uk
               </li>
               <li className="text-sm text-muted-foreground">
                 United Kingdom
@@ -112,7 +112,7 @@ const LegalFooter: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Cruzi AI. All rights reserved.
+            © {currentYear} Cruzi Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link

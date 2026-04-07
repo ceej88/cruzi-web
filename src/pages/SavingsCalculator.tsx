@@ -63,7 +63,7 @@ const SavingsCalculator: React.FC = () => {
             <button onClick={() => navigate("/")} className="font-black text-xl tracking-tight neural-gradient-text" style={{
             animation: "text-glow 3s ease-in-out infinite"
           }}>
-              Cruzi AI
+              Cruzi
             </button>
             <button onClick={() => navigate("/instructor")} className="min-h-[44px] px-5 py-2.5 bg-foreground text-background rounded-full font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all" style={{
             touchAction: "manipulation"

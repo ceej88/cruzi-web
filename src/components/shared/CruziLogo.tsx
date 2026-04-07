@@ -18,7 +18,7 @@ const CruziLogo: React.FC<CruziLogoProps> = ({ size = 'md', className = '' }) =>
         className={`font-black font-outfit tracking-tight neural-gradient-text ${sizeClasses[size]}`}
         style={{ animation: 'text-glow 3s ease-in-out infinite' }}
       >
-        Cruzi AI
+        Cruzi
       </span>
     </div>
   );

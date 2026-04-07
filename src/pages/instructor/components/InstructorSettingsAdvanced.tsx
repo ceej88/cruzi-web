@@ -613,7 +613,7 @@ const InstructorSettingsAdvanced: React.FC = () => {
           {currentSection === 'notifications' && <div className="space-y-12 animate-in slide-in-from-right-8 duration-500">
               <div>
                 <h3 className="text-3xl font-black text-foreground tracking-tight">Alert Preferences</h3>
-                <p className="text-muted-foreground font-medium mt-2">Configure how Cruzi AI keeps you updated.</p>
+                <p className="text-muted-foreground font-medium mt-2">Configure how Cruzi keeps you updated.</p>
               </div>
 
               <div className="space-y-4">

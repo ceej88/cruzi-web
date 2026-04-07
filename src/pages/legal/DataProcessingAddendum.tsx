@@ -1,358 +1,228 @@
 import React from "react";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
-import LegalSection from "@/components/legal/LegalSection";
+
+const Section: React.FC<{ number: string; title: string; children: React.ReactNode }> = ({ number, title, children }) => (
+  <section className="mb-10">
+    <h2 className="text-xl font-bold text-[#7C3AED] mb-4">{number}. {title}</h2>
+    <div className="text-foreground leading-relaxed space-y-3">{children}</div>
+  </section>
+);
+
+const BulletList: React.FC<{ items: React.ReactNode[] }> = ({ items }) => (
+  <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+    {items.map((item, i) => <li key={i}>{item}</li>)}
+  </ul>
+);
 
 const DataProcessingAddendum: React.FC = () => {
   return (
-    <LegalPageLayout
-      title="Data Processing Addendum"
-      lastUpdated="30 January 2026"
-    >
-      <p className="text-lg text-muted-foreground mb-8">
-        This Data Processing Addendum ("DPA") forms part of the Terms of Service
-        between Cruzi AI Ltd ("Processor") and driving instructors ("Controller")
-        using the Cruzi AI platform. This DPA sets out the terms under which we
+    <LegalPageLayout title="Data Processing Addendum" lastUpdated="7 April 2026">
+      <p className="text-base text-muted-foreground mb-6 leading-relaxed border-l-4 border-[#7C3AED] pl-4 py-2 bg-primary/5 rounded-r-lg">
+        This Data Processing Addendum ("DPA") forms part of the Terms of Service between Cruzi Ltd ("Processor") and
+        driving instructors ("Controller") using the Cruzi platform. This DPA sets out the terms under which we
         process personal data on your behalf.
       </p>
 
-      <div className="bg-muted/50 p-6 rounded-xl mb-8">
-        <p className="text-sm">
-          <strong>Important:</strong> As an instructor, you are a data
-          controller for your students' personal data. Cruzi AI acts as your data
-          processor when handling this data on the platform.
+      <div className="bg-muted/50 p-5 rounded-xl mb-10 border border-border">
+        <p className="text-sm text-foreground">
+          <strong>Important:</strong> As an instructor, you are a data controller for your students' personal data.
+          Cruzi acts as your data processor when handling this data on the platform.
         </p>
       </div>
 
-      <LegalSection id="definitions" title="1. Definitions" defaultOpen>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            <strong>"Controller"</strong> means you, the driving instructor, who
-            determines the purposes and means of processing student data
-          </li>
-          <li>
-            <strong>"Processor"</strong> means Cruzi AI Ltd, who processes
-            student data on your behalf
-          </li>
-          <li>
-            <strong>"Sub-processor"</strong> means any third party engaged by
-            the Processor to process data
-          </li>
-          <li>
-            <strong>"Student Data"</strong> means personal data of your students
-            processed through the Platform
-          </li>
-          <li>
-            <strong>"Data Protection Laws"</strong> means UK GDPR, Data
-            Protection Act 2018, and PECR
-          </li>
-        </ul>
-      </LegalSection>
+      <Section number="1" title="Definitions">
+        <BulletList items={[
+          <><strong>"Controller"</strong> means you, the driving instructor, who determines the purposes and means of processing student data</>,
+          <><strong>"Processor"</strong> means Cruzi Ltd, who processes student data on your behalf</>,
+          <><strong>"Sub-processor"</strong> means any third party engaged by the Processor to process data</>,
+          <><strong>"Student Data"</strong> means personal data of your students processed through the Platform</>,
+          <><strong>"Data Protection Laws"</strong> means UK GDPR, Data Protection Act 2018, and PECR</>,
+        ]} />
+      </Section>
 
-      <LegalSection id="scope" title="2. Scope of Processing">
-        <h4 className="font-semibold mb-2">Subject Matter</h4>
-        <p className="mb-4">
-          Processing of student personal data for the provision of driving
-          instruction management services.
+      <Section number="2" title="Scope of Processing">
+        <h3 className="font-semibold text-foreground mb-2">Subject Matter</h3>
+        <p className="text-muted-foreground mb-4">
+          Processing of student personal data for the provision of driving instruction management services.
         </p>
 
-        <h4 className="font-semibold mt-4 mb-2">Duration</h4>
-        <p className="mb-4">
-          For the duration of your use of the Platform, plus applicable
-          retention periods as outlined in our Privacy Policy.
+        <h3 className="font-semibold text-foreground mb-2">Duration</h3>
+        <p className="text-muted-foreground mb-4">
+          For the duration of your use of the Platform, plus applicable retention periods as outlined in our Privacy Policy.
         </p>
 
-        <h4 className="font-semibold mt-4 mb-2">Nature and Purpose</h4>
-        <ul className="list-disc pl-6 space-y-2 mb-4">
-          <li>Storing and organising student profiles and contact details</li>
-          <li>Recording lesson bookings and attendance</li>
-          <li>Tracking skill progress and assessments</li>
-          <li>Processing lesson notes and feedback</li>
-          <li>Facilitating communication between instructor and student</li>
-          <li>Processing payments and credit balances</li>
-        </ul>
+        <h3 className="font-semibold text-foreground mb-2">Nature and Purpose</h3>
+        <BulletList items={[
+          "Storing and organising student profiles and contact details",
+          "Recording lesson bookings and attendance",
+          "Tracking skill progress and assessments",
+          "Processing lesson notes and feedback",
+          "Facilitating communication between instructor and student",
+          "Processing payments and credit balances",
+        ]} />
 
-        <h4 className="font-semibold mt-4 mb-2">Categories of Data</h4>
-        <ul className="list-disc pl-6 space-y-2 mb-4">
-          <li>Identity data (name, email, phone, address)</li>
-          <li>Lesson records and progress notes</li>
-          <li>Skill assessments and mock test results</li>
-          <li>Payment and credit information</li>
-          <li>Messages and communications</li>
-          <li>Voice recordings (where consent is given)</li>
-          <li>GPS data from solo practice sessions</li>
-        </ul>
+        <h3 className="font-semibold text-foreground mt-5 mb-2">Categories of Data</h3>
+        <BulletList items={[
+          "Identity data (name, email, phone, address)",
+          "Lesson records and progress notes",
+          "Skill assessments and mock test results",
+          "Payment and credit information",
+          "Messages and communications",
+          "Voice recordings (where consent is given)",
+          "GPS data from solo practice sessions",
+        ]} />
 
-        <h4 className="font-semibold mt-4 mb-2">Data Subjects</h4>
-        <p>Students of the Controller (driving instructor).</p>
-      </LegalSection>
+        <h3 className="font-semibold text-foreground mt-5 mb-2">Data Subjects</h3>
+        <p className="text-muted-foreground">Students of the Controller (driving instructor).</p>
+      </Section>
 
-      <LegalSection id="controller-obligations" title="3. Controller Obligations">
-        <p className="mb-4">As the Controller, you are responsible for:</p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            Having a lawful basis for processing your students' personal data
-          </li>
-          <li>
-            Providing students with appropriate privacy notices explaining how
-            their data is used
-          </li>
-          <li>
-            Obtaining explicit consent for voice recordings and GPS tracking
-          </li>
-          <li>
-            Responding to data subject requests (with our assistance)
-          </li>
-          <li>
-            Ensuring the accuracy of data you input into the Platform
-          </li>
-          <li>
-            Notifying us promptly of any data protection issues
-          </li>
-          <li>
-            Complying with all applicable Data Protection Laws
-          </li>
-        </ul>
-      </LegalSection>
+      <Section number="3" title="Controller Obligations">
+        <p className="text-muted-foreground mb-3">As the Controller, you are responsible for:</p>
+        <BulletList items={[
+          "Having a lawful basis for processing your students' personal data",
+          "Providing students with appropriate privacy notices explaining how their data is used",
+          "Obtaining explicit consent for voice recordings and GPS tracking",
+          "Responding to data subject requests (with our assistance)",
+          "Ensuring the accuracy of data you input into the Platform",
+          "Notifying us promptly of any data protection issues",
+          "Complying with all applicable Data Protection Laws",
+        ]} />
+      </Section>
 
-      <LegalSection id="processor-obligations" title="4. Processor Obligations">
-        <p className="mb-4">As the Processor, Cruzi AI will:</p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            Process Student Data only on your documented instructions (i.e.,
-            through normal platform use)
-          </li>
-          <li>
-            Ensure persons authorised to process data have committed to
-            confidentiality
-          </li>
-          <li>
-            Implement appropriate technical and organisational security measures
-          </li>
-          <li>
-            Only engage sub-processors with prior general authorisation (see
-            Section 5)
-          </li>
-          <li>
-            Assist you in responding to data subject requests
-          </li>
-          <li>
-            Assist you with data protection impact assessments where required
-          </li>
-          <li>
-            Delete or return data upon termination (subject to legal retention
-            requirements)
-          </li>
-          <li>
-            Make available information to demonstrate compliance upon reasonable
-            request
-          </li>
-        </ul>
-      </LegalSection>
+      <Section number="4" title="Processor Obligations">
+        <p className="text-muted-foreground mb-3">As the Processor, Cruzi will:</p>
+        <BulletList items={[
+          "Process Student Data only on your documented instructions (through normal platform use)",
+          "Ensure persons authorised to process data have committed to confidentiality",
+          "Implement appropriate technical and organisational security measures",
+          "Only engage sub-processors with prior general authorisation (see Section 5)",
+          "Assist you in responding to data subject requests",
+          "Assist you with data protection impact assessments where required",
+          "Delete or return data upon termination (subject to legal retention requirements)",
+          "Make available information to demonstrate compliance upon reasonable request",
+        ]} />
+      </Section>
 
-      <LegalSection id="sub-processors" title="5. Sub-Processors">
-        <p className="mb-4">
-          By agreeing to this DPA, you provide general authorisation for us to
-          engage the following sub-processors:
+      <Section number="5" title="Sub-Processors">
+        <p className="text-muted-foreground mb-4">
+          By agreeing to this DPA, you provide general authorisation for us to engage the following sub-processors:
         </p>
-        <table className="w-full border-collapse mb-4">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4">Sub-Processor</th>
-              <th className="text-left py-2 pr-4">Purpose</th>
-              <th className="text-left py-2">Location</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b">
-              <td className="py-2 pr-4">Supabase Inc.</td>
-              <td className="py-2 pr-4">Database hosting and authentication</td>
-              <td className="py-2">AWS EU (Ireland)</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 pr-4">Stripe Inc.</td>
-              <td className="py-2 pr-4">Payment processing</td>
-              <td className="py-2">US (EU SCCs)</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 pr-4">Google LLC</td>
-              <td className="py-2 pr-4">AI services (Gemini), Maps</td>
-              <td className="py-2">US (EU SCCs)</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 pr-4">ElevenLabs Inc.</td>
-              <td className="py-2 pr-4">Voice synthesis</td>
-              <td className="py-2">US</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="mb-4">
-          We will notify you of any intended changes to sub-processors, giving
-          you the opportunity to object to such changes.
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="text-left py-2 px-3 font-semibold text-foreground">Sub-Processor</th>
+                <th className="text-left py-2 px-3 font-semibold text-foreground">Purpose</th>
+                <th className="text-left py-2 px-3 font-semibold text-foreground">Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { name: "Supabase Inc.", purpose: "Database hosting and authentication", location: "AWS EU (Ireland)" },
+                { name: "Stripe Inc.", purpose: "Payment processing", location: "US (EU SCCs)" },
+                { name: "OpenAI", purpose: "AI features (lesson plans, Voice Scribe)", location: "US (EU SCCs)" },
+                { name: "Google LLC", purpose: "AI services, Maps", location: "US (EU SCCs)" },
+                { name: "Resend Inc.", purpose: "Email delivery", location: "US (EU SCCs)" },
+                { name: "Twilio Inc.", purpose: "SMS notifications", location: "US (EU SCCs)" },
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-border">
+                  <td className="py-2 px-3 text-muted-foreground">{row.name}</td>
+                  <td className="py-2 px-3 text-muted-foreground">{row.purpose}</td>
+                  <td className="py-2 px-3 text-muted-foreground">{row.location}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-muted-foreground">
+          We will notify you of any intended changes to sub-processors, giving you the opportunity to object.
         </p>
-      </LegalSection>
+      </Section>
 
-      <LegalSection id="security" title="6. Security Measures">
-        <p className="mb-4">
-          We implement the following security measures to protect Student Data:
+      <Section number="6" title="Security Measures">
+        <h3 className="font-semibold text-foreground mb-2">Technical Measures</h3>
+        <BulletList items={[
+          "Encryption of data in transit (TLS 1.2+)",
+          "Encryption of data at rest (AES-256)",
+          "Multi-factor authentication options",
+          "Role-based access controls",
+          "Regular security updates and patching",
+          "Secure API authentication",
+        ]} />
+
+        <h3 className="font-semibold text-foreground mt-5 mb-2">Organisational Measures</h3>
+        <BulletList items={[
+          "Staff training on data protection",
+          "Confidentiality agreements with all personnel",
+          "Access limited to need-to-know basis",
+          "Regular security assessments",
+          "Incident response procedures",
+        ]} />
+      </Section>
+
+      <Section number="7" title="Data Subject Rights">
+        <p className="text-muted-foreground mb-3">
+          When a student exercises their data protection rights (access, rectification, erasure, etc.), we will:
         </p>
+        <BulletList items={[
+          "Forward the request to you if addressed to us incorrectly",
+          "Provide you with the tools to respond to requests (data export, deletion features)",
+          "Assist you in responding within the statutory timeframes",
+          "Provide information about data processing activities upon request",
+        ]} />
+      </Section>
 
-        <h4 className="font-semibold mb-2">Technical Measures</h4>
-        <ul className="list-disc pl-6 space-y-2 mb-4">
-          <li>Encryption of data in transit (TLS 1.2+)</li>
-          <li>Encryption of data at rest (AES-256)</li>
-          <li>Multi-factor authentication options</li>
-          <li>Role-based access controls</li>
-          <li>Regular security updates and patching</li>
-          <li>Secure API authentication</li>
-        </ul>
-
-        <h4 className="font-semibold mt-4 mb-2">Organisational Measures</h4>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>Staff training on data protection</li>
-          <li>Confidentiality agreements with all personnel</li>
-          <li>Access limited to need-to-know basis</li>
-          <li>Regular security assessments</li>
-          <li>Incident response procedures</li>
-        </ul>
-      </LegalSection>
-
-      <LegalSection id="data-subject-rights" title="7. Data Subject Rights">
-        <p className="mb-4">
-          When a student exercises their data protection rights (access,
-          rectification, erasure, etc.), we will:
+      <Section number="8" title="Data Breach Notification">
+        <p className="text-muted-foreground mb-3">In the event of a personal data breach affecting Student Data:</p>
+        <BulletList items={[
+          "We will notify you without undue delay (and within 24 hours where feasible)",
+          "Provide details of the breach including categories and approximate number of data subjects affected",
+          "Describe the likely consequences and measures taken or proposed",
+          "Assist you in meeting your notification obligations to the ICO (within 72 hours if required)",
+        ]} />
+        <p className="text-muted-foreground mt-3">
+          You are responsible for notifying the ICO and affected individuals where required by law.
         </p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            Forward the request to you if addressed to us incorrectly
-          </li>
-          <li>
-            Provide you with the tools to respond to requests (data export,
-            deletion features)
-          </li>
-          <li>
-            Assist you in responding within the statutory timeframes
-          </li>
-          <li>
-            Provide information about data processing activities upon request
-          </li>
-        </ul>
-      </LegalSection>
+      </Section>
 
-      <LegalSection id="breach-notification" title="8. Data Breach Notification">
-        <p className="mb-4">
-          In the event of a personal data breach affecting Student Data:
-        </p>
-        <ul className="list-disc pl-6 space-y-2 mb-4">
-          <li>
-            We will notify you without undue delay (and within 24 hours where
-            feasible)
-          </li>
-          <li>
-            Provide details of the breach including categories and approximate
-            number of data subjects affected
-          </li>
-          <li>
-            Describe the likely consequences and measures taken/proposed
-          </li>
-          <li>
-            Assist you in meeting your notification obligations to the ICO
-            (within 72 hours if required)
-          </li>
-        </ul>
-        <p>
-          You are responsible for notifying the ICO and affected individuals
-          where required by law.
-        </p>
-      </LegalSection>
+      <Section number="9" title="International Transfers">
+        <p className="text-muted-foreground mb-3">Where Student Data is transferred outside the UK or EEA, we ensure:</p>
+        <BulletList items={[
+          "Transfers only to countries with adequacy decisions, or",
+          "Appropriate safeguards are in place (Standard Contractual Clauses, UK IDTA)",
+          "Additional technical measures where necessary to ensure equivalent protection",
+        ]} />
+      </Section>
 
-      <LegalSection id="international-transfers" title="9. International Transfers">
-        <p className="mb-4">
-          Where Student Data is transferred outside the UK/EEA, we ensure:
-        </p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            Transfers only to countries with adequacy decisions, or
-          </li>
-          <li>
-            Appropriate safeguards are in place (Standard Contractual Clauses,
-            UK IDTA)
-          </li>
-          <li>
-            Additional technical measures where necessary to ensure equivalent
-            protection
-          </li>
-        </ul>
-      </LegalSection>
+      <Section number="10" title="Termination and Data Return">
+        <p className="text-muted-foreground mb-3">Upon termination of your account:</p>
+        <BulletList items={[
+          "You may export your Student Data using the platform's export features",
+          "We will delete Student Data within 30 days of account closure",
+          "Some data may be retained for legal or regulatory requirements (e.g. financial records for 7 years)",
+          "We will provide confirmation of deletion upon request",
+        ]} />
+      </Section>
 
-      <LegalSection id="termination" title="10. Termination & Data Return">
-        <p className="mb-4">
-          Upon termination of your account:
+      <Section number="11" title="Liability">
+        <p className="text-muted-foreground mb-3">
+          Each party shall be liable for damages caused by processing that violates Data Protection Laws:
         </p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            You may export your Student Data using the platform's export
-            features
-          </li>
-          <li>
-            We will delete Student Data within 30 days of account closure
-          </li>
-          <li>
-            Some data may be retained for legal/regulatory requirements (e.g.,
-            financial records for 7 years)
-          </li>
-          <li>
-            We will provide confirmation of deletion upon request
-          </li>
-        </ul>
-      </LegalSection>
+        <BulletList items={[
+          "Controllers are liable for processing that does not comply with their obligations",
+          "Processors are liable for processing that does not comply with processor-specific obligations or that is outside the Controller's instructions",
+          "Where both parties are responsible, liability shall be apportioned according to fault",
+        ]} />
+      </Section>
 
-      <LegalSection id="liability" title="11. Liability">
-        <p className="mb-4">
-          Each party shall be liable for damages caused by processing that
-          violates Data Protection Laws:
-        </p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            Controllers are liable for processing that doesn't comply with their
-            obligations
-          </li>
-          <li>
-            Processors are liable for processing that doesn't comply with
-            processor-specific obligations or that is outside the Controller's
-            instructions
-          </li>
-          <li>
-            Where both parties are responsible, liability shall be apportioned
-            according to fault
-          </li>
-        </ul>
-      </LegalSection>
-
-      <LegalSection id="contact" title="12. Contact">
-        <p className="mb-4">
-          For questions about this DPA or data processing activities:
-        </p>
-        <ul className="list-disc pl-6 space-y-2">
-          <li>
-            <strong>Data Protection Contact:</strong>{" "}
-            <a
-              href="mailto:dpo@cruzi.app"
-              className="text-primary hover:underline"
-            >
-              dpo@cruzi.app
-            </a>
-          </li>
-          <li>
-            <strong>Breach Reporting:</strong>{" "}
-            <a
-              href="mailto:security@cruzi.app"
-              className="text-primary hover:underline"
-            >
-              security@cruzi.app
-            </a>
-          </li>
-        </ul>
-      </LegalSection>
+      <Section number="12" title="Contact">
+        <p className="text-muted-foreground mb-3">For questions about this DPA or data processing activities:</p>
+        <BulletList items={[
+          <><strong>Data Protection Contact:</strong> <a href="mailto:privacy@cruzi.co.uk" className="text-primary hover:underline">privacy@cruzi.co.uk</a></>,
+          <><strong>Breach Reporting:</strong> <a href="mailto:security@cruzi.co.uk" className="text-primary hover:underline">security@cruzi.co.uk</a></>,
+          <><strong>Address:</strong> Cruzi Ltd, 3rd Floor, 86-90 Paul Street, London, England, EC2A 4NE</>,
+        ]} />
+      </Section>
     </LegalPageLayout>
   );
 };

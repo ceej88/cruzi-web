@@ -239,7 +239,7 @@ const OwnerCommandCentre: React.FC = () => {
           </div>
         </div>
 
-        {/* Cruzi AI Unbeatable Features */}
+        {/* Cruzi Unbeatable Features */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -247,7 +247,7 @@ const OwnerCommandCentre: React.FC = () => {
         >
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
           <h2 className="text-3xl font-black tracking-tight mb-6">
-            Cruzi AI<br />Unbeatable<br />Features
+            Cruzi<br />Unbeatable<br />Features
           </h2>
           <div className="space-y-3">
             {aiFeatures.map((feature) => (
