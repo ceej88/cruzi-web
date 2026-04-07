@@ -30,7 +30,8 @@ const AuthCallbackPage: React.FC = () => {
         setStatus('success');
 
         setTimeout(() => {
-          const dest = roleRow?.role === 'student' ? '/install' : '/instructor';
+          const next = new URLSearchParams(window.location.search).get('next');
+          const dest = next || (roleRow?.role === 'student' || roleRow?.role === 'parent' ? '/install' : '/instructor');
           navigate(dest, { replace: true });
         }, 2000);
 

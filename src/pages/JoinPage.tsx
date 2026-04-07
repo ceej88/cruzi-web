@@ -1,13 +1,11 @@
-// Join Page - Public route for invite link validation
-// Students land here when clicking a shared invite link
-
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, AlertCircle, GraduationCap, CheckCircle, Smartphone } from 'lucide-react';
+import { Loader2, AlertCircle, GraduationCap, CheckCircle, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const APP_STORE_URL = 'https://apps.apple.com/gb/app/cruzi/id6759689036';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.cruzi.app';
 
 interface InviteData {
   instructor_id: string;
@@ -17,68 +15,124 @@ interface InviteData {
 
 const JoinPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const token = searchParams.get('t');
-  
+
   const [isValidating, setIsValidating] = useState(true);
   const [inviteData, setInviteData] = useState<InviteData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [showEmailSent, setShowEmailSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
   useEffect(() => {
     const validateToken = async () => {
-      if (!token) {
-        setError('No invite token provided');
-        setIsValidating(false);
-        return;
-      }
-
+      if (!token) { setError('No invite token provided'); setIsValidating(false); return; }
       try {
-        const { data, error: rpcError } = await supabase
-          .rpc('validate_invite_link', { _token: token });
-
+        const { data, error: rpcError } = await supabase.rpc('validate_invite_link', { _token: token });
         if (rpcError) throw rpcError;
-
-        if (data && data.length > 0) {
-          const result = data[0];
-          if (result.is_valid) {
-            setInviteData({
-              instructor_id: result.instructor_id,
-              instructor_name: result.instructor_name || 'Your Instructor',
-              instructor_pin: result.instructor_pin || '',
-            });
-          } else {
-            setError(result.error_message || 'This link is no longer valid');
-          }
+        if (data && data.length > 0 && data[0].is_valid) {
+          setInviteData({
+            instructor_id: data[0].instructor_id,
+            instructor_name: data[0].instructor_name || 'Your Instructor',
+            instructor_pin: data[0].instructor_pin || '',
+          });
         } else {
-          setError('Invalid link');
+          setError(data?.[0]?.error_message || 'This link is no longer valid');
         }
-      } catch (err) {
-        console.error('Error validating invite:', err);
+      } catch {
         setError('Unable to validate invite link. Please try again.');
       } finally {
         setIsValidating(false);
       }
     };
-
     validateToken();
   }, [token]);
 
-  // Navigate to auth with pre-filled data
-  const handleContinue = () => {
-    if (!inviteData) return;
-    
-    // Store invite data in sessionStorage for the auth page to pick up
-    sessionStorage.setItem('cruzi_invite_data', JSON.stringify({
-      instructorId: inviteData.instructor_id,
-      instructorName: inviteData.instructor_name,
-      pin: inviteData.instructor_pin,
-      token: token,
-    }));
-    
-    navigate('/auth?mode=signup&role=student');
+  const startResendCooldown = () => {
+    setResendCooldown(60);
+    const timer = setInterval(() => {
+      setResendCooldown(prev => { if (prev <= 1) { clearInterval(timer); return 0; } return prev - 1; });
+    }, 1000);
   };
 
-  // Loading state
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setFormError('Please fill in all fields.');
+      return;
+    }
+    if (password.length < 6) {
+      setFormError('Password must be at least 6 characters.');
+      return;
+    }
+    setFormLoading(true);
+    setFormError('');
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: 'https://cruzi.co.uk/auth/callback?next=/install',
+          data: {
+            role: 'student',
+            full_name: name.trim(),
+            instructor_id: inviteData?.instructor_id,
+            invite_token: token,
+          },
+        },
+      });
+      if (signUpError) throw signUpError;
+
+      const userId = data.user?.id;
+      if (userId) {
+        await supabase.from('profiles').upsert({
+          user_id: userId,
+          full_name: name.trim(),
+          email: email.trim(),
+          instructor_id: inviteData?.instructor_id ?? null,
+        }, { onConflict: 'user_id' });
+
+        await supabase.from('user_roles').upsert({
+          user_id: userId,
+          role: 'student',
+        }, { onConflict: 'user_id' });
+      }
+
+      setSentToEmail(email.trim());
+      setShowEmailSent(true);
+      startResendCooldown();
+    } catch (err: any) {
+      setFormError(
+        err.message?.includes('already registered')
+          ? 'This email is already registered. Try logging into the Cruzi app instead.'
+          : (err.message || 'Something went wrong. Please try again.')
+      );
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (resendCooldown > 0 || formLoading) return;
+    setFormLoading(true);
+    try {
+      await supabase.auth.resend({
+        type: 'signup',
+        email: sentToEmail,
+        options: { emailRedirectTo: 'https://cruzi.co.uk/auth/callback?next=/install' },
+      });
+      startResendCooldown();
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
   if (isValidating) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -90,7 +144,6 @@ const JoinPage: React.FC = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-background overflow-y-auto">
@@ -100,30 +153,63 @@ const JoinPage: React.FC = () => {
               <AlertCircle className="h-8 w-8 text-destructive" />
             </div>
             <h1 className="text-2xl font-black text-foreground mb-2">Link Invalid</h1>
-            <p className="text-muted-foreground mb-6">{error}</p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Ask your instructor for a new link or enter their PIN manually when signing up.
-            </p>
-            <Button
-              onClick={() => navigate('/auth?role=student')}
-              className="w-full"
-            >
-              Go to Sign Up
-            </Button>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <p className="text-sm text-muted-foreground">Ask your instructor for a new link.</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Valid invite - show confirmation
-  const instructorFirst = inviteData?.instructor_name?.split(' ')[0] || 'your instructor';
+  if (showEmailSent) {
+    return (
+      <div className="bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="max-w-md mx-auto px-4 py-10 text-center space-y-5">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <Mail className="h-10 w-10 text-primary" />
+          </div>
+          <h1 className="text-3xl font-black text-foreground">Check your inbox</h1>
+          <p className="text-muted-foreground">
+            We sent a verification link to{' '}
+            <span className="font-bold text-foreground break-all">{sentToEmail}</span>
+          </p>
+
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <p className="text-sm font-semibold text-foreground">
+              Once verified, download Cruzi to complete your setup
+            </p>
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="block">
+              <img
+                src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg"
+                alt="Download on the App Store"
+                className="h-14 mx-auto hover:opacity-90 transition-opacity"
+              />
+            </a>
+            <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" className="block">
+              <img
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                alt="Get it on Google Play"
+                className="h-14 mx-auto hover:opacity-90 transition-opacity"
+              />
+            </a>
+          </div>
+
+          <button
+            onClick={handleResend}
+            disabled={resendCooldown > 0 || formLoading}
+            className="w-full py-3 rounded-xl bg-primary text-white font-semibold disabled:opacity-50 transition-all hover:bg-primary/90"
+          >
+            {formLoading ? 'Sending...' : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="max-w-md mx-auto px-4 py-10 space-y-5">
 
-        {/* Header */}
         <div className="text-center">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <GraduationCap className="h-10 w-10 text-primary" />
@@ -134,41 +220,11 @@ const JoinPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Invite verified badge */}
         <div className="flex items-center gap-2 justify-center text-green-600">
           <CheckCircle className="h-4 w-4" />
           <span className="text-sm font-bold">Invite verified — link is valid</span>
         </div>
 
-        {/* App download — PRIMARY CTA */}
-        <div className="bg-card border-2 border-primary/20 rounded-2xl p-6 text-center space-y-3">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-            Best experience
-          </div>
-          <div className="flex items-center justify-center gap-3 mb-1">
-            <Smartphone className="h-6 w-6 text-primary" />
-            <h2 className="text-xl font-black text-foreground">Get the Cruzi app</h2>
-          </div>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Download Cruzi on your phone, then tap this invite link again to connect to {instructorFirst} automatically.
-          </p>
-          <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="block mt-2">
-            <img
-              src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg"
-              alt="Download on the App Store"
-              className="h-14 mx-auto hover:opacity-90 transition-opacity"
-            />
-          </a>
-        </div>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground font-medium">or continue on the web</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        {/* Instructor card + web CTA — secondary */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center gap-4 mb-5">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-black text-base flex-shrink-0">
@@ -190,24 +246,61 @@ const JoinPage: React.FC = () => {
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-2">This PIN will be pre-filled when you sign up</p>
+              <p className="text-xs text-muted-foreground mt-2">Keep this PIN — you will need it in the app</p>
             </div>
           )}
 
-          <Button
-            onClick={handleContinue}
-            variant="outline"
-            className="w-full h-12 text-base font-bold rounded-xl"
-          >
-            Create Account on Web
-          </Button>
+          {formError && (
+            <p className="text-sm text-destructive mb-4 bg-destructive/10 rounded-lg px-3 py-2">{formError}</p>
+          )}
+
+          <form onSubmit={handleSignup} className="space-y-3">
+            <div>
+              <label className="text-sm font-semibold text-foreground block mb-1">Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Your full name"
+                className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-foreground block mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-foreground block mb-1">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-bold rounded-xl mt-1"
+              disabled={formLoading}
+            >
+              {formLoading
+                ? <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</span>
+                : 'Create Account'
+              }
+            </Button>
+          </form>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-xs text-muted-foreground pb-4">
           Already have an account?{' '}
-          <button onClick={() => navigate('/auth?mode=login')} className="text-primary font-bold hover:underline">
-            Log in
-          </button>
+          <a href="https://cruzi.co.uk/auth" className="text-primary font-bold hover:underline">Log in</a>
         </p>
       </div>
     </div>
