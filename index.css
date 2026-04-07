@@ -1,0 +1,556 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Cruzi AI Design System
+   - Primary Violet: #8B5CF6 (hsl 262 83% 66%)
+   - Electric Purple: #A855F7 (hsl 271 81% 56%)
+   - Cyber Teal: #2DD4BF (hsl 166 76% 50%)
+   - Dark Headers: #0F172A (hsl 222 47% 11%)
+   - Success Green: #10B981 (hsl 160 84% 39%)
+   - Gold: #FFBF00 (hsl 45 100% 50%)
+   - Fonts: Outfit (headings), Inter (body)
+   - Style: Glassmorphism cards with blur effects, gradient buttons
+*/
+
+@layer base {
+  :root {
+    /* ========== CRUZI BRAND IDENTITY ========== */
+    --cruzi-violet: 262 83% 66%;     /* #8B5CF6 - Deep Violet (Primary) */
+    --cruzi-purple: 271 81% 56%;     /* #A855F7 - Electric Purple */
+    --cruzi-teal: 166 76% 50%;       /* #2DD4BF - Cyber Teal (Success) */
+    --cruzi-dark: 222 47% 11%;       /* #0F172A - Slate 900 (Headers) */
+    --cruzi-light: 210 20% 98%;      /* #F8FAFC - Slate 50 (Background) */
+    --cruzi-success: 160 84% 39%;
+    --cruzi-gold: 45 100% 50%;
+    --cruzi-danger: 0 84% 60%;
+
+    /* Core Theme - Light Mode */
+    --background: 210 20% 98%;       /* #F8FAFC exact */
+    --foreground: 222 47% 11%;       /* #0F172A */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --card-dark: 222 47% 11%;
+    --card-dark-foreground: 0 0% 100%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 262 83% 66%;          /* #8B5CF6 - Deep Violet */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;        /* Slate 100 */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 262 83% 96%;           /* Violet 50 */
+    --accent-foreground: 262 83% 66%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 262 83% 66%;             /* Violet focus ring */
+
+    --radius: 0.75rem;
+
+    /* Glassmorphism */
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.2;
+    --glass-blur: 20px;
+
+    /* Safe area insets for mobile */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+
+    /* Sidebar variables - Updated to violet */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 262 83% 66%;          /* Violet */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 83% 95%;           /* Violet 50 */
+    --sidebar-accent-foreground: 262 83% 66%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 262 83% 66%;             /* Violet */
+  }
+
+  .dark {
+    /* Cruzi Dark Mode */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --card-dark: 222 47% 15%;
+    --card-dark-foreground: 0 0% 100%;
+
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 262 83% 70%;          /* Lighter violet for dark mode */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 262 83% 50%;           /* Violet accent for dark */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 262 83% 70%;             /* Violet focus ring */
+
+    /* Dark Glassmorphism */
+    --glass-bg: 222 47% 11% / 0.8;
+    --glass-border: 0 0% 100% / 0.1;
+
+    /* Dark Sidebar - Violet themed */
+    --sidebar-background: 222 47% 6%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 262 83% 70%;          /* Violet */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 262 83% 70%;             /* Violet */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+    touch-action: pan-x pan-y;
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  #root {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-outfit font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+}
+
+@layer components {
+  /* Glassmorphism Card */
+  .glass-card {
+    @apply relative overflow-hidden rounded-2xl;
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 
+      0 4px 30px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-card-solid {
+    @apply glass-card bg-card/95;
+  }
+
+  /* Gradient Button Variants */
+  .btn-gradient-primary {
+    @apply relative overflow-hidden font-medium transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--cruzi-blue)) 0%, hsl(var(--cruzi-cyan)) 100%);
+    @apply text-white shadow-lg;
+  }
+
+  .btn-gradient-primary:hover {
+    @apply scale-[1.02] shadow-xl;
+    background: linear-gradient(135deg, hsl(var(--cruzi-blue)) 20%, hsl(var(--cruzi-cyan)) 100%);
+  }
+
+  .btn-gradient-primary:active {
+    @apply scale-[0.98];
+  }
+
+  .btn-gradient-accent {
+    @apply relative overflow-hidden font-medium transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--cruzi-indigo)) 0%, hsl(var(--cruzi-cyan)) 100%);
+    @apply text-white shadow-lg;
+  }
+
+  .btn-gradient-gold {
+    @apply relative overflow-hidden font-medium transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--cruzi-gold)) 0%, hsl(45 100% 60%) 100%);
+    @apply text-foreground shadow-lg;
+  }
+
+  /* Mobile Bottom Navigation */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 z-50;
+    padding-bottom: max(var(--safe-area-inset-bottom), 0.5rem);
+    @apply glass-card rounded-t-3xl border-t border-x-0 border-b-0;
+  }
+
+  .bottom-nav-item {
+    @apply flex flex-col items-center justify-center gap-1 py-2 px-4 rounded-xl transition-all duration-200;
+    @apply text-muted-foreground;
+    min-height: 56px;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-primary bg-primary/10;
+  }
+
+  .bottom-nav-item:active {
+    @apply scale-95;
+  }
+
+  /* Touch-friendly targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Skill Badge */
+  .skill-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium;
+    @apply transition-all duration-200 hover:scale-105;
+  }
+
+  /* Progress Ring */
+  .progress-ring {
+    @apply relative inline-flex items-center justify-center;
+  }
+
+  .progress-ring__circle {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.5s ease-in-out;
+  }
+
+  /* Floating Action Button */
+  .fab {
+    @apply fixed z-40 w-14 h-14 rounded-full shadow-2xl;
+    @apply flex items-center justify-center;
+    @apply btn-gradient-primary;
+    bottom: calc(80px + var(--safe-area-inset-bottom));
+    right: 1rem;
+  }
+
+  /* Card with glow effect */
+  .card-glow {
+    @apply relative;
+  }
+
+  .card-glow::before {
+    content: '';
+    @apply absolute -inset-1 rounded-3xl opacity-0 blur-xl transition-opacity duration-300;
+    background: linear-gradient(135deg, hsl(var(--cruzi-blue) / 0.3) 0%, hsl(var(--cruzi-cyan) / 0.3) 100%);
+  }
+
+  .card-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Animated gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--cruzi-blue)) 0%, hsl(var(--cruzi-cyan)) 50%, hsl(var(--cruzi-indigo)) 100%);
+    background-size: 200% auto;
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% center;
+    }
+    50% {
+      background-position: 100% center;
+    }
+  }
+
+  /* Cruzi Branded Sidebar - Solid background with mesh gradient overlay */
+  .sidebar-cruzi-brand {
+    @apply relative overflow-hidden bg-card;
+    isolation: isolate;
+
+    /* Solid mesh gradient on top of card background */
+    background:
+      linear-gradient(180deg, hsl(var(--cruzi-blue) / 0.15) 0%, transparent 50%, hsl(var(--cruzi-indigo) / 0.12) 100%),
+      radial-gradient(ellipse 90% 60% at 15% 0%, hsl(var(--cruzi-blue) / 0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 85% 40%, hsl(var(--cruzi-cyan) / 0.25) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 70% 100%, hsl(var(--cruzi-indigo) / 0.35) 0%, transparent 65%),
+      hsl(var(--card));
+
+    box-shadow: 0 1px 0 hsl(var(--border));
+  }
+
+  /* Keep sidebar content above glow layers */
+  .sidebar-cruzi-brand > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sidebar-cruzi-brand::before {
+    content: "";
+    @apply absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none;
+    z-index: 0;
+    background: radial-gradient(circle, hsl(var(--cruzi-blue) / 0.35) 0%, transparent 70%);
+    filter: blur(46px);
+    mix-blend-mode: screen;
+    animation: float-glow 10s ease-in-out infinite;
+  }
+
+  .sidebar-cruzi-brand::after {
+    content: "";
+    @apply absolute -bottom-28 -left-28 w-80 h-80 rounded-full pointer-events-none;
+    z-index: 0;
+    background: radial-gradient(circle, hsl(var(--cruzi-indigo) / 0.3) 0%, transparent 70%);
+    filter: blur(52px);
+    mix-blend-mode: screen;
+    animation: float-glow 9s ease-in-out infinite reverse;
+  }
+
+  @keyframes float-glow {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+    50% { transform: translate(14px, 10px) scale(1.08); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-cruzi-brand::before,
+    .sidebar-cruzi-brand::after {
+      animation: none;
+    }
+  }
+
+  .dark .sidebar-cruzi-brand {
+    background:
+      linear-gradient(180deg, hsl(var(--cruzi-blue) / 0.18) 0%, transparent 55%, hsl(var(--cruzi-indigo) / 0.15) 100%),
+      radial-gradient(ellipse 90% 60% at 15% 0%, hsl(var(--cruzi-blue) / 0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 85% 40%, hsl(var(--cruzi-cyan) / 0.2) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 70% 100%, hsl(var(--cruzi-indigo) / 0.3) 0%, transparent 65%),
+      hsl(var(--card));
+
+    box-shadow: 0 1px 0 hsl(var(--border));
+  }
+}
+
+@layer utilities {
+  /* Neural Gradient - Official Cruzi Brand Signature */
+  .neural-gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, #8b5cf6, #a855f7, #2dd4bf);
+  }
+  
+  .neural-gradient-bg {
+    background-image: linear-gradient(to right, #8b5cf6, #a855f7, #2dd4bf);
+  }
+
+  /* Safe area padding utilities */
+  .pt-safe {
+    padding-top: var(--safe-area-inset-top);
+  }
+  
+  .pb-safe {
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  }
+
+  .pb-nav {
+    padding-bottom: calc(80px + var(--safe-area-inset-bottom));
+  }
+
+  /* Safe area height utilities */
+  .h-safe-area-top {
+    height: env(safe-area-inset-top);
+  }
+
+  .h-safe-area-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hardware accelerated scrolling */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Overscroll behavior */
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Touch target minimum size */
+  .touch-target-min {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Epiphany Bridge - Cinematic Effects */
+  .epiphany-glow-breathe {
+    animation: glow-breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-breathe {
+    0%, 100% {
+      filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor);
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 40px currentColor) drop-shadow(0 0 80px currentColor);
+      transform: scale(1.05);
+    }
+  }
+
+  .epiphany-text-glow {
+    text-shadow: 
+      0 0 20px currentColor,
+      0 0 40px currentColor,
+      0 0 60px currentColor;
+  }
+
+  .neural-orb {
+    @apply absolute rounded-full blur-3xl;
+    animation: neural-float 8s ease-in-out infinite;
+  }
+
+  @keyframes neural-float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.3;
+    }
+    33% {
+      transform: translate(20px, -20px) scale(1.1);
+      opacity: 0.5;
+    }
+    66% {
+      transform: translate(-15px, 15px) scale(0.95);
+      opacity: 0.4;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .epiphany-glow-breathe,
+    .neural-orb {
+      animation: none;
+    }
+  }
+
+  /* Infinite Neural Canvas - Drifting Atmospheric Auras */
+  @keyframes drift {
+    0%, 100% { 
+      transform: translate(-50%, -50%) scale(1); 
+    }
+    25% { 
+      transform: translate(-48%, -52%) scale(1.02); 
+    }
+    50% { 
+      transform: translate(-52%, -48%) scale(1.05); 
+    }
+    75% { 
+      transform: translate(-50%, -50%) scale(1.03); 
+    }
+  }
+
+  .animate-drift {
+    animation: drift 20s ease-in-out infinite;
+  }
+
+  .animate-drift-reverse {
+    animation: drift 25s ease-in-out infinite reverse;
+  }
+
+  .animate-drift-slow {
+    animation: drift 30s ease-in-out infinite;
+  }
+
+  /* ========== THREE-MODE RESPONSIVE UTILITIES ========== */
+  
+  /* Responsive touch/click targets */
+  /* Mobile: 48px (touch), Desktop: 36px (mouse) */
+  .touch-target-responsive {
+    @apply min-h-[48px] min-w-[48px] lg:min-h-[36px] lg:min-w-[36px];
+  }
+  
+  /* Active states: mobile = scale, desktop = bg change */
+  .interactive-responsive {
+    @apply active:scale-95 lg:active:scale-100 lg:hover:bg-muted/50;
+  }
+  
+  /* Desktop readable text (slightly larger on big screens) */
+  .text-desktop-readable {
+    @apply text-sm lg:text-base;
+  }
+
+  /* Desktop-only overflow reset (remove fixed viewport) */
+  @screen lg {
+    .mobile-fixed-viewport {
+      position: static !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+  }
+}

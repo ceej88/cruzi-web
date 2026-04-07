@@ -1,0 +1,30 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "5XJQGJRRKJ.com.cruzi.app"
+        ],
+        "components": [
+          {
+            "/": "/join*"
+          },
+          {
+            "/": "/parent/*"
+          },
+          {
+            "/": "/connect/*"
+          },
+          {
+            "/": "/install*"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "5XJQGJRRKJ.com.cruzi.app"
+    ]
+  }
+}
