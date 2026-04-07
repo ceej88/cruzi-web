@@ -1,4 +1,7 @@
 {
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "framework": "vite",
   "headers": [
     {
       "source": "/.well-known/apple-app-site-association",
