@@ -73,7 +73,7 @@ const ParentInvitePage: React.FC = () => {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: 'https://cruzi.co.uk/auth/callback?next=/install',
+          emailRedirectTo: 'https://www.cruzi.co.uk/auth/callback?next=/install',
           data: { role: 'parent', full_name: name.trim() },
         },
       });
@@ -92,14 +92,10 @@ const ParentInvitePage: React.FC = () => {
           role: 'parent',
         }, { onConflict: 'user_id' });
 
-        // claim-parent-token requires an authenticated session which doesn't exist
-        // until email is confirmed — catch and ignore, the claim will complete on first login
+        // Store the token so AuthCallbackPage can claim it after email verification
+        // establishes a real authenticated session (no JWT exists at this point)
         if (token) {
-          try {
-            await supabase.functions.invoke('claim-parent-token', { body: { token } });
-          } catch {
-            // non-fatal
-          }
+          localStorage.setItem('pending_parent_token', token);
         }
       }
 

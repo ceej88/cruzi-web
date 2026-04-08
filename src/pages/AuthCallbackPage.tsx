@@ -3,10 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 
+async function claimPendingParentToken() {
+  const pendingToken = localStorage.getItem('pending_parent_token');
+  if (!pendingToken) return;
+  localStorage.removeItem('pending_parent_token');
+  try {
+    await supabase.functions.invoke('claim-parent-token', { body: { token: pendingToken } });
+  } catch {
+    // non-fatal — parent can still use the app, link may need manual retry
+  }
+}
+
 async function getRoleAndRedirect(navigate: ReturnType<typeof useNavigate>) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/auth'); return; }
+
+    // Claim any pending parent invite token now that we have a valid session
+    await claimPendingParentToken();
 
     const { data: profile } = await supabase
       .from('profiles')
