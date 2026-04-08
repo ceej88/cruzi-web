@@ -9,101 +9,51 @@ const AuthCallbackPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    let unsubscribe: (() => void) | null = null;
-
     const handleCallback = async () => {
       try {
-        // Check both query params (?code=) and hash fragments (#error=, #access_token=)
-        const params = new URLSearchParams(window.location.search);
-        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-
-        const code = params.get('code');
-        const errorParam = params.get('error') || hashParams.get('error');
-        const errorDescription = params.get('error_description') || hashParams.get('error_description');
-
-        if (errorParam) {
-          const msg = errorDescription
-            ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
-            : errorParam;
-          throw new Error(msg);
-        }
-
+        // Check for PKCE code first
+        const code = new URLSearchParams(window.location.search).get('code');
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) throw error;
-          await resolveSession();
+          await supabase.auth.exchangeCodeForSession(code);
+          setStatus('success');
+          setTimeout(() => navigate('/instructor'), 2000);
           return;
         }
 
-        // No code — session may arrive via hash fragment (token_hash flow).
-        // Listen for the SIGNED_IN event which fires once the hash is processed.
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-              await resolveSession(session.user.id);
-            } else if (event === 'TOKEN_REFRESHED' && session) {
-              await resolveSession(session.user.id);
-            }
+        // Check for implicit hash tokens
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+          const params = new URLSearchParams(hash.replace('#', ''));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          if (accessToken && refreshToken) {
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            setStatus('success');
+            setTimeout(() => navigate('/instructor'), 2000);
+            return;
           }
-        );
-        unsubscribe = () => subscription.unsubscribe();
+        }
 
-        // Also try getSession immediately in case it's already set
+        // Nothing in URL — check if session already exists
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          await resolveSession(session.user.id);
+          setStatus('success');
+          setTimeout(() => navigate('/instructor'), 2000);
           return;
         }
 
-        // If still nothing after 8 seconds, give up
-        setTimeout(() => {
-          setErrorMsg('Verification timed out — please try signing in directly');
-          setStatus('error');
-        }, 8000);
-
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Verification failed';
-        console.error('Auth callback error:', msg);
-        setErrorMsg(msg);
+        setErrorMsg('Verification timed out. Please try again.');
         setStatus('error');
-      }
-    };
-
-    const resolveSession = async (userId?: string) => {
-      try {
-        let uid = userId;
-        if (!uid) {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (!session) throw new Error('No session found after confirmation');
-          uid = session.user.id;
-        }
-
-        const { data: roleRow } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', uid)
-          .single();
-
-        setStatus('success');
-
-        setTimeout(() => {
-          const next = new URLSearchParams(window.location.search).get('next');
-          const dest = next || (roleRow?.role === 'student' || roleRow?.role === 'parent' ? '/install' : '/instructor');
-          navigate(dest, { replace: true });
-        }, 2000);
-
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Verification failed';
-        setErrorMsg(msg);
+      } catch (err) {
+        setErrorMsg('Verification failed. Please try again.');
         setStatus('error');
       }
     };
 
     handleCallback();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
   }, [navigate]);
 
   return (
