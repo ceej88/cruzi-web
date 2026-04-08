@@ -9,22 +9,73 @@ const AuthCallbackPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
+
     const handleCallback = async () => {
       try {
-        const code = new URLSearchParams(window.location.search).get('code');
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const errorParam = params.get('error');
+        const errorDescription = params.get('error_description');
+
+        if (errorParam) {
+          throw new Error(errorDescription || errorParam);
+        }
 
         if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
+          await resolveSession();
+          return;
         }
 
+        // No code — session may arrive via hash fragment (token_hash flow).
+        // Listen for the SIGNED_IN event which fires once the hash is processed.
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+              await resolveSession(session.user.id);
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+              await resolveSession(session.user.id);
+            }
+          }
+        );
+        unsubscribe = () => subscription.unsubscribe();
+
+        // Also try getSession immediately in case it's already set
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error('No session found after confirmation');
+        if (session) {
+          await resolveSession(session.user.id);
+          return;
+        }
+
+        // If still nothing after 8 seconds, give up
+        setTimeout(() => {
+          setErrorMsg('Verification timed out — please try signing in directly');
+          setStatus('error');
+        }, 8000);
+
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Verification failed';
+        console.error('Auth callback error:', msg);
+        setErrorMsg(msg);
+        setStatus('error');
+      }
+    };
+
+    const resolveSession = async (userId?: string) => {
+      try {
+        let uid = userId;
+        if (!uid) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) throw new Error('No session found after confirmation');
+          uid = session.user.id;
+        }
 
         const { data: roleRow } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', session.user.id)
+          .eq('user_id', uid)
           .single();
 
         setStatus('success');
@@ -37,13 +88,16 @@ const AuthCallbackPage: React.FC = () => {
 
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Verification failed';
-        console.error('Auth callback error:', msg);
         setErrorMsg(msg);
         setStatus('error');
       }
     };
 
     handleCallback();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [navigate]);
 
   return (
