@@ -13,13 +13,19 @@ const AuthCallbackPage: React.FC = () => {
 
     const handleCallback = async () => {
       try {
+        // Check both query params (?code=) and hash fragments (#error=, #access_token=)
         const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+
         const code = params.get('code');
-        const errorParam = params.get('error');
-        const errorDescription = params.get('error_description');
+        const errorParam = params.get('error') || hashParams.get('error');
+        const errorDescription = params.get('error_description') || hashParams.get('error_description');
 
         if (errorParam) {
-          throw new Error(errorDescription || errorParam);
+          const msg = errorDescription
+            ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+            : errorParam;
+          throw new Error(msg);
         }
 
         if (code) {
