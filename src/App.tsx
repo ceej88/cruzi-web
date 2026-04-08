@@ -13,6 +13,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import OwnerCommandCentre from "./pages/owner/OwnerCommandCentre";
+import InstructorWebDashboard from "./pages/instructor/InstructorWebDashboard";
 import NotFound from "./pages/NotFound";
 import JoinPage from "./pages/JoinPage";
 import InstallPage from "./pages/InstallPage";
@@ -65,8 +66,8 @@ const AppRoutes = () => {
       <Route path="/connect/complete" element={<ConnectCompletePage />} />
       <Route path="/connect/refresh" element={<ConnectRefreshPage />} />
 
-      {/* Instructor dashboard — being rebuilt. Redirect to auth for now */}
-      <Route path="/instructor/*" element={<Navigate to="/auth" replace />} />
+      {/* Instructor web dashboard */}
+      <Route path="/instructor/*" element={<InstructorWebDashboard />} />
 
       {/* Owner Command Centre (admin) */}
       <Route
