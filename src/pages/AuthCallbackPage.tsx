@@ -3,6 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 
+async function getRoleAndRedirect(navigate: ReturnType<typeof useNavigate>) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate('/auth'); return; }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('level')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    const level = profile?.level;
+    if (level === 'instructor') {
+      navigate('/instructor');
+    } else if (level === 'student' || level === 'parent') {
+      navigate('/install');
+    } else {
+      // No profile yet or unknown — check user metadata
+      const role = user.user_metadata?.role;
+      navigate(role === 'instructor' ? '/instructor' : '/install');
+    }
+  } catch {
+    navigate('/auth');
+  }
+}
+
 const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -11,43 +37,49 @@ const AuthCallbackPage: React.FC = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Check for PKCE code first
+        // 1. PKCE code flow
         const code = new URLSearchParams(window.location.search).get('code');
         if (code) {
           await supabase.auth.exchangeCodeForSession(code);
           setStatus('success');
-          setTimeout(() => navigate('/instructor'), 2000);
+          setTimeout(() => getRoleAndRedirect(navigate), 1500);
           return;
         }
 
-        // Check for implicit hash tokens
+        // 2. Implicit flow — access_token in hash
         const hash = window.location.hash;
         if (hash && hash.includes('access_token')) {
           const params = new URLSearchParams(hash.replace('#', ''));
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
           if (accessToken && refreshToken) {
-            await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
+            await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
             setStatus('success');
-            setTimeout(() => navigate('/instructor'), 2000);
+            setTimeout(() => getRoleAndRedirect(navigate), 1500);
             return;
           }
         }
 
-        // Nothing in URL — check if session already exists
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setStatus('success');
-          setTimeout(() => navigate('/instructor'), 2000);
+        // 3. Check for error in hash (e.g. expired token)
+        if (hash && hash.includes('error')) {
+          const params = new URLSearchParams(hash.replace('#', ''));
+          const errorDesc = params.get('error_description') ?? 'Verification failed. Please try again.';
+          setErrorMsg(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
+          setStatus('error');
           return;
         }
 
-        setErrorMsg('Verification timed out. Please try again.');
+        // 4. Session may already exist (user clicked link on same device)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setStatus('success');
+          setTimeout(() => getRoleAndRedirect(navigate), 1500);
+          return;
+        }
+
+        setErrorMsg('Verification link has expired or was already used. Please sign in or request a new link.');
         setStatus('error');
-      } catch (err) {
+      } catch {
         setErrorMsg('Verification failed. Please try again.');
         setStatus('error');
       }
@@ -74,7 +106,7 @@ const AuthCallbackPage: React.FC = () => {
               <CheckCircle className="h-12 w-12 text-emerald-500" />
             </div>
             <h2 className="text-2xl font-bold">Email confirmed</h2>
-            <p className="text-muted-foreground">Welcome to Cruzi. Taking you to the app...</p>
+            <p className="text-muted-foreground">Welcome to Cruzi. Redirecting you now...</p>
           </>
         )}
 
