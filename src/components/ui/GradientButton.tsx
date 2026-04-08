@@ -35,7 +35,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
     };
 
     const variantClasses = {
-      primary: "bg-gradient-to-r from-violet-500 via-purple-500 to-teal-400 text-white shadow-[0_0_30px_rgba(139,92,246,0.5),0_0_60px_rgba(45,212,191,0.3)] hover:shadow-[0_0_40px_rgba(139,92,246,0.7),0_0_80px_rgba(45,212,191,0.5)]",
+      primary: "bg-[#7c3aed] text-white shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:bg-[#6d28d9] hover:shadow-[0_0_40px_rgba(124,58,237,0.7)]",
       accent: "btn-gradient-accent",
       gold: "btn-gradient-gold",
       outline:

@@ -93,7 +93,7 @@ const SmsInviteModal: React.FC<SmsInviteModalProps> = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-2xl font-black tracking-tight">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-teal-400 flex items-center justify-center text-white shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-[#7c3aed] flex items-center justify-center text-white shadow-lg">
                 <Smartphone className="h-5 w-5" />
               </div>
               Send via SMS

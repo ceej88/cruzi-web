@@ -19,12 +19,12 @@ const levelConfig = {
   },
   [SkillProficiency.UNDER_INSTRUCTION]: {
     label: "Helped",
-    color: "bg-cruzi-cyan/20 text-cruzi-cyan",
+    color: "bg-primary/20 text-primary",
     stars: 2,
   },
   [SkillProficiency.PROMPTED]: {
     label: "Prompted",
-    color: "bg-cruzi-indigo/20 text-cruzi-indigo",
+    color: "bg-violet-600/20 text-violet-600",
     stars: 3,
   },
   [SkillProficiency.SELDOM_PROMPTED]: {

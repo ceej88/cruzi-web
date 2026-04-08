@@ -137,8 +137,8 @@ export const DVSA_CATEGORIES = [
 
 // Level badge colors and labels
 export const LEVEL_CONFIG = {
-  [PupilLevel.BEGINNER]: { label: 'Beginner', color: 'bg-cruzi-cyan/20 text-cruzi-cyan' },
-  [PupilLevel.INTERMEDIATE]: { label: 'Intermediate', color: 'bg-cruzi-indigo/20 text-cruzi-indigo' },
+  [PupilLevel.BEGINNER]: { label: 'Beginner', color: 'bg-primary/20 text-primary' },
+  [PupilLevel.INTERMEDIATE]: { label: 'Intermediate', color: 'bg-violet-600/20 text-violet-600' },
   [PupilLevel.ADVANCED]: { label: 'Advanced', color: 'bg-cruzi-gold/20 text-cruzi-gold' },
   [PupilLevel.TEST_READY]: { label: 'Test Ready', color: 'bg-cruzi-success/20 text-cruzi-success' }
 };

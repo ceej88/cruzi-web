@@ -95,7 +95,7 @@ const SavingsCalculator: React.FC = () => {
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-outfit tracking-[-0.03em] leading-[1.15] mb-8">
             How Much Is Admin{" "}
-            <span className="whitespace-nowrap italic bg-gradient-to-r from-violet-500 via-purple-500 to-teal-400 bg-clip-text text-transparent inline-block pb-1 mx-[10px] px-[4px]">
+            <span className="whitespace-nowrap italic text-[#7c3aed] inline-block pb-1 mx-[10px] px-[4px]">
               Costing You?
             </span>
           </h1>
@@ -263,7 +263,7 @@ const SavingsCalculator: React.FC = () => {
         <FadeInSection>
           <div className="max-w-4xl mx-auto">
             <div className="relative rounded-[2rem] sm:rounded-[3rem] overflow-hidden p-8 sm:p-14 text-white" style={{
-            background: "linear-gradient(135deg, #8b5cf6 0%, #a855f7 40%, #2dd4bf 100%)",
+            background: "#7c3aed",
             animation: "glow-breathe 3s ease-in-out infinite"
           }}>
               {/* Decorative blurs */}

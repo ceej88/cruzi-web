@@ -12,7 +12,6 @@ import AuthPage from "./pages/AuthPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
-import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import OwnerCommandCentre from "./pages/owner/OwnerCommandCentre";
 import NotFound from "./pages/NotFound";
 import JoinPage from "./pages/JoinPage";
@@ -66,14 +65,8 @@ const AppRoutes = () => {
       <Route path="/connect/complete" element={<ConnectCompletePage />} />
       <Route path="/connect/refresh" element={<ConnectRefreshPage />} />
 
-      {/* Instructor routes - No ProtectedRoute wrapper!
-          The InstructorDashboard handles its own funnel state machine:
-          VISION → TIERS → SIGNUP → VERIFICATION → READY
-          Returning instructors are detected and skip to READY automatically */}
-      <Route
-        path="/instructor/*"
-        element={<InstructorDashboard />}
-      />
+      {/* Instructor dashboard — being rebuilt. Redirect to auth for now */}
+      <Route path="/instructor/*" element={<Navigate to="/auth" replace />} />
 
       {/* Owner Command Centre (admin) */}
       <Route

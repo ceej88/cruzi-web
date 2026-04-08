@@ -21,8 +21,8 @@ const statBlocks = [
     value: "70%",
     label: "Engagement Increase",
     sub: "With structured practice plans.",
-    style: "text-teal-500",
-    border: "border-teal-500/30",
+    style: "text-primary",
+    border: "border-primary/30",
   },
   {
     value: "3×",

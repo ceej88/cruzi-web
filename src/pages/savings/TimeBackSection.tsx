@@ -33,8 +33,8 @@ const TimeBackSection: React.FC<TimeBackSectionProps> = ({
       icon: Battery,
       title: "Your Wellbeing",
       description: `Or just… breathe. Less burnout. More energy for the lessons that matter.`,
-      accent: "text-teal-500",
-      accentBg: "bg-teal-500/10",
+      accent: "text-primary",
+      accentBg: "bg-primary/10",
     },
   ];
 

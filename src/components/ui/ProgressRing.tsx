@@ -15,7 +15,7 @@ const colorMap = {
   primary: "stroke-primary",
   success: "stroke-cruzi-success",
   gold: "stroke-cruzi-gold",
-  cyan: "stroke-cruzi-cyan",
+  cyan: "stroke-primary",
 };
 
 const ProgressRing: React.FC<ProgressRingProps> = ({

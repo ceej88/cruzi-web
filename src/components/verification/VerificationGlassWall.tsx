@@ -171,7 +171,7 @@ const VerificationGlassWall: React.FC<VerificationGlassWallProps> = ({
       className="space-y-8"
     >
       <div className="text-center space-y-3">
-        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl shadow-cyan-500/30">
+        <div className="w-20 h-20 mx-auto bg-[#7c3aed] rounded-3xl flex items-center justify-center shadow-xl shadow-violet-500/30">
           <Camera className="w-10 h-10 text-white" />
         </div>
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">Vision Capture</h2>
