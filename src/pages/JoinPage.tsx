@@ -96,6 +96,7 @@ const JoinPage: React.FC = () => {
           full_name: name.trim(),
           email: email.trim(),
           instructor_id: inviteData?.instructor_id ?? null,
+          level: 'student',
         }, { onConflict: 'user_id' });
 
         await supabase.from('user_roles').upsert({
