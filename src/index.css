@@ -140,15 +140,13 @@
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    height: 100%;
-    overflow: hidden;
+    overflow: auto;
   }
 
   body {
     @apply bg-background text-foreground font-inter antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    height: 100%;
-    overflow: hidden;
+    overflow: auto;
     overscroll-behavior-y: none;
     touch-action: pan-x pan-y;
     padding-top: var(--safe-area-inset-top);
@@ -158,9 +156,7 @@
   }
 
   #root {
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
   }
