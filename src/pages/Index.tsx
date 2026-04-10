@@ -131,7 +131,6 @@ const Index: React.FC = () => {
       {/* HERO */}
       <section
         className="relative pt-28 pb-16 md:pt-36 md:pb-20 px-4 sm:px-8 bg-white"
-        style={{ overflowX: "hidden" }}
       >
         {/* Orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
