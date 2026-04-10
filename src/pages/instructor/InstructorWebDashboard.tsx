@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Home, Users, MessageSquare, Wallet, BarChart2, Settings, ChevronLeft
+  Home, Users, MessageSquare, Wallet, BarChart2, Settings, ChevronLeft, LogOut
 } from 'lucide-react';
 import InstructorOverview from './InstructorOverview';
 import InstructorStudents from './InstructorStudents';
@@ -35,8 +35,14 @@ const pageTitles: Record<string, string> = {
 export function DashHeader({ name }: { name: string }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const isHome = location.pathname === '/instructor';
   const title = pageTitles[location.pathname] ?? '';
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
@@ -63,7 +69,16 @@ export function DashHeader({ name }: { name: string }) {
             )}
           </div>
         </div>
-        <span className="text-xl font-black text-[#7c3aed] flex-shrink-0">Cruzi</span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xl font-black text-[#7c3aed]">Cruzi</span>
+          <button
+            onClick={handleSignOut}
+            title="Sign out"
+            className="ml-2 p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </header>
   );
