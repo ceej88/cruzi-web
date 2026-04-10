@@ -103,7 +103,7 @@ const InstructorOverview: React.FC<Props> = ({ userId }) => {
           </div>
         </div>
         <a
-          href="https://apps.apple.com/gb/app/cruzi/id6742619354"
+          href="https://apps.apple.com/gb/app/cruzi/id6759689036"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full bg-gray-900 text-white rounded-xl py-3 px-4 font-semibold text-sm hover:bg-gray-800 transition-colors"
