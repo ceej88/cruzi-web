@@ -1,18 +1,20 @@
 import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Crown, Calendar, ClipboardCheck, Mic, Smartphone, ArrowRight, CheckCircle, PoundSterling } from "lucide-react";
+import {
+  Loader2, Crown, Calendar, ClipboardCheck, Mic, Smartphone,
+  ArrowRight, CheckCircle, PoundSterling, BadgeCheck,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import featureCalendar from "@/assets/feature-calendar.jpg";
 import featureConfidence from "@/assets/feature-confidence.jpg";
 import featureNotes from "@/assets/feature-notes.jpg";
-import featureSteering from "@/assets/feature-steering.jpg";
 
 const fadeIn = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.55 },
 };
 
 const Index: React.FC = () => {
@@ -43,7 +45,57 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden" style={{ scrollBehavior: "smooth" }}>
+
+      <style>{`
+        @keyframes gradientCycle {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes orbFloat1 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(40px, -30px) scale(1.08); }
+          66% { transform: translate(-25px, 15px) scale(0.94); }
+        }
+        @keyframes orbFloat2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(-35px, 25px) scale(1.06); }
+          66% { transform: translate(30px, -20px) scale(0.96); }
+        }
+        @keyframes orbFloat3 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(20px, -40px) scale(1.04); }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.5), 0 4px 24px rgba(124,58,237,0.25); }
+          50% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0), 0 4px 32px rgba(124,58,237,0.45); }
+        }
+        .gradient-text {
+          background: linear-gradient(90deg, #7c3aed, #3b82f6, #7c3aed);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: gradientCycle 4s ease infinite;
+        }
+        .cta-pulse {
+          animation: pulseGlow 2.2s ease-in-out infinite;
+        }
+        .orb1 { animation: orbFloat1 12s ease-in-out infinite; }
+        .orb2 { animation: orbFloat2 16s ease-in-out infinite; }
+        .orb3 { animation: orbFloat3 20s ease-in-out infinite; }
+        .glass-card {
+          background: rgba(255,255,255,0.03);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .dark .glass-card {
+          background: rgba(255,255,255,0.03);
+        }
+      `}</style>
+
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border pt-safe">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
@@ -54,6 +106,7 @@ const Index: React.FC = () => {
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
               <a href="#features" className="hover:text-foreground transition-colors">Features</a>
               <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
+              <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
               <a href="#portals" className="hover:text-foreground transition-colors">Get Started</a>
             </div>
             <div className="flex items-center gap-3">
@@ -66,7 +119,7 @@ const Index: React.FC = () => {
               </button>
               <button
                 onClick={() => handleSelectRole("instructor")}
-                className="min-h-[44px] px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all"
+                className="cta-pulse min-h-[44px] px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold hover:opacity-90 active:scale-95 transition-all"
                 style={{ touchAction: "manipulation" }}
               >
                 Start Free Trial
@@ -77,20 +130,27 @@ const Index: React.FC = () => {
       </nav>
 
       {/* HERO */}
-      <section className="pt-24 pb-10 md:pt-32 md:pb-12 px-4 sm:px-8">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="relative pt-28 pb-10 md:pt-36 md:pb-12 px-4 sm:px-8 overflow-hidden">
+        {/* Gradient orbs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="orb1 absolute top-10 left-1/4 w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
+          <div className="orb2 absolute top-20 right-1/4 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)", filter: "blur(40px)" }} />
+          <div className="orb3 absolute bottom-0 left-1/2 w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)", filter: "blur(50px)" }} />
+        </div>
+
+        <div className="relative max-w-3xl mx-auto text-center">
           <motion.div {...fadeIn}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-4">
-              Increase Student Engagement{" "}
-              <span className="text-primary">&amp; Automate Your Admin</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-5">
+              The Only Platform Built for{" "}
+              <span className="gradient-text">Instructors, Students &amp; Parents</span>
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
-              Built for UK driving instructors. Free 30-day trial.
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
+              Lesson plans in 2 minutes. Students practice between lessons with real test routes. Parents see real-time progress. This is what TD Drive forgot to build.
             </p>
           </motion.div>
 
           {/* ROLE CARDS */}
-          <div className="grid sm:grid-cols-3 gap-4 text-left">
+          <div className="grid sm:grid-cols-3 gap-4 text-left" id="portals">
             {[
               {
                 icon: Calendar,
@@ -122,7 +182,7 @@ const Index: React.FC = () => {
                 {...fadeIn}
                 transition={{ duration: 0.4, delay: card.delay }}
                 onClick={card.onClick}
-                className="bg-card border border-border rounded-2xl p-6 text-left shadow-sm hover:shadow-md hover:border-primary/40 active:scale-[0.98] transition-all cursor-pointer group w-full"
+                className="bg-card border border-border rounded-2xl p-6 text-left shadow-sm hover:shadow-lg hover:border-primary/40 hover:-translate-y-1 active:scale-[0.98] transition-all cursor-pointer group w-full"
                 style={{ touchAction: "manipulation" }}
               >
                 <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
@@ -163,28 +223,105 @@ const Index: React.FC = () => {
       <section className="py-8 border-y border-border bg-muted/30">
         <div className="max-w-5xl mx-auto px-4 sm:px-8">
           <div className="flex flex-wrap items-center justify-center gap-8 text-muted-foreground text-sm font-medium">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>DVSA syllabus aligned</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>GDPR compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>Works on any device</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>No contract required</span>
-            </div>
+            {["DVSA syllabus aligned", "GDPR compliant", "Works on any device", "No contract required"].map((item) => (
+              <div key={item} className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* THREE EXPERIENCES */}
+      <section className="py-24 px-4 sm:px-8">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeIn} className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
+              One platform. Three experiences.
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Every role gets exactly what they need — nothing more, nothing less.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                label: "For Instructors",
+                color: "#7c3aed",
+                borderColor: "border-t-purple-500",
+                glowColor: "rgba(124,58,237,0.15)",
+                delay: 0,
+                items: [
+                  "Lesson plans in 2 minutes",
+                  "Auto admin morning briefing",
+                  "Mock test recording",
+                  "Voice scribe notes",
+                  "Core skills tracking",
+                ],
+              },
+              {
+                label: "For Students",
+                color: "#3b82f6",
+                borderColor: "border-t-blue-500",
+                glowColor: "rgba(59,130,246,0.15)",
+                delay: 0.1,
+                items: [
+                  "Test routes to practice between lessons",
+                  "Progress across 27 DVSA skills",
+                  "Theory prep resources",
+                  "Lesson history",
+                  "Direct instructor connection",
+                ],
+              },
+              {
+                label: "For Parents",
+                color: "#10b981",
+                borderColor: "border-t-emerald-500",
+                glowColor: "rgba(16,185,129,0.15)",
+                delay: 0.2,
+                items: [
+                  "Real-time progress view",
+                  "Co-pilot practice guide",
+                  "Test date countdown",
+                  "Between-lesson tracking",
+                  "Peace of mind dashboard",
+                ],
+              },
+            ].map((card) => (
+              <motion.div
+                key={card.label}
+                {...fadeIn}
+                transition={{ duration: 0.5, delay: card.delay }}
+                className={`glass-card rounded-2xl border-t-4 ${card.borderColor} p-7 transition-all duration-300 hover:-translate-y-2`}
+                style={{ "--glow": card.glowColor } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = `0 20px 60px ${card.glowColor}`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "";
+                }}
+              >
+                <h3 className="text-lg font-black font-outfit mb-5" style={{ color: card.color }}>
+                  {card.label}
+                </h3>
+                <ul className="space-y-3">
+                  {card.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: card.color }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="py-20 px-4 sm:px-8">
+      <section id="features" className="py-20 px-4 sm:px-8 bg-muted/20">
         <div className="max-w-7xl mx-auto">
           <motion.div {...fadeIn} className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
@@ -230,7 +367,7 @@ const Index: React.FC = () => {
                 key={feature.title}
                 {...fadeIn}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
                 {feature.video ? (
                   <video
@@ -300,8 +437,29 @@ const Index: React.FC = () => {
         </div>
       </section>
 
+      {/* TESTIMONIAL */}
+      <section className="py-20 px-4 sm:px-8 bg-muted/20">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            {...fadeIn}
+            className="relative pl-8 border-l-4 border-primary"
+          >
+            <div className="absolute -top-4 -left-3 text-primary" style={{ fontSize: "5rem", lineHeight: 1, opacity: 0.25, fontFamily: "Georgia, serif" }}>&ldquo;</div>
+            <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed text-foreground mb-6">
+              I switched from TD Drive the same week I tried Cruzi. My students are more engaged between lessons than they have ever been. Parents are now messaging me asking questions they never asked before.
+            </blockquote>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm">Erica Vale — Independent ADI, Chester</span>
+              <span className="inline-flex items-center gap-1 text-xs text-primary font-semibold bg-primary/10 px-2 py-0.5 rounded-full">
+                <BadgeCheck className="h-3 w-3" /> Verified
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* HOW IT WORKS */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-8 bg-muted/30">
+      <section id="how-it-works" className="py-20 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto">
           <motion.div {...fadeIn} className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
@@ -321,11 +479,133 @@ const Index: React.FC = () => {
                 transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="text-center"
               >
-                <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-lg font-black mx-auto mb-4">
+                <div className="w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-black mx-auto mb-4 shadow-lg" style={{ boxShadow: "0 8px 24px rgba(124,58,237,0.3)" }}>
                   {item.step}
                 </div>
                 <h3 className="text-lg font-bold mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" className="py-24 px-4 sm:px-8 bg-muted/20">
+        <div className="max-w-5xl mx-auto">
+          <motion.div {...fadeIn} className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Start free. Upgrade when you're ready.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
+            {[
+              {
+                name: "Free",
+                price: "£0",
+                period: "/month",
+                desc: "Up to 10 students",
+                highlight: false,
+                badge: null,
+                features: [
+                  "All core features",
+                  "Student app",
+                  "Parent dashboard",
+                  "DVSA skill tracking",
+                  "Voice scribe notes",
+                ],
+                delay: 0,
+              },
+              {
+                name: "Pro",
+                price: "£14.99",
+                period: "/month",
+                desc: "Up to 14 students",
+                highlight: true,
+                badge: "Most Popular",
+                features: [
+                  "Everything in Free",
+                  "Priority support",
+                  "Advanced reporting",
+                  "Auto lesson plans",
+                  "Morning briefings",
+                ],
+                delay: 0.1,
+              },
+              {
+                name: "Premium",
+                price: "£24.99",
+                period: "/month",
+                desc: "Unlimited students",
+                highlight: false,
+                badge: null,
+                features: [
+                  "Everything in Pro",
+                  "Multi-instructor support",
+                  "School dashboard",
+                  "Bulk student management",
+                  "Custom branding",
+                ],
+                delay: 0.2,
+              },
+            ].map((plan) => (
+              <motion.div
+                key={plan.name}
+                {...fadeIn}
+                transition={{ duration: 0.5, delay: plan.delay }}
+                className={`relative rounded-2xl p-7 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
+                  plan.highlight
+                    ? "bg-primary text-primary-foreground shadow-2xl"
+                    : "bg-card border border-border hover:shadow-lg"
+                }`}
+                style={plan.highlight ? { boxShadow: "0 8px 40px rgba(124,58,237,0.35)" } : {}}
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-primary text-xs font-black px-3 py-1 rounded-full border border-primary shadow-md">
+                    {plan.badge}
+                  </div>
+                )}
+                <div className="mb-6">
+                  <h3 className={`text-lg font-black mb-1 ${plan.highlight ? "text-primary-foreground" : ""}`}>
+                    {plan.name}
+                  </h3>
+                  <div className="flex items-end gap-1 mb-1">
+                    <span className="text-4xl font-black">{plan.price}</span>
+                    <span className={`text-sm mb-1.5 ${plan.highlight ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      {plan.period}
+                    </span>
+                  </div>
+                  <p className={`text-sm ${plan.highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                    {plan.desc}
+                  </p>
+                </div>
+
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm">
+                      <CheckCircle className={`h-4 w-4 shrink-0 ${plan.highlight ? "text-primary-foreground/80" : "text-primary"}`} />
+                      <span className={plan.highlight ? "text-primary-foreground/90" : "text-muted-foreground"}>
+                        {f}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handleSelectRole("instructor")}
+                  className={`w-full min-h-[48px] rounded-full font-bold text-sm transition-all active:scale-95 hover:opacity-90 ${
+                    plan.highlight
+                      ? "bg-white text-primary hover:bg-white/90"
+                      : "bg-primary text-primary-foreground"
+                  }`}
+                  style={{ touchAction: "manipulation" }}
+                >
+                  Get Started
+                </button>
               </motion.div>
             ))}
           </div>
@@ -337,8 +617,11 @@ const Index: React.FC = () => {
         <div className="max-w-3xl mx-auto">
           <motion.div
             {...fadeIn}
-            className="bg-card border border-border rounded-2xl p-8 md:p-12 text-center shadow-sm"
+            className="relative overflow-hidden bg-card border border-border rounded-2xl p-8 md:p-12 text-center shadow-sm"
           >
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-40 rounded-full" style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 70%)", filter: "blur(20px)" }} />
+            </div>
             <PoundSterling className="h-8 w-8 text-primary mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-black font-outfit mb-3">
               See how much admin time you could save
@@ -381,7 +664,7 @@ const Index: React.FC = () => {
         </div>
       </footer>
 
-      {/* Owner Crown Button - Secret Admin Access */}
+      {/* Owner Crown Button */}
       <div className="fixed bottom-4 right-4 opacity-20 hover:opacity-100 transition-opacity duration-300 z-50">
         <button
           onClick={() => navigate("/owner")}

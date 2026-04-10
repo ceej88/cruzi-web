@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -12,10 +12,11 @@ import { z } from "zod";
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 
-type ResetMode = "request" | "reset" | "success" | "updated";
+type ResetMode = "request" | "reset" | "success";
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   const [mode, setMode] = useState<ResetMode>("request");
   const [email, setEmail] = useState("");
@@ -25,23 +26,28 @@ const ResetPasswordPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
+  // Check if we have a recovery token in the URL (user clicked email link)
   useEffect(() => {
-    // Check hash immediately on mount — before Supabase clears it
-    const hash = window.location.hash;
-    if (hash.includes('type=recovery')) {
-      setMode("reset");
-      return;
-    }
+    const checkRecoveryToken = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If there's a session and we came from a recovery link, show reset form
+      if (session?.user && (searchParams.get('type') === 'recovery' || window.location.hash.includes('type=recovery'))) {
+        setMode("reset");
+      }
+    };
 
-    // Fallback — listen for PASSWORD_RECOVERY event
+    // Also listen for auth state changes (recovery flow triggers this)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setMode("reset");
       }
     });
 
+    checkRecoveryToken();
+
     return () => subscription.unsubscribe();
-  }, []);
+  }, [searchParams]);
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +61,7 @@ const ResetPasswordPage: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Generate the password reset token using Supabase
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
@@ -64,6 +71,7 @@ const ResetPasswordPage: React.FC = () => {
         return;
       }
 
+      // Send branded email via our edge function
       const { error: emailError } = await supabase.functions.invoke('send-auth-email', {
         body: {
           type: 'password-reset',
@@ -74,6 +82,7 @@ const ResetPasswordPage: React.FC = () => {
 
       if (emailError) {
         console.error("Failed to send branded email:", emailError);
+        // Still show success since Supabase sent the default email
       }
 
       toast.success("Check your email for the reset link!");
@@ -110,179 +119,158 @@ const ResetPasswordPage: React.FC = () => {
 
       if (error) {
         toast.error(error.message);
-        return;
+      } else {
+        toast.success("Password updated successfully!");
+        navigate("/auth");
       }
-
-      setMode("updated");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: '#7c3aed' }}>Cruzi</h1>
-          <p className="text-muted-foreground mt-1">Reset your password</p>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      {/* Logo */}
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold font-outfit neural-gradient-text mb-2">
+          Cruzi
+        </h1>
+        <p className="text-muted-foreground">Reset your password</p>
+      </div>
 
-        <GlassCard className="p-8">
-          {mode === "request" && (
-            <form onSubmit={handleRequestReset} className="space-y-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#7c3aed1a' }}>
-                  <Mail className="h-8 w-8" style={{ color: '#7c3aed' }} />
-                </div>
-                <h2 className="text-2xl font-bold text-foreground">Forgot Password?</h2>
-                <p className="text-muted-foreground text-sm mt-1">Enter your email and we'll send you a reset link</p>
+      <GlassCard className="w-full max-w-md" padding="lg">
+        {mode === "request" && (
+          <form onSubmit={handleRequestReset} className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Mail className="h-8 w-8 text-primary" />
               </div>
+              <h2 className="text-2xl font-bold text-foreground">Forgot Password?</h2>
+              <p className="text-muted-foreground text-sm mt-2">
+                Enter your email and we'll send you a reset link
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={errors.email ? "border-destructive" : ""}
+              />
+              {errors.email && (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              )}
+            </div>
+
+            <GradientButton
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full"
+              isLoading={isLoading}
+            >
+              Send Reset Link
+            </GradientButton>
+
+            <button
+              type="button"
+              onClick={() => navigate("/auth")}
+              className="w-full flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Sign In
+            </button>
+          </form>
+        )}
+
+        {mode === "reset" && (
+          <form onSubmit={handleResetPassword} className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <KeyRound className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground">Set New Password</h2>
+              <p className="text-muted-foreground text-sm mt-2">
+                Choose a strong password for your account
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">New Password</Label>
+              <div className="relative">
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={errors.email ? "border-destructive" : ""}
-                />
-                {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email}</p>
-                )}
-              </div>
-
-              <GradientButton
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full"
-                isLoading={isLoading}
-              >
-                Send Reset Link
-              </GradientButton>
-
-              <button
-                type="button"
-                onClick={() => navigate("/auth")}
-                className="flex items-center justify-center gap-2 hover:opacity-70 transition-opacity text-sm mx-auto w-full"
-                style={{ color: '#7c3aed' }}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Sign In
-              </button>
-            </form>
-          )}
-
-          {mode === "reset" && (
-            <form onSubmit={handleResetPassword} className="space-y-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#7c3aed1a' }}>
-                  <KeyRound className="h-8 w-8" style={{ color: '#7c3aed' }} />
-                </div>
-                <h2 className="text-2xl font-bold text-foreground">Set New Password</h2>
-                <p className="text-muted-foreground text-sm mt-1">Choose a strong password for your account</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={errors.password ? "border-destructive pr-10" : "pr-10"}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={errors.confirmPassword ? "border-destructive" : ""}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={errors.password ? "border-destructive pr-10" : "pr-10"}
                 />
-                {errors.confirmPassword && (
-                  <p className="text-xs text-destructive">{errors.confirmPassword}</p>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-
-              <GradientButton
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full"
-                isLoading={isLoading}
-              >
-                Update Password
-              </GradientButton>
-            </form>
-          )}
-
-          {mode === "success" && (
-            <div className="text-center py-6">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-8 w-8 text-emerald-500" />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
-              <p className="text-muted-foreground text-sm mb-6">
-                We've sent a password reset link to <strong>{email}</strong>.
-                Click the link in the email to reset your password.
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate("/auth")}
-                className="flex items-center justify-center gap-2 hover:opacity-70 transition-opacity text-sm mx-auto"
-                style={{ color: '#7c3aed' }}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Sign In
-              </button>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              )}
             </div>
-          )}
 
-          {mode === "updated" && (
-            <div className="text-center py-6">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#7c3aed1a' }}>
-                <CheckCircle className="h-10 w-10" style={{ color: '#7c3aed' }} />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground mb-3">Password updated!</h2>
-              <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                Go back to the Cruzi app and log in with your new password.
-              </p>
-              <a
-                href="https://apps.apple.com/gb/app/cruzi/id6759689036"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#7c3aed' }}
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                Open on the App Store
-              </a>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={errors.confirmPassword ? "border-destructive" : ""}
+              />
+              {errors.confirmPassword && (
+                <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+              )}
             </div>
-          )}
-        </GlassCard>
-      </div>
+
+            <GradientButton
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full"
+              isLoading={isLoading}
+            >
+              Update Password
+            </GradientButton>
+          </form>
+        )}
+
+        {mode === "success" && (
+          <div className="text-center py-6">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-emerald-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              We've sent a password reset link to <strong>{email}</strong>. 
+              Click the link in the email to reset your password.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate("/auth")}
+              className="flex items-center justify-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm mx-auto"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Sign In
+            </button>
+          </div>
+        )}
+      </GlassCard>
     </div>
   );
 };
