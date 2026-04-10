@@ -102,15 +102,26 @@ const InstructorOverview: React.FC<Props> = ({ userId }) => {
             <p className="text-sm text-gray-500">Full management: lessons, skills, mock tests and more.</p>
           </div>
         </div>
-        <a
-          href="https://apps.apple.com/gb/app/cruzi/id6759689036"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full bg-gray-900 text-white rounded-xl py-3 px-4 font-semibold text-sm hover:bg-gray-800 transition-colors"
-        >
-          <Apple className="w-4 h-4" />
-          Download on the App Store
-        </a>
+        <div className="flex flex-col gap-2">
+          <a
+            href="https://apps.apple.com/gb/app/cruzi/id6759689036"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-gray-900 text-white rounded-xl py-3 px-4 font-semibold text-sm hover:bg-gray-800 transition-colors"
+          >
+            <Apple className="w-4 h-4" />
+            Download on the App Store
+          </a>
+          <a
+            href="https://play.google.com/store/apps/details?id=com.cruzi.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-gray-900 text-white rounded-xl py-3 px-4 font-semibold text-sm hover:bg-gray-800 transition-colors"
+          >
+            <Smartphone className="w-4 h-4" />
+            Get it on Google Play
+          </a>
+        </div>
       </div>
     </div>
   );

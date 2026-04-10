@@ -141,10 +141,16 @@ const InstructorWebDashboard: React.FC = () => {
               <p className="text-2xl mb-2">📅</p>
               <h2 className="text-xl font-bold text-gray-900 mb-2">Diary is in the app</h2>
               <p className="text-gray-500 text-sm mb-6">Manage your lesson diary from the Cruzi mobile app.</p>
-              <a href="https://apps.apple.com/gb/app/cruzi/id6759689036" target="_blank" rel="noopener noreferrer"
-                className="bg-[#7c3aed] text-white rounded-xl px-6 py-3 font-semibold text-sm hover:bg-purple-700 transition-colors">
-                Download on App Store
-              </a>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="https://apps.apple.com/gb/app/cruzi/id6759689036" target="_blank" rel="noopener noreferrer"
+                  className="bg-gray-900 text-white rounded-xl px-6 py-3 font-semibold text-sm hover:bg-gray-800 transition-colors">
+                  Download on App Store
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.cruzi.app" target="_blank" rel="noopener noreferrer"
+                  className="bg-gray-900 text-white rounded-xl px-6 py-3 font-semibold text-sm hover:bg-gray-800 transition-colors">
+                  Get it on Google Play
+                </a>
+              </div>
             </div>
           } />
           <Route path="*" element={<Navigate to="/instructor" replace />} />
