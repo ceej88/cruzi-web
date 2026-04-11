@@ -47,8 +47,8 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
         navigate('/instructor');
       } else {
         // Sign up new user
-        const redirectUrl = `${window.location.origin}/instructor`;
-        
+        const redirectUrl = `${window.location.origin}/auth/callback`;
+
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -72,66 +72,34 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
           return;
         }
 
-        // ========== ATOMIC DATABASE SYNC ==========
+        // The handle_new_user_profile trigger (SECURITY DEFINER) creates profile and
+        // user_roles rows. No client-side writes: session is null until email is
+        // verified so RLS would reject them silently.
         if (data.user) {
-          // 1. Create instructor role in user_roles table
-          const { error: roleError } = await supabase.from('user_roles').insert({
-            user_id: data.user.id,
-            role: 'instructor',
-          });
-          
-          if (roleError) {
-            console.error('Role creation failed:', roleError);
-          }
-
-          // 2. Create profile record
-          const { error: profileError } = await supabase.from('profiles').insert({
-            user_id: data.user.id,
-            email: formData.email,
-            full_name: formData.name,
-          });
-          
-          if (profileError) {
-            console.error('Profile creation failed:', profileError);
-          }
-
-          // 3. Generate unique 4-digit PIN via database RPC
-          const { data: generatedPin, error: pinError } = await supabase.rpc(
-            'generate_instructor_pin', 
-            { _user_id: data.user.id }
-          );
-          
-          if (pinError) {
-            console.error('PIN generation failed:', pinError);
-          }
-
-          // 4. Send branded welcome email
+          // Send branded welcome / verification email (anon key — no session needed)
           try {
             await supabase.functions.invoke('send-auth-email', {
               body: {
                 type: 'verify-email',
                 email: formData.email,
-                url: `${window.location.origin}/instructor`,
+                url: `${window.location.origin}/auth/callback`,
                 userName: formData.name,
                 userRole: 'instructor',
               },
             });
-            console.log('Welcome email sent successfully');
           } catch (emailError) {
-            console.error('Welcome email failed:', emailError);
+            console.error('Welcome email failed (non-fatal):', emailError);
           }
 
-          // 4. Calculate tier-specific values
+          // Persist tier selection so the dashboard can pick it up after verify
           const maxStudents = tier === 'LITE' ? 5 : 9999;
-          const trialEndsAt = tier === 'ELITE' 
-            ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() 
+          const trialEndsAt = tier === 'ELITE'
+            ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
             : undefined;
 
-          // 5. Build complete InstructorProfile for localStorage
           const fullProfile: InstructorProfile = {
             name: formData.name,
             email: formData.email,
-            instructorPin: generatedPin || undefined,
             adiNumber: '',
             grade: '',
             bio: '',
@@ -147,15 +115,12 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
             trialExpiresAt: trialEndsAt,
           };
 
-          // 6. Persist to BOTH localStorage keys for cross-component sync
           localStorage.setItem('cruzi_settings', JSON.stringify(fullProfile));
           localStorage.setItem('cruzi_instructor_profile', JSON.stringify(fullProfile));
           localStorage.setItem('cruzi_selected_tier', tier);
-          
-          // 7. Broadcast update event for listening components
           window.dispatchEvent(new Event('cruzi_data_update'));
-          
-          // 8. For Elite tier, trigger Stripe checkout with 30-day trial
+
+          // For Elite tier, open Stripe checkout in a new tab
           if (tier === 'ELITE') {
             try {
               const { url } = await createCheckoutSession();
@@ -164,9 +129,8 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
                   title: 'Starting Elite Trial',
                   description: 'Opening secure payment setup in new tab...',
                 });
-                // Open Stripe Checkout in new tab (iframe security requirement)
                 window.open(url, '_blank');
-                return; // Don't call onComplete - Stripe will redirect back
+                return;
               }
             } catch (checkoutError) {
               console.error('Elite checkout session failed:', checkoutError);
@@ -175,7 +139,6 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
                 description: 'Your account was created. You can start your Elite trial from Settings.',
                 variant: 'destructive',
               });
-              // Fall through to proceed without checkout - they can upgrade later
             }
           }
         }

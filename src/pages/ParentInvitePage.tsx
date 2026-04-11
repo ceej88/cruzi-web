@@ -79,24 +79,13 @@ const ParentInvitePage: React.FC = () => {
       });
       if (signUpError) throw signUpError;
 
-      const userId = data.user?.id;
-      if (userId) {
-        await supabase.from('profiles').upsert({
-          user_id: userId,
-          full_name: name.trim(),
-          email: email.trim(),
-        }, { onConflict: 'user_id' });
+      // The handle_new_user_profile trigger (SECURITY DEFINER) creates the profile
+      // and user_roles rows from metadata. No client-side writes — session is null
+      // until the user verifies their email, so RLS would reject them silently.
 
-        await supabase.from('user_roles').upsert({
-          user_id: userId,
-          role: 'parent',
-        }, { onConflict: 'user_id' });
-
-        // Store the token so AuthCallbackPage can claim it after email verification
-        // establishes a real authenticated session (no JWT exists at this point)
-        if (token) {
-          localStorage.setItem('pending_parent_token', token);
-        }
+      // Store token now so AuthCallbackPage can claim it once the session is live
+      if (token) {
+        localStorage.setItem('pending_parent_token', token);
       }
 
       setSentToEmail(email.trim());
@@ -164,8 +153,8 @@ const ParentInvitePage: React.FC = () => {
     return (
       <div className="bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="max-w-md mx-auto px-4 py-10 text-center space-y-5">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <Mail className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <Mail className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-3xl font-black text-foreground">Check your inbox</h1>
           <p className="text-muted-foreground">
@@ -213,8 +202,8 @@ const ParentInvitePage: React.FC = () => {
       <div className="max-w-md mx-auto px-4 py-10 space-y-5">
 
         <div className="text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">
             {firstName ? `Follow ${firstName}'s driving journey` : "Follow your child's driving journey"}

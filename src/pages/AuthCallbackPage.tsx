@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 
+const ALLOWED_NEXT_PATHS = new Set(['/install', '/instructor', '/auth']);
+
 async function claimPendingParentToken() {
   const pendingToken = localStorage.getItem('pending_parent_token');
   if (!pendingToken) return;
@@ -14,29 +16,35 @@ async function claimPendingParentToken() {
   }
 }
 
-async function getRoleAndRedirect(navigate: ReturnType<typeof useNavigate>) {
+async function getRoleAndRedirect(
+  navigate: ReturnType<typeof useNavigate>,
+  nextParam: string | null
+) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/auth'); return; }
 
-    // Claim any pending parent invite token now that we have a valid session
     await claimPendingParentToken();
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('level')
+    // Read role from user_roles (source of truth), fall back to metadata
+    const { data: roleRow } = await supabase
+      .from('user_roles')
+      .select('role')
       .eq('user_id', user.id)
       .maybeSingle();
 
-    const level = profile?.level;
-    if (level === 'instructor') {
+    const role = roleRow?.role ?? user.user_metadata?.role;
+
+    // Honour ?next= param if it points to an allowed internal path
+    if (nextParam && ALLOWED_NEXT_PATHS.has(nextParam)) {
+      navigate(nextParam);
+      return;
+    }
+
+    if (role === 'instructor' || role === 'school_admin') {
       navigate('/instructor');
-    } else if (level === 'student' || level === 'parent') {
-      navigate('/install');
     } else {
-      // No profile yet or unknown — check user metadata
-      const role = user.user_metadata?.role;
-      navigate(role === 'instructor' ? '/instructor' : '/install');
+      navigate('/install');
     }
   } catch {
     navigate('/auth');
@@ -51,12 +59,15 @@ const AuthCallbackPage: React.FC = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get('code');
+        const next = searchParams.get('next');
+
         // 1. PKCE code flow
-        const code = new URLSearchParams(window.location.search).get('code');
         if (code) {
           await supabase.auth.exchangeCodeForSession(code);
           setStatus('success');
-          setTimeout(() => getRoleAndRedirect(navigate), 1500);
+          setTimeout(() => getRoleAndRedirect(navigate, next), 1500);
           return;
         }
 
@@ -69,7 +80,7 @@ const AuthCallbackPage: React.FC = () => {
           if (accessToken && refreshToken) {
             await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
             setStatus('success');
-            setTimeout(() => getRoleAndRedirect(navigate), 1500);
+            setTimeout(() => getRoleAndRedirect(navigate, next), 1500);
             return;
           }
         }
@@ -87,7 +98,7 @@ const AuthCallbackPage: React.FC = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           setStatus('success');
-          setTimeout(() => getRoleAndRedirect(navigate), 1500);
+          setTimeout(() => getRoleAndRedirect(navigate, next), 1500);
           return;
         }
 
@@ -116,8 +127,8 @@ const AuthCallbackPage: React.FC = () => {
 
         {status === 'success' && (
           <>
-            <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
-              <CheckCircle className="h-12 w-12 text-emerald-500" />
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <CheckCircle className="h-12 w-12 text-primary" />
             </div>
             <h2 className="text-2xl font-bold">Email confirmed</h2>
             <p className="text-muted-foreground">Welcome to Cruzi. Redirecting you now...</p>

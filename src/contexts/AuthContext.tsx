@@ -119,6 +119,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           emailRedirectTo: redirectUrl,
           data: {
             role: selectedRole,
+            // Pass instructor_id in metadata so the trigger (Priority 1 update)
+            // can write it to profiles.instructor_id without a client-side write
+            ...(instructorId ? { instructor_id: instructorId } : {}),
           },
         },
       });
@@ -126,37 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (error) return { error };
 
       if (data.user) {
-        // Trigger on auth.users handles role creation via SECURITY DEFINER.
-        // This insert is a belt-and-suspenders fallback — ignored if trigger already ran.
-        const { error: roleError } = await supabase.from("user_roles").insert({
-          user_id: data.user.id,
-          role: selectedRole,
-        });
+        // The handle_new_user_profile trigger (SECURITY DEFINER) creates the profile
+        // and user_roles rows from auth.users metadata. No client-side writes here —
+        // session is null until the user clicks the verification link, so any RLS-
+        // protected insert would fail silently.
 
-        if (roleError && roleError.code !== '23505') {
-          console.error("Error creating role:", roleError);
-        }
-
-        // Create profile with instructor link
-        const { error: profileError } = await supabase.from("profiles").insert({
-          user_id: data.user.id,
-          email: email,
-          instructor_id: instructorId,
-        });
-
-        if (profileError) {
-          console.error("Error creating profile:", profileError);
-        }
-
-        // If student with PIN, call link function to create notification
-        if (selectedRole === "student" && pinCode && instructorId) {
-          await supabase.rpc("link_student_to_instructor", {
-            _pin_code: pinCode,
-            _student_id: data.user.id,
-          });
-        }
-
-        // Send branded verification email
+        // Send branded verification email (uses anon key, no session required)
         try {
           await supabase.functions.invoke('send-auth-email', {
             body: {
@@ -168,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         } catch (emailError) {
           console.error("Failed to send branded verification email:", emailError);
-          // Continue anyway - Supabase sends default verification email
+          // Non-fatal — Supabase sends its own default verification email as fallback
         }
       }
 
@@ -198,6 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       'cruzi_selected_tier',
       'cruzi_signup_name',
       'cruzi_trial_expires',
+      'pending_parent_token',
     ];
     cruziSessionKeys.forEach(key => localStorage.removeItem(key));
     

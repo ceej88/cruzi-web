@@ -89,21 +89,9 @@ const JoinPage: React.FC = () => {
       });
       if (signUpError) throw signUpError;
 
-      const userId = data.user?.id;
-      if (userId) {
-        await supabase.from('profiles').upsert({
-          user_id: userId,
-          full_name: name.trim(),
-          email: email.trim(),
-          instructor_id: inviteData?.instructor_id ?? null,
-          level: 'student',
-        }, { onConflict: 'user_id' });
-
-        await supabase.from('user_roles').upsert({
-          user_id: userId,
-          role: 'student',
-        }, { onConflict: 'user_id' });
-      }
+      // The handle_new_user_profile trigger (SECURITY DEFINER) creates the profile
+      // and user_roles rows from metadata. No client-side writes — session is null
+      // until the user verifies their email, so RLS would reject them silently.
 
       setSentToEmail(email.trim());
       setShowEmailSent(true);
@@ -221,7 +209,7 @@ const JoinPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 justify-center text-green-600">
+        <div className="flex items-center gap-2 justify-center text-primary">
           <CheckCircle className="h-4 w-4" />
           <span className="text-sm font-bold">Invite verified — link is valid</span>
         </div>
