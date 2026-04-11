@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { MapPin, Clock, Navigation, AlertTriangle, Lightbulb, ExternalLink, Loader2, Route } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { MapPin, Clock, Navigation, AlertTriangle, Lightbulb, ExternalLink, Loader2, Route, LogIn } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const APP_STORE_URL = 'https://apps.apple.com/gb/app/cruzi/id6759689036';
@@ -57,12 +58,17 @@ function buildAppleMapsUrl(coords: { lat: number; lng: number }[]): string {
 
 const SharedRoutePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [route, setRoute] = useState<RouteData | null>(null);
   const [steps, setSteps] = useState<StepData[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) { setLoading(false); return; }
     if (!id) { setNotFound(true); setLoading(false); return; }
     (async () => {
       const [routeRes, stepsRes] = await Promise.all([
@@ -86,7 +92,7 @@ const SharedRoutePage: React.FC = () => {
       if (stepsRes.data) setSteps(stepsRes.data as StepData[]);
       setLoading(false);
     })();
-  }, [id]);
+  }, [id, user, authLoading]);
 
   if (loading) {
     return (
@@ -95,6 +101,27 @@ const SharedRoutePage: React.FC = () => {
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
           <p className="text-muted-foreground font-medium">Loading route…</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+          <LogIn className="h-8 w-8 text-primary" />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Sign In to View Route</h1>
+        <p className="text-muted-foreground mb-6 max-w-sm">
+          Your instructor has shared a test route with you. Sign in to your Cruzi account to view the full details.
+        </p>
+        <button
+          onClick={() => navigate(`/auth?redirect=${encodeURIComponent(location.pathname)}`)}
+          className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+        >
+          <LogIn className="h-5 w-5" />
+          Sign In
+        </button>
       </div>
     );
   }

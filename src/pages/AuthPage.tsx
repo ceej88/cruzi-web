@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -27,6 +27,8 @@ const AuthPage: React.FC = () => {
 
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
 
   const startResendCooldown = () => {
     setResendCooldown(60);
@@ -75,7 +77,7 @@ const AuthPage: React.FC = () => {
           toast.error(error.message.includes("Invalid login") ? "Invalid email or password" : error.message);
         } else {
           toast.success("Welcome back!");
-          navigate("/");
+          navigate(redirectTo, { replace: true });
         }
       } else {
         const { error } = await signUp(email, password, "instructor");

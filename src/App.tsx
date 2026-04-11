@@ -21,6 +21,7 @@ import ParentInvitePage from "./pages/ParentInvitePage";
 import SavingsCalculator from "./pages/SavingsCalculator";
 import ConnectCompletePage from "./pages/ConnectCompletePage";
 import ConnectRefreshPage from "./pages/ConnectRefreshPage";
+import SharedRoutePage from "./pages/SharedRoutePage";
 
 // Legal Pages
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -65,6 +66,7 @@ const AppRoutes = () => {
       <Route path="/savings" element={<SavingsCalculator />} />
       <Route path="/connect/complete" element={<ConnectCompletePage />} />
       <Route path="/connect/refresh" element={<ConnectRefreshPage />} />
+      <Route path="/route/:id" element={<SharedRoutePage />} />
 
       {/* Instructor web dashboard */}
       <Route path="/instructor/*" element={<InstructorWebDashboard />} />
