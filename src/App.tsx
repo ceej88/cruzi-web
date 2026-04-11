@@ -22,6 +22,7 @@ import SavingsCalculator from "./pages/SavingsCalculator";
 import ConnectCompletePage from "./pages/ConnectCompletePage";
 import ConnectRefreshPage from "./pages/ConnectRefreshPage";
 import SharedRoutePage from "./pages/SharedRoutePage";
+import EnquiryPage from "./pages/EnquiryPage";
 
 // Legal Pages
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -67,6 +68,7 @@ const AppRoutes = () => {
       <Route path="/connect/complete" element={<ConnectCompletePage />} />
       <Route path="/connect/refresh" element={<ConnectRefreshPage />} />
       <Route path="/route/:id" element={<SharedRoutePage />} />
+      <Route path="/enquire/:slug" element={<EnquiryPage />} />
 
       {/* Instructor web dashboard */}
       <Route path="/instructor/*" element={<InstructorWebDashboard />} />
