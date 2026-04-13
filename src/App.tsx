@@ -23,6 +23,7 @@ import ConnectCompletePage from "./pages/ConnectCompletePage";
 import ConnectRefreshPage from "./pages/ConnectRefreshPage";
 import SharedRoutePage from "./pages/SharedRoutePage";
 import EnquiryPage from "./pages/EnquiryPage";
+import FeaturesPage from "./pages/FeaturesPage";
 
 // Legal Pages
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -65,6 +66,7 @@ const AppRoutes = () => {
       <Route path="/admin-login" element={<AdminLoginPage />} />
       <Route path="/install" element={<InstallPage />} />
       <Route path="/savings" element={<SavingsCalculator />} />
+      <Route path="/features" element={<FeaturesPage />} />
       <Route path="/connect/complete" element={<ConnectCompletePage />} />
       <Route path="/connect/refresh" element={<ConnectRefreshPage />} />
       <Route path="/route/:id" element={<SharedRoutePage />} />
