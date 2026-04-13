@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -51,6 +51,24 @@ const CheckItem = ({ text }: { text: string }) => (
   </li>
 );
 
+const LazyVideo = ({ src, style, ...rest }: React.VideoHTMLAttributes<HTMLVideoElement> & { src: string; style?: React.CSSProperties }) => {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        el.src = src;
+        el.load();
+        observer.disconnect();
+      }
+    }, { rootMargin: "300px" });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [src]);
+  return <video ref={ref} muted loop playsInline preload="none" style={style} {...rest} onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }} />;
+};
+
 const Index: React.FC = () => {
   const { user, role, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -84,9 +102,10 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div style={{ background: BG, color: TEXT, minHeight: "100vh", overflowX: "hidden", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
 
       <style>{`
+        html { overflow-x: hidden; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes heroGlow { 0%,100% { opacity:0.6; transform:scale(1) } 50% { opacity:1; transform:scale(1.08) } }
         @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(124,58,237,0.5),0 0 32px rgba(124,58,237,0.2) } 50% { box-shadow:0 0 28px rgba(124,58,237,0.75),0 0 56px rgba(124,58,237,0.35) } }
@@ -214,10 +233,11 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
           <motion.div {...fadeUp}>
-            <div style={{ borderRadius: 24, overflow: "hidden", background: "#000", boxShadow: `0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}, 0 0 60px rgba(124,58,237,0.15)` }}>
+            <div style={{ borderRadius: 24, overflow: "hidden", background: "#0d1117", boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
               <video
                 src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-demo.mp4"
-                autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}
+                autoPlay muted loop playsInline preload="metadata"
+                style={{ width: "100%", display: "block" }}
                 onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
               />
             </div>
@@ -286,11 +306,11 @@ const Index: React.FC = () => {
                 style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", display: "flex", flexDirection: "column" }}
               >
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
-                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "rgba(0,0,0,0.4)" }}>
+                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "#0d1117" }}>
                   {f.video ? (
-                    <video src={f.video} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
+                    <LazyVideo src={f.video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
                   ) : f.img ? (
-                    <img src={f.img} alt={f.label} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
+                    <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
                   ) : null}
                 </div>
                 <div style={{ padding: "28px 28px 32px" }}>
@@ -339,11 +359,10 @@ const Index: React.FC = () => {
               </ul>
             </motion.div>
             <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <div style={{ borderRadius: 20, overflow: "hidden", background: "#000", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}` }}>
-                <video
+              <div style={{ borderRadius: 20, overflow: "hidden", background: "#0d1117", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
+                <LazyVideo
                   src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
-                  autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}
-                  onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
+                  autoPlay style={{ width: "100%", display: "block" }}
                 />
               </div>
             </motion.div>
