@@ -35,14 +35,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    let initialSessionHandled = false;
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        initialSessionHandled = true;
+      }
+
       setSession(session);
       setUser(session?.user ?? null);
 
-      // Defer role fetching with setTimeout to avoid deadlock
       if (session?.user) {
         setTimeout(() => {
           fetchUserRole(session.user.id);
@@ -53,8 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     });
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (initialSessionHandled) return;
+
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -80,7 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Error fetching role:", error);
         setRole(null);
       } else if (data) {
-        setRole(data.role);
+        const mappedRole: AppRole = data.role === "school_admin" ? "instructor" : data.role;
+        setRole(mappedRole);
       }
     } catch (err) {
       console.error("Failed to fetch role:", err);
