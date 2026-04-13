@@ -76,21 +76,6 @@ const InstructorSignup: React.FC<InstructorSignupProps> = ({ tier, onComplete, o
         // user_roles rows. No client-side writes: session is null until email is
         // verified so RLS would reject them silently.
         if (data.user) {
-          // Send branded welcome / verification email (anon key — no session needed)
-          try {
-            await supabase.functions.invoke('send-auth-email', {
-              body: {
-                type: 'verify-email',
-                email: formData.email,
-                url: `${window.location.origin}/auth/callback`,
-                userName: formData.name,
-                userRole: 'instructor',
-              },
-            });
-          } catch (emailError) {
-            console.error('Welcome email failed (non-fatal):', emailError);
-          }
-
           // Persist tier selection so the dashboard can pick it up after verify
           const maxStudents = tier === 'LITE' ? 5 : 9999;
           const trialEndsAt = tier === 'ELITE'
