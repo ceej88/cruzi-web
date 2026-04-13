@@ -7,7 +7,7 @@ import {
   CheckCircle, ArrowRight, BookOpen,
   Clock, FileText, Layers, BadgeCheck, Target, Wifi,
 } from "lucide-react";
-import featureCalendar from "@/assets/feature-calendar.jpg";
+import calendarPhone from "@/assets/calendar-phone.png";
 import featureNotes from "@/assets/feature-notes.jpg";
 import studentView from "@/assets/student-view-clean.png";
 
@@ -273,15 +273,16 @@ export default function FeaturesPage() {
               {
                 icon: Calendar, label: "Diary & Scheduling",
                 desc: "Your week, mastered. Drag and reschedule lessons, block time off, colour-code every student. A calendar that works the way you think.",
-                img: featureCalendar,
+                img: calendarPhone,
+                phone: true,
                 highlight: ["Drag-and-drop rescheduling", "Colour-coded by student", "Block time management", "Upcoming lesson summaries"],
               },
               {
                 icon: ClipboardCheck, label: "Pupil Progress",
-                desc: "Track all 38 DVSA competencies on the official 1–5 scale. Share real-time progress with students and parents. Know exactly when a pupil is test-ready.",
+                desc: "Track all 27 DVSA competencies on the official 1–5 scale. Share real-time progress with students and parents. Know exactly when a pupil is test-ready.",
                 img: studentView,
                 phone: true,
-                highlight: ["All 38 DVSA topics scored", "Test readiness indicator", "Shared with students & parents", "Historical progress view"],
+                highlight: ["All 27 DVSA topics scored", "Test readiness indicator", "Shared with students & parents", "Historical progress view"],
               },
               {
                 icon: Mic, label: "Voice Scribe",
@@ -308,16 +309,15 @@ export default function FeaturesPage() {
 
                 {/* Media */}
                 <div style={{
-                  height: (f as any).phone ? 380 : 200,
+                  height: (f as any).phone ? 460 : 200,
                   overflow: "hidden",
                   borderRadius: "24px 24px 0 0",
                   background: (f as any).phone
-                    ? "radial-gradient(ellipse at center 60%, rgba(124,58,237,0.22) 0%, #090d1a 65%)"
+                    ? "radial-gradient(ellipse at center 50%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
                     : "#0d1117",
                   display: "flex",
-                  alignItems: (f as any).phone ? "center" : undefined,
+                  alignItems: (f as any).phone ? "flex-end" : undefined,
                   justifyContent: (f as any).phone ? "center" : undefined,
-                  padding: (f as any).phone ? "16px 0 0" : undefined,
                 }}>
                   {(f as any).video ? (
                     <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
@@ -325,10 +325,11 @@ export default function FeaturesPage() {
                     <img
                       src={f.img} alt={f.label} loading="lazy"
                       style={{
-                        height: "100%",
-                        width: "auto",
+                        width: "90%",
+                        height: "auto",
                         objectFit: "contain",
-                        filter: "drop-shadow(0 12px 40px rgba(124,58,237,0.45))",
+                        display: "block",
+                        filter: "drop-shadow(0 -4px 32px rgba(124,58,237,0.4))",
                       }}
                     />
                   ) : f.img ? (
