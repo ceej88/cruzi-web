@@ -1,37 +1,72 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Loader2, Crown, Calendar, ClipboardCheck, Mic, Smartphone,
-  ArrowRight, CheckCircle, PoundSterling, BadgeCheck,
+  ArrowRight, CheckCircle, Brain, Zap, Target, Map, FileText,
+  Shield, Users, BookOpen, BadgeCheck, PoundSterling, Layers,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import featureCalendar from "@/assets/feature-calendar.jpg";
 import featureConfidence from "@/assets/feature-confidence.jpg";
 import featureNotes from "@/assets/feature-notes.jpg";
 
-const P = "#7C3AED";
-const P_DARK = "#1E0A3C";
-const P_MID = "#5B21B6";
-const P_LIGHT = "#EDE9FE";
-const P_BG = "#F5F3FF";
-const P_GLOW = "rgba(124,58,237,0.2)";
+const BG      = "#060e20";
+const GLASS   = "rgba(31, 43, 73, 0.45)";
+const GLASS_B = "rgba(189, 157, 255, 0.12)";
+const P       = "#7c3aed";
+const P_SEC   = "#bd9dff";
+const TEXT    = "#dee5ff";
+const MUTED   = "#a3aac4";
+const GLOW    = "rgba(124,58,237,0.35)";
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
+const fadeUp = {
+  initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.6, ease: "easeOut" as const },
 };
+
+const glassCard: React.CSSProperties = {
+  background: GLASS,
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border: `1px solid ${GLASS_B}`,
+  borderRadius: 24,
+  position: "relative",
+  overflow: "hidden",
+};
+
+const SectionPill = ({ label }: { label: string }) => (
+  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 9999, padding: "6px 16px", marginBottom: 20 }}>
+    <span style={{ width: 6, height: 6, borderRadius: "50%", background: P_SEC, display: "inline-block" }} />
+    <span style={{ color: P_SEC, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{label}</span>
+  </div>
+);
+
+const CheckItem = ({ text }: { text: string }) => (
+  <li style={{ display: "flex", alignItems: "flex-start", gap: 10, color: MUTED, fontSize: 14, lineHeight: 1.6 }}>
+    <CheckCircle style={{ color: P_SEC, width: 16, height: 16, flexShrink: 0, marginTop: 2 }} />
+    {text}
+  </li>
+);
 
 const Index: React.FC = () => {
   const { user, role, isLoading } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
+    document.head.appendChild(link);
+    return () => { document.head.removeChild(link); };
+  }, []);
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="h-8 w-8 animate-spin" style={{ color: P }} />
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: BG }}>
+        <Loader2 style={{ width: 32, height: 32, color: P, animation: "spin 1s linear infinite" }} />
       </div>
     );
   }
@@ -49,369 +84,266 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white" style={{ color: "#111827" }}>
+    <div style={{ background: BG, color: TEXT, minHeight: "100vh", overflowX: "hidden", fontFamily: "'Inter', sans-serif" }}>
 
       <style>{`
-        @keyframes purpleGradient {
-          0%   { background-position: 0% 50%; }
-          50%  { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes orbA {
-          0%,100% { transform: translate(0,0) scale(1); }
-          50%      { transform: translate(24px,-20px) scale(1.05); }
-        }
-        @keyframes orbB {
-          0%,100% { transform: translate(0,0) scale(1); }
-          50%      { transform: translate(-20px,16px) scale(0.96); }
-        }
-        @keyframes ctaPulse {
-          0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4), 0 4px 20px rgba(124,58,237,0.25); }
-          50%      { box-shadow: 0 0 0 12px rgba(124,58,237,0), 0 4px 20px rgba(124,58,237,0.25); }
-        }
-        .hero-gradient-text {
-          background: linear-gradient(90deg, #7C3AED, #5B21B6, #7C3AED);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: purpleGradient 3s ease infinite;
-        }
-        .orb-a { animation: orbA 8s ease-in-out infinite; }
-        .orb-b { animation: orbB 8s ease-in-out infinite 1s; }
-        .btn-pulse { animation: ctaPulse 2s ease-in-out infinite; }
-        .card-hover {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 20px 40px rgba(124,58,237,0.15);
-        }
-        .pro-card-hover {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .pro-card-hover:hover {
-          transform: translateY(-6px) scale(1.05);
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes heroGlow { 0%,100% { opacity:0.6; transform:scale(1) } 50% { opacity:1; transform:scale(1.08) } }
+        @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(124,58,237,0.5),0 0 32px rgba(124,58,237,0.2) } 50% { box-shadow:0 0 28px rgba(124,58,237,0.75),0 0 56px rgba(124,58,237,0.35) } }
+        @keyframes gradShift { 0% { background-position:0% 50% } 50% { background-position:100% 50% } 100% { background-position:0% 50% } }
+        @keyframes floatA { 0%,100% { transform:translate(0,0) } 50% { transform:translate(20px,-18px) } }
+        @keyframes floatB { 0%,100% { transform:translate(0,0) } 50% { transform:translate(-16px,14px) } }
+        .hero-grad { background: linear-gradient(90deg, #7c3aed, #bd9dff, #a78bfa, #7c3aed); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation: gradShift 5s ease infinite; }
+        .btn-pulse { animation: btnPulse 3s ease-in-out infinite; }
+        .orb-a { animation: heroGlow 9s ease-in-out infinite; }
+        .orb-b { animation: heroGlow 12s ease-in-out infinite reverse; }
+        .float-a { animation: floatA 8s ease-in-out infinite; }
+        .float-b { animation: floatB 10s ease-in-out infinite 1s; }
+        .role-card:hover { border-color: rgba(124,58,237,0.5) !important; transform: translateY(-4px); }
+        .role-card { transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
+        .role-card:hover { box-shadow: 0 16px 48px rgba(124,58,237,0.18); }
+        .feat-card:hover { border-color: rgba(124,58,237,0.4) !important; }
+        .feat-card { transition: border-color 0.25s, box-shadow 0.25s; }
+        .feat-card:hover { box-shadow: 0 0 36px rgba(124,58,237,0.12); }
+        .price-card:hover { border-color: rgba(124,58,237,0.5) !important; transform: translateY(-4px); }
+        .price-card { transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
+        .step-num { background: rgba(124,58,237,0.18); border: 1px solid rgba(124,58,237,0.4); }
       `}</style>
 
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b" style={{ borderColor: "#E5E7EB" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="h-16 flex items-center justify-between">
-            <span className="font-black text-xl font-outfit tracking-tight" style={{ color: "#111827" }}>
-              Cruzi
-            </span>
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: "#6B7280" }}>
-              <a href="#features" className="hover:text-purple-700 transition-colors" style={{ transition: "color 0.3s ease" }}>Features</a>
-              <a href="#how-it-works" className="hover:text-purple-700 transition-colors">How It Works</a>
-              <a href="#pricing" className="hover:text-purple-700 transition-colors">Pricing</a>
-              <a href="#portals" className="hover:text-purple-700 transition-colors">Get Started</a>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/auth?mode=login")}
-                className="min-h-[44px] px-5 py-2 text-sm font-semibold transition-colors"
-                style={{ color: "#6B7280", touchAction: "manipulation" }}
-              >
-                Log In
-              </button>
-              <button
-                onClick={() => handleSelectRole("instructor")}
-                className="btn-pulse min-h-[44px] px-5 py-2.5 text-sm font-bold text-white active:scale-95"
-                style={{ background: P, borderRadius: 16, touchAction: "manipulation" }}
-              >
-                Start Free Trial
-              </button>
-            </div>
-          </div>
+      {/* ─── AMBIENT BG ─── */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(189,157,255,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(124,58,237,0.08) 0%, transparent 45%)` }} />
+
+      {/* ─── NAV ─── */}
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(6,14,32,0.75)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(189,157,255,0.08)", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button onClick={() => navigate("/")} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, background: "none", border: "none", cursor: "pointer" }}>
+          Cruzi
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <button onClick={() => navigate("/features")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>Features</button>
+          <button onClick={() => navigate("/savings")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>ROI Calculator</button>
+          <button onClick={() => navigate("/auth?mode=login")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>Log In</button>
+          <button
+            onClick={() => handleSelectRole("instructor")}
+            style={{ background: P, color: "#fff", border: "none", padding: "10px 22px", borderRadius: 9999, fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", boxShadow: `0 0 16px ${GLOW}`, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 0 28px rgba(124,58,237,0.55)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 16px ${GLOW}`; }}
+          >
+            Get Started
+          </button>
         </div>
       </nav>
 
-      {/* HERO */}
-      <section
-        className="relative pt-28 pb-16 md:pt-36 md:pb-20 px-4 sm:px-8 bg-white"
-      >
+      {/* ─── HERO ─── */}
+      <section style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 24px 60px", textAlign: "center" }}>
+
         {/* Orbs */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div
-            className="orb-a absolute rounded-full"
-            style={{
-              top: "8%", left: "15%", width: 480, height: 480,
-              background: `radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)`,
-              filter: "blur(48px)",
-            }}
-          />
-          <div
-            className="orb-b absolute rounded-full"
-            style={{
-              top: "15%", right: "12%", width: 380, height: 380,
-              background: `radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)`,
-              filter: "blur(48px)",
-            }}
-          />
-        </div>
+        <div className="orb-a" style={{ position: "absolute", top: "12%", left: "6%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div className="orb-b" style={{ position: "absolute", bottom: "15%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(189,157,255,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <motion.div {...fadeIn}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-[1.1] mb-5" style={{ color: "#111827" }}>
-              The Only Platform Built for{" "}
-              <span className="hero-gradient-text">Instructors, Students &amp; Parents</span>
-            </h1>
-            <p className="text-lg leading-relaxed mb-8 max-w-2xl mx-auto" style={{ color: "#6B7280" }}>
-              Lesson plans in 2 minutes. Students practice between lessons with real test routes. Parents see real-time progress. This is what TD Drive forgot to build.
-            </p>
+        <motion.div {...fadeUp}>
+          <SectionPill label="BUILT FOR UK ADIS" />
+        </motion.div>
 
-            {/* Hero CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
-              <button
-                onClick={() => handleSelectRole("instructor")}
-                className="btn-pulse inline-flex items-center justify-center gap-2 min-h-[52px] px-8 text-base font-bold text-white"
-                style={{ background: P, borderRadius: 16, touchAction: "manipulation" }}
-              >
-                Start Free Trial — It's Free
-                <ArrowRight className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => handleSelectRole("student")}
-                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-8 text-base font-bold bg-white"
-                style={{
-                  color: P, border: `2px solid ${P}`, borderRadius: 16,
-                  touchAction: "manipulation", transition: "all 0.3s ease",
-                }}
-              >
-                Get the Student App
-              </button>
-            </div>
-          </motion.div>
+        <motion.h1
+          {...fadeUp}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2.8rem, 6.5vw, 5.4rem)", lineHeight: 1.06, letterSpacing: "-0.03em", margin: "0 0 28px", maxWidth: 860, textShadow: "0 0 40px rgba(124,58,237,0.2)" }}
+        >
+          The app UK driving<br />
+          <span className="hero-grad">instructors actually</span><br />
+          love using.
+        </motion.h1>
 
-          {/* ROLE CARDS */}
-          <div className="grid sm:grid-cols-3 gap-4 text-left" id="portals">
-            {[
-              {
-                icon: Calendar,
-                label: "I'm a driving teacher",
-                desc: "Diary, pupils, finances and compliance — all in one place.",
-                cta: "Start Free Trial",
-                delay: 0.05,
-                onClick: () => handleSelectRole("instructor"),
-              },
-              {
-                icon: ClipboardCheck,
-                label: "I'm learning to drive",
-                desc: "Track your progress, book lessons and prepare for your test.",
-                cta: "Get the App",
-                delay: 0.1,
-                onClick: () => handleSelectRole("student"),
-              },
-              {
-                icon: Smartphone,
-                label: "I'm a parent",
-                desc: "Support your child's learning with guided Co-Pilot practice.",
-                cta: "Find Out More",
-                delay: 0.15,
-                onClick: () => handleSelectRole("student"),
-              },
-            ].map((card) => (
-              <motion.button
-                key={card.label}
-                {...fadeIn}
-                transition={{ duration: 0.4, delay: card.delay }}
-                onClick={card.onClick}
-                className="card-hover bg-white p-6 text-left cursor-pointer group w-full"
-                style={{
-                  borderRadius: 16, border: "1px solid #E5E7EB",
-                  borderTop: `3px solid ${P}`, touchAction: "manipulation",
-                }}
-              >
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: P_LIGHT }}
-                >
-                  <card.icon className="h-5 w-5" style={{ color: P }} />
-                </div>
-                <h3 className="text-base font-black mb-1.5 leading-snug" style={{ color: P_DARK }}>{card.label}</h3>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: "#6B7280" }}>
-                  {card.desc}
-                </p>
-                <span className="inline-flex items-center gap-1.5 font-bold text-sm group-hover:gap-2.5" style={{ color: P, transition: "gap 0.3s ease" }}>
-                  {card.cta} <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
+        <motion.p
+          {...fadeUp}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{ fontSize: "clamp(1rem, 2vw, 1.2rem)", color: MUTED, maxWidth: 560, lineHeight: 1.75, margin: "0 0 52px" }}
+        >
+          Lesson plans in 2 minutes. Students practice between lessons. Parents see real-time progress. One platform — three experiences.
+        </motion.p>
+
+        {/* Hero CTAs */}
+        <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.3 }} style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 64 }}>
+          <button
+            className="btn-pulse"
+            onClick={() => handleSelectRole("instructor")}
+            style={{ background: P, color: "#fff", border: "none", padding: "17px 40px", borderRadius: 9999, fontSize: 16, fontWeight: 700, cursor: "pointer", transition: "transform 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "flex", alignItems: "center", gap: 8 }}
+            onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
+            onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
+          >
+            Start Free — No Card Needed <ArrowRight style={{ width: 18, height: 18 }} />
+          </button>
+          <button
+            onClick={() => handleSelectRole("student")}
+            style={{ background: "rgba(255,255,255,0.05)", color: TEXT, border: `1px solid ${GLASS_B}`, padding: "17px 40px", borderRadius: 9999, fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.09)"; e.currentTarget.style.borderColor = "rgba(189,157,255,0.3)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = GLASS_B; }}
+          >
+            Get the Student App
+          </button>
+        </motion.div>
+
+        {/* Role Cards */}
+        <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.4 }} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, maxWidth: 860, width: "100%" }}>
+          {[
+            { icon: BookOpen, label: "I'm a driving instructor", desc: "Diary, pupils, finances and compliance — all in one place.", cta: "Start Free Trial", onClick: () => handleSelectRole("instructor"), accent: P },
+            { icon: ClipboardCheck, label: "I'm learning to drive", desc: "Track your progress, book lessons and prepare for your test.", cta: "Get the App", onClick: () => handleSelectRole("student"), accent: P_SEC },
+            { icon: Shield, label: "I'm a parent", desc: "Support your child's learning with guided Co-Pilot practice sessions.", cta: "Find Out More", onClick: () => handleSelectRole("student"), accent: "#a78bfa" },
+          ].map((card) => (
+            <button
+              key={card.label}
+              className="role-card"
+              onClick={card.onClick}
+              style={{ ...glassCard, padding: "28px 24px", textAlign: "left", cursor: "pointer", background: "rgba(31,43,73,0.35)", border: `1px solid ${GLASS_B}` }}
+            >
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${card.accent}88, transparent)` }} />
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: `${card.accent}22`, border: `1px solid ${card.accent}44`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: `0 0 16px ${card.accent}30` }}>
+                <card.icon style={{ color: card.accent, width: 20, height: 20 }} />
+              </div>
+              <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 16, margin: "0 0 8px", color: TEXT }}>{card.label}</h3>
+              <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.65, margin: "0 0 16px" }}>{card.desc}</p>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: card.accent, fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                {card.cta} <ArrowRight style={{ width: 14, height: 14 }} />
+              </span>
+            </button>
+          ))}
+        </motion.div>
       </section>
 
-      {/* DEMO VIDEO */}
-      <section className="pb-14 px-4 sm:px-8 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeIn} transition={{ duration: 0.6, delay: 0.2 }}>
-            <div
-              className="overflow-hidden"
-              style={{ borderRadius: 20, border: `1px solid ${P_LIGHT}`, background: "#000", boxShadow: `0 24px 60px ${P_GLOW}` }}
-            >
+      {/* ─── DEMO VIDEO ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <motion.div {...fadeUp}>
+            <div style={{ borderRadius: 24, overflow: "hidden", background: "#000", boxShadow: `0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}, 0 0 60px rgba(124,58,237,0.15)` }}>
               <video
                 src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-demo.mp4"
-                autoPlay muted loop playsInline className="w-full"
-                onError={(e) => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
+                autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}
+                onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
               />
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
-      <section className="py-8 border-y" style={{ borderColor: P_LIGHT, background: P_BG }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm font-medium" style={{ color: "#6B7280" }}>
-            {["DVSA syllabus aligned", "GDPR compliant", "Works on any device", "No contract required"].map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" style={{ color: P }} />
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* ─── TRUST STRIP ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
+        <motion.div {...fadeUp} style={{ maxWidth: 900, margin: "0 auto", ...glassCard, padding: "20px 32px", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 32 }}>
+          {["DVSA Syllabus Aligned", "GDPR Compliant", "Works on Any Device", "No Contract Required", "Offline Mode Included"].map(item => (
+            <div key={item} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: MUTED }}>
+              <CheckCircle style={{ color: P_SEC, width: 15, height: 15, flexShrink: 0 }} />
+              {item}
+            </div>
+          ))}
+        </motion.div>
       </section>
 
-      {/* THREE EXPERIENCES */}
-      <section className="py-24 px-4 sm:px-8" style={{ background: P_BG }}>
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4" style={{ color: P_DARK }}>
-              One platform. Three experiences.
+      {/* ─── CORE FEATURES ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ marginBottom: 60, textAlign: "center" }}>
+            <SectionPill label="CORE FEATURES" />
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px", textShadow: "0 0 30px rgba(124,58,237,0.15)" }}>
+              The tools that run your business
             </h2>
-            <p className="text-lg max-w-xl mx-auto" style={{ color: "#6B7280" }}>
-              Every role gets exactly what they need — nothing more, nothing less.
+            <p style={{ color: MUTED, fontSize: 17, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
+              Built by people who understand what ADIs actually need — not generic software forced to fit.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             {[
               {
-                label: "For Instructors",
-                items: ["Lesson plans in 2 minutes", "Auto admin morning briefing", "Mock test recording", "Voice scribe notes", "Core skills tracking"],
-                delay: 0,
+                icon: Calendar, label: "Diary & Scheduling",
+                desc: "Your week, mastered. Drag and reschedule lessons, block time off, colour-code every student.",
+                img: featureCalendar,
+                highlight: ["Drag-and-drop rescheduling", "Colour-coded by student", "Block time management", "Upcoming lesson summaries"],
               },
               {
-                label: "For Students",
-                items: ["Test routes to practise between lessons", "Progress across 27 DVSA skills", "Theory prep resources", "Lesson history", "Direct instructor connection"],
-                delay: 0.1,
+                icon: ClipboardCheck, label: "Pupil Progress",
+                desc: "Track all 38 DVSA competencies on the official 1–5 scale. Know exactly when a pupil is test-ready.",
+                img: featureConfidence,
+                highlight: ["All 38 DVSA topics scored", "Test readiness indicator", "Shared with students & parents", "Historical progress view"],
               },
               {
-                label: "For Parents",
-                items: ["Real-time progress view", "Co-pilot practice guide", "Test date countdown", "Between-lesson tracking", "Peace of mind dashboard"],
-                delay: 0.2,
+                icon: Mic, label: "Voice Scribe",
+                desc: "After every session, speak. Cruzi listens, transcribes and formats your notes into professional lesson records.",
+                img: featureNotes,
+                highlight: ["AI-powered transcription", "Auto-formatted records", "Session analysis included", "Stored against pupil history"],
               },
-            ].map((card) => (
+              {
+                icon: Smartphone, label: "Student App",
+                desc: "Your students live on their phones. Give them progress tracking, lesson booking and direct instructor communication.",
+                img: null,
+                video: "https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-mobile.mp4",
+                highlight: ["Progress across all DVSA skills", "Lesson booking & history", "Theory prep resources", "Direct instructor chat"],
+              },
+            ].map((f, i) => (
               <motion.div
-                key={card.label}
-                {...fadeIn}
-                transition={{ duration: 0.5, delay: card.delay }}
-                className="card-hover bg-white p-7"
-                style={{
-                  borderRadius: 16, borderTop: `3px solid ${P}`,
-                  border: "1px solid #E5E7EB", borderTopWidth: 3, borderTopColor: P,
-                }}
+                key={f.label}
+                {...fadeUp}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="feat-card"
+                style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", display: "flex", flexDirection: "column" }}
               >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
-                  style={{ background: P_LIGHT }}
-                >
-                  <CheckCircle className="h-5 w-5" style={{ color: P }} />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
+                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "rgba(0,0,0,0.4)" }}>
+                  {f.video ? (
+                    <video src={f.video} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
+                  ) : f.img ? (
+                    <img src={f.img} alt={f.label} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
+                  ) : null}
                 </div>
-                <h3 className="text-lg font-black mb-5" style={{ color: P_DARK }}>{card.label}</h3>
-                <ul className="space-y-3">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: "#6B7280" }}>
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: P }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section id="features" className="py-20 px-4 sm:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4" style={{ color: "#111827" }}>
-              Everything you need, nothing you don't
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#6B7280" }}>
-              Built by people who understand what ADIs actually need day-to-day.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: Calendar, title: "Diary & Scheduling", desc: "Manage your week at a glance. Drag lessons, block time off, colour-code by student.", img: featureCalendar, video: null },
-              { icon: ClipboardCheck, title: "Pupil Progress", desc: "Score all 27 DVSA competencies on the official 1–5 scale. Share progress with students and parents.", img: featureConfidence, video: null },
-              { icon: Mic, title: "Voice Scribe", desc: "Dictate lesson notes hands-free after each session. Cruzi formats them into professional records.", img: featureNotes, video: null },
-              { icon: Smartphone, title: "Student App", desc: "Your students track their progress, book lessons, and study theory — all from their phone.", img: null, video: "https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-mobile.mp4" },
-            ].map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                {...fadeIn}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="card-hover overflow-hidden"
-                style={{ borderRadius: 16, border: "1px solid #E5E7EB", background: "#fff" }}
-              >
-                {feature.video ? (
-                  <video
-                    src={feature.video} autoPlay muted loop playsInline className="w-full h-40 object-cover"
-                    onError={(e) => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
-                  />
-                ) : feature.img ? (
-                  <img
-                    src={feature.img} alt={feature.title} className="w-full h-40 object-cover" loading="lazy"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                  />
-                ) : null}
-                <div className="p-6">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: P_LIGHT }}>
-                    <feature.icon className="h-5 w-5" style={{ color: P }} />
+                <div style={{ padding: "28px 28px 32px" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                    <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
                   </div>
-                  <h3 className="text-lg font-bold mb-2" style={{ color: "#111827" }}>{feature.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "#6B7280" }}>{feature.desc}</p>
+                  <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
+                  <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>{f.desc}</p>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                    {f.highlight.map(h => <CheckItem key={h} text={h} />)}
+                  </ul>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }} style={{ textAlign: "center", marginTop: 48 }}>
+            <button
+              onClick={() => navigate("/features")}
+              style={{ background: "rgba(255,255,255,0.05)", color: P_SEC, border: `1px solid rgba(124,58,237,0.35)`, padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.12)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.35)"; }}
+            >
+              See all features <ArrowRight style={{ width: 16, height: 16 }} />
+            </button>
+          </motion.div>
         </div>
       </section>
 
-      {/* MOCK TEST DEMO */}
-      <section className="py-16 px-4 sm:px-8" style={{ background: P_BG }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <motion.div {...fadeIn}>
-              <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4" style={{ color: P_DARK }}>
-                Built-in mock test recording
+      {/* ─── MOCK TEST ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <motion.div {...fadeUp}>
+              <SectionPill label="MOCK TEST RECORDING" />
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.7rem, 3vw, 2.5rem)", letterSpacing: "-0.02em", margin: "0 0 20px", color: TEXT }}>
+                Professional debrief.<br />
+                <span style={{ color: P_SEC }}>In seconds, not minutes.</span>
               </h2>
-              <p className="leading-relaxed mb-6" style={{ color: "#6B7280" }}>
-                Record faults against all 26 DVSA categories during a mock test drive. Generate a professional debrief report instantly — no paper, no clipboard.
+              <p style={{ color: MUTED, lineHeight: 1.8, margin: "0 0 32px", fontSize: 15 }}>
+                Record faults against all 26 DVSA categories during a live mock test. Generate a professional report instantly — no paper, no clipboard, no delay.
               </p>
-              <ul className="space-y-3 text-sm" style={{ color: "#6B7280" }}>
-                {["All 26 DVSA fault categories", "Driver and serious fault tracking", "One-tap report sharing with students", "Stored in pupil history automatically"].map(item => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 shrink-0" style={{ color: P }} />
-                    {item}
-                  </li>
-                ))}
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                {["All 26 DVSA fault categories covered", "Driver and serious fault tracking", "One-tap report sharing with students", "Stored automatically in pupil history"].map(item => <CheckItem key={item} text={item} />)}
               </ul>
             </motion.div>
-            <motion.div {...fadeIn} transition={{ duration: 0.5, delay: 0.2 }}>
-              <div style={{ borderRadius: 20, overflow: "hidden", border: `1px solid ${P_LIGHT}`, background: "#000", boxShadow: `0 20px 50px ${P_GLOW}` }}>
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
+              <div style={{ borderRadius: 20, overflow: "hidden", background: "#000", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}` }}>
                 <video
                   src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
-                  autoPlay muted loop playsInline className="w-full"
-                  onError={(e) => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
+                  autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}
+                  onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
                 />
               </div>
             </motion.div>
@@ -419,152 +351,144 @@ const Index: React.FC = () => {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
-      <section className="py-20 px-4 sm:px-8" style={{ background: P_DARK }}>
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            {...fadeIn}
-            className="relative pl-8"
-            style={{ borderLeft: `4px solid ${P}` }}
-          >
-            <div
-              className="absolute"
-              style={{ top: -20, left: -12, fontSize: "6rem", lineHeight: 1, fontFamily: "Georgia, serif", color: P, opacity: 0.3 }}
-            >
-              &ldquo;
-            </div>
-            <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed mb-6 italic" style={{ color: "#FFFFFF" }}>
-              I switched from TD Drive the same week I tried Cruzi. My students are more engaged between lessons than they have ever been. Parents are now messaging me asking questions they never asked before.
-            </blockquote>
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-bold" style={{ color: P_LIGHT }}>Erica Vale</p>
-                <p className="text-sm" style={{ color: "#A78BFA" }}>Independent ADI, Chester</p>
-              </div>
-              <span
-                className="inline-flex items-center gap-1 text-xs font-bold text-white px-3 py-1 rounded-full ml-2"
-                style={{ background: P }}
-              >
-                <BadgeCheck className="h-3 w-3" /> Verified
-              </span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-8 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4" style={{ color: "#111827" }}>
-              Up and running in minutes
+      {/* ─── AI POWERED ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ textAlign: "center", marginBottom: 60 }}>
+            <SectionPill label="AI-POWERED" />
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px" }}>
+              Intelligence built in
             </h2>
+            <p style={{ color: MUTED, fontSize: 17, maxWidth: 500, margin: "0 auto", lineHeight: 1.7 }}>
+              Not AI for the sake of it — tools that actually save you time every single day.
+            </p>
           </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
             {[
-              { step: "1", title: "Sign Up", desc: "Create your free account. No card required." },
-              { step: "2", title: "Set Up Your Diary", desc: "Add your students, set your hours, and configure your rates." },
-              { step: "3", title: "Invite Your Students", desc: "Share a PIN or link. They join instantly and see their progress." },
+              { icon: Brain, label: "AI Lesson Planning", desc: "Auto-generates lesson plans from each student's skill scores and lesson history. One tap." },
+              { icon: Mic, label: "Voice Scribe", desc: "Powered by Google Gemini 2.5. Speak after a session — get formatted professional notes." },
+              { icon: Zap, label: "Cruzi Intelligence", desc: "Your personal AI teaching assistant. Ask anything about your students or DVSA requirements." },
+              { icon: Target, label: "Test Readiness Score", desc: "Real-time percentage readiness calculated from all 38 DVSA competencies. No guesswork." },
+              { icon: Map, label: "Local Intel Quiz", desc: "AI-generated interactive quizzes about tricky local test routes and hazards. Built per postcode." },
+              { icon: FileText, label: "DVSA Insights", desc: "Request, track and analyse official DVSA test data reports. Understand local pass rates." },
             ].map((item, i) => (
-              <motion.div key={item.step} {...fadeIn} transition={{ duration: 0.5, delay: i * 0.15 }} className="text-center">
-                <div
-                  className="w-14 h-14 text-white rounded-full flex items-center justify-center text-xl font-black mx-auto mb-4"
-                  style={{ background: P, boxShadow: "0 8px 24px rgba(124,58,237,0.3)" }}
-                >
-                  {item.step}
+              <motion.div
+                key={item.label}
+                {...fadeUp}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="feat-card"
+                style={{ ...glassCard, padding: "28px 24px" }}
+              >
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.35), transparent)" }} />
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                  <item.icon style={{ color: P_SEC, width: 18, height: 18 }} />
                 </div>
-                <h3 className="text-lg font-bold mb-2" style={{ color: "#111827" }}>{item.title}</h3>
-                <p className="text-sm" style={{ color: "#6B7280" }}>{item.desc}</p>
+                <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 8px", color: TEXT }}>{item.label}</h3>
+                <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.65, margin: 0 }}>{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* PRICING */}
-      <section id="pricing" className="py-24 px-4 sm:px-8 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-black font-outfit mb-4" style={{ color: "#111827" }}>
+      {/* ─── HOW IT WORKS ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ textAlign: "center", marginBottom: 64 }}>
+            <SectionPill label="HOW IT WORKS" />
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px" }}>
+              Up and running in minutes
+            </h2>
+            <p style={{ color: MUTED, fontSize: 17, lineHeight: 1.7, margin: 0 }}>No complicated setup. No training required.</p>
+          </motion.div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 32 }}>
+            {[
+              { step: "1", title: "Create your account", desc: "Sign up free in under 2 minutes. No card, no contract, no catch." },
+              { step: "2", title: "Set up your diary", desc: "Add students, set your availability and configure your lesson types." },
+              { step: "3", title: "Invite your students", desc: "Share a PIN or link. They join instantly and see their progress live." },
+            ].map((item, i) => (
+              <motion.div key={item.step} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.15 }} style={{ textAlign: "center" }}>
+                <div className="step-num" style={{ width: 60, height: 60, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 0 24px rgba(124,58,237,0.2)" }}>
+                  <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 22, color: P_SEC }}>{item.step}</span>
+                </div>
+                <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 17, margin: "0 0 10px", color: TEXT }}>{item.title}</h3>
+                <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── PRICING ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ textAlign: "center", marginBottom: 64 }}>
+            <SectionPill label="PRICING" />
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px" }}>
               Simple, transparent pricing
             </h2>
-            <p className="text-lg" style={{ color: "#6B7280" }}>Start free. Upgrade when you're ready.</p>
+            <p style={{ color: MUTED, fontSize: 17, lineHeight: 1.7, margin: 0 }}>Start free. Upgrade when you're ready.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 items-center">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24, alignItems: "start" }}>
             {[
               {
-                name: "Free",
-                price: "£0",
-                period: "/month",
-                desc: "Up to 10 students",
-                pro: false,
+                name: "Free", price: "£0", period: "/month", desc: "Up to 10 students", pro: false,
                 features: ["All core features", "Student app", "Parent dashboard", "DVSA skill tracking", "Voice scribe notes"],
                 delay: 0,
               },
               {
-                name: "Pro",
-                price: "£14.99",
-                period: "/month",
-                desc: "Up to 14 students",
-                pro: true,
+                name: "Pro", price: "£14.99", period: "/month", desc: "Up to 14 students", pro: true,
                 features: ["Everything in Free", "Priority support", "Advanced reporting", "Auto lesson plans", "Morning briefings"],
                 delay: 0.1,
               },
               {
-                name: "Premium",
-                price: "£24.99",
-                period: "/month",
-                desc: "Unlimited students",
-                pro: false,
+                name: "Premium", price: "£24.99", period: "/month", desc: "Unlimited students", pro: false,
                 features: ["Everything in Pro", "Multi-instructor support", "School dashboard", "Bulk student management", "Custom branding"],
                 delay: 0.2,
               },
             ].map((plan) => (
               <motion.div
                 key={plan.name}
-                {...fadeIn}
-                transition={{ duration: 0.5, delay: plan.delay }}
-                className={`relative flex flex-col p-7 ${plan.pro ? "pro-card-hover" : "card-hover"}`}
+                {...fadeUp}
+                transition={{ duration: 0.6, delay: plan.delay }}
+                className="price-card"
                 style={{
-                  borderRadius: 16,
-                  background: "#fff",
-                  border: plan.pro ? `2px solid ${P}` : "1px solid #E5E7EB",
-                  boxShadow: plan.pro ? `0 0 30px rgba(124,58,237,0.2)` : undefined,
-                  transform: plan.pro ? "scale(1.05)" : undefined,
+                  ...glassCard,
+                  padding: "36px 28px",
+                  border: plan.pro ? `1px solid rgba(124,58,237,0.6)` : `1px solid ${GLASS_B}`,
+                  boxShadow: plan.pro ? `0 0 40px rgba(124,58,237,0.2)` : "none",
+                  transform: plan.pro ? "scale(1.03)" : "scale(1)",
                 }}
               >
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: plan.pro ? `linear-gradient(90deg, transparent, rgba(124,58,237,0.7), transparent)` : "linear-gradient(90deg, transparent, rgba(189,157,255,0.3), transparent)" }} />
                 {plan.pro && (
-                  <div
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 text-white text-xs font-black px-4 py-1.5 rounded-full"
-                    style={{ background: P }}
-                  >
-                    Most Popular
+                  <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: P, color: "#fff", fontSize: 11, fontWeight: 800, padding: "5px 16px", borderRadius: 9999, letterSpacing: "0.06em", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", boxShadow: `0 0 16px ${GLOW}` }}>
+                    MOST POPULAR
                   </div>
                 )}
-                <div className="mb-6">
-                  <h3 className="text-lg font-black mb-1" style={{ color: "#111827" }}>{plan.name}</h3>
-                  <div className="flex items-end gap-1 mb-1">
-                    <span className="text-4xl font-black" style={{ color: P }}>{plan.price}</span>
-                    <span className="text-sm mb-1.5" style={{ color: "#6B7280" }}>{plan.period}</span>
+                <div style={{ marginBottom: 28 }}>
+                  <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, margin: "0 0 8px", color: TEXT }}>{plan.name}</h3>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 6 }}>
+                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 40, color: plan.pro ? P_SEC : TEXT, lineHeight: 1 }}>{plan.price}</span>
+                    <span style={{ color: MUTED, fontSize: 14, marginBottom: 6 }}>{plan.period}</span>
                   </div>
-                  <p className="text-sm" style={{ color: "#6B7280" }}>{plan.desc}</p>
+                  <p style={{ color: MUTED, fontSize: 13, margin: 0 }}>{plan.desc}</p>
                 </div>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "#6B7280" }}>
-                      <CheckCircle className="h-4 w-4 shrink-0" style={{ color: P }} />
-                      {f}
-                    </li>
-                  ))}
+                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {plan.features.map(f => <CheckItem key={f} text={f} />)}
                 </ul>
                 <button
                   onClick={() => handleSelectRole("instructor")}
-                  className="w-full min-h-[48px] font-bold text-sm text-white active:scale-95"
-                  style={{ background: P, borderRadius: 12, transition: "opacity 0.3s ease", touchAction: "manipulation" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  style={{
+                    width: "100%", padding: "14px 0", border: "none", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    background: plan.pro ? P : "rgba(255,255,255,0.07)",
+                    color: plan.pro ? "#fff" : TEXT,
+                    boxShadow: plan.pro ? `0 0 20px ${GLOW}` : "none",
+                    border: plan.pro ? "none" : `1px solid ${GLASS_B}` as any,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; if (plan.pro) e.currentTarget.style.boxShadow = "0 0 32px rgba(124,58,237,0.55)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; if (plan.pro) e.currentTarget.style.boxShadow = `0 0 20px ${GLOW}`; }}
                 >
                   Get Started
                 </button>
@@ -574,67 +498,112 @@ const Index: React.FC = () => {
         </div>
       </section>
 
-      {/* SAVINGS CTA */}
-      <section className="py-16 px-4 sm:px-8" style={{ background: P_BG }}>
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            {...fadeIn}
-            className="relative overflow-hidden text-center p-8 md:p-12 bg-white"
-            style={{ borderRadius: 20, border: `1px solid ${P_LIGHT}`, boxShadow: `0 8px 40px rgba(124,58,237,0.08)` }}
-          >
-            <PoundSterling className="h-8 w-8 mx-auto mb-4" style={{ color: P }} />
-            <h2 className="text-2xl sm:text-3xl font-black font-outfit mb-3" style={{ color: "#111827" }}>
-              See how much admin time you could save
+      {/* ─── SAVINGS CTA ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(36px, 6vw, 60px)", textAlign: "center" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.45), transparent)" }} />
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", boxShadow: "0 0 20px rgba(124,58,237,0.25)" }}>
+              <PoundSterling style={{ color: P_SEC, width: 24, height: 24 }} />
+            </div>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT }}>
+              See how much time you could save
             </h2>
-            <p className="mb-6" style={{ color: "#6B7280" }}>Interactive calculator — personalised to your workload</p>
+            <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.7, margin: "0 0 36px" }}>
+              Interactive calculator — personalised to your workload and student count.
+            </p>
             <button
               onClick={() => navigate("/savings")}
-              className="inline-flex items-center gap-2 min-h-[48px] px-8 py-3 font-bold text-sm text-white active:scale-95"
-              style={{ background: P, borderRadius: 16, transition: "opacity 0.3s ease", touchAction: "manipulation" }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              style={{ background: "rgba(124,58,237,0.2)", color: P_SEC, border: "1px solid rgba(124,58,237,0.4)", padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.3)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(124,58,237,0.2)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)"; }}
             >
-              Try the Calculator
-              <ArrowRight className="h-4 w-4" />
+              Try the Calculator <ArrowRight style={{ width: 16, height: 16 }} />
             </button>
           </motion.div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-12 px-4 sm:px-8 border-t" style={{ borderColor: P_LIGHT, background: P_BG }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <span className="font-black text-lg font-outfit" style={{ color: "#111827" }}>Cruzi</span>
-              <p className="text-sm mt-1" style={{ color: "#6B7280" }}>The smarter way to manage your driving school.</p>
+      {/* ─── TESTIMONIAL ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(36px, 6vw, 56px)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.45), transparent)" }} />
+            <div style={{ fontSize: "7rem", lineHeight: 0.8, fontFamily: "Georgia, serif", color: P_SEC, opacity: 0.25, marginBottom: 24 }}>&ldquo;</div>
+            <blockquote style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.35rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.75, margin: "0 0 36px", fontWeight: 400 }}>
+              I switched from TD Drive the same week I tried Cruzi. My students are more engaged between lessons than they have ever been. Parents are now messaging me asking questions they never asked before.
+            </blockquote>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div>
+                <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, margin: "0 0 2px", color: TEXT }}>Erica Vale</p>
+                <p style={{ color: MUTED, fontSize: 13, margin: 0 }}>Independent ADI, Chester</p>
+              </div>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 9999, padding: "5px 12px", fontSize: 11, fontWeight: 700, color: P_SEC }}>
+                <BadgeCheck style={{ width: 12, height: 12 }} /> Verified
+              </span>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: "#6B7280" }}>
-              <a href="/terms" className="hover:text-purple-700 transition-colors">Terms</a>
-              <a href="/privacy" className="hover:text-purple-700 transition-colors">Privacy</a>
-              <a href="/cookies" className="hover:text-purple-700 transition-colors">Cookies</a>
-              <a href="/acceptable-use" className="hover:text-purple-700 transition-colors">Acceptable Use</a>
-            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── FINAL CTA ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 120px", textAlign: "center" }}>
+        <motion.div {...fadeUp} style={{ maxWidth: 640, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.02em", margin: "0 0 20px", textShadow: "0 0 40px rgba(124,58,237,0.25)" }}>
+            Start free today.<br />
+            <span style={{ color: P_SEC }}>No card required.</span>
+          </h2>
+          <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.7, margin: "0 0 44px" }}>
+            Up and running in minutes. Your students will notice the difference from lesson one.
+          </p>
+          <button
+            className="btn-pulse"
+            onClick={() => handleSelectRole("instructor")}
+            style={{ background: P, color: "#fff", border: "none", padding: "18px 52px", borderRadius: 9999, fontSize: 17, fontWeight: 700, cursor: "pointer", transition: "transform 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 10 }}
+            onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
+            onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
+          >
+            Get Started Free <ArrowRight style={{ width: 20, height: 20 }} />
+          </button>
+        </motion.div>
+      </section>
+
+      {/* ─── FOOTER ─── */}
+      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(189,157,255,0.08)", padding: "40px 24px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
+          <div>
+            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>Cruzi</span>
+            <p style={{ color: MUTED, fontSize: 13, margin: "4px 0 0" }}>The smarter way to manage your driving school.</p>
           </div>
-          <div className="mt-8 pt-6 border-t text-center text-xs" style={{ borderColor: P_LIGHT, color: "#6B7280" }}>
-            © {new Date().getFullYear()} Cruzi. All rights reserved.
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+            {[
+              { label: "Features", href: "/features" },
+              { label: "ROI Calculator", href: "/savings" },
+              { label: "Terms", href: "/terms" },
+              { label: "Privacy", href: "/privacy" },
+              { label: "Cookies", href: "/cookies" },
+              { label: "Acceptable Use", href: "/acceptable-use" },
+            ].map(link => (
+              <a key={link.label} href={link.href} style={{ color: MUTED, fontSize: 13, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>
+                {link.label}
+              </a>
+            ))}
           </div>
+        </div>
+        <div style={{ maxWidth: 1100, margin: "24px auto 0", paddingTop: 24, borderTop: "1px solid rgba(189,157,255,0.06)", textAlign: "center" }}>
+          <p style={{ color: MUTED, fontSize: 12, margin: 0 }}>© {new Date().getFullYear()} Cruzi. All rights reserved.</p>
         </div>
       </footer>
 
-      {/* Owner Crown — secret access */}
-      <div className="fixed bottom-4 right-4 z-50" style={{ opacity: 0.2, transition: "opacity 0.3s ease" }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.2")}
-      >
+      {/* ─── OWNER CROWN (secret) ─── */}
+      <div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 50, opacity: 0.15, transition: "opacity 0.3s ease" }} onMouseEnter={e => (e.currentTarget.style.opacity = "1")} onMouseLeave={e => (e.currentTarget.style.opacity = "0.15")}>
         <button
           onClick={() => navigate("/owner")}
-          className="flex items-center justify-center w-8 h-8 rounded-full"
-          style={{ background: "#F3F4F6", transition: "background 0.3s ease" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "#FCD34D")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "#F3F4F6")}
+          style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: `1px solid ${GLASS_B}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "background 0.3s ease" }}
+          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,215,0,0.15)")}
+          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
         >
-          <Crown className="h-4 w-4" style={{ color: "#9CA3AF" }} />
+          <Crown style={{ width: 14, height: 14, color: MUTED }} />
         </button>
       </div>
     </div>
