@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 import featureCalendar from "@/assets/feature-calendar.jpg";
 import featureNotes from "@/assets/feature-notes.jpg";
-import studentView from "@/assets/student-view.png";
+import studentView from "@/assets/student-view-clean.png";
 
 const BG      = "#060e20";
 const GLASS   = "rgba(31, 43, 73, 0.45)";
@@ -308,15 +308,16 @@ const Index: React.FC = () => {
               >
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
                 <div style={{
-                  height: (f as any).phone ? 280 : 200,
+                  height: (f as any).phone ? 380 : 200,
                   overflow: "hidden",
                   borderRadius: "24px 24px 0 0",
                   background: (f as any).phone
                     ? "radial-gradient(ellipse at center 60%, rgba(124,58,237,0.22) 0%, #090d1a 65%)"
                     : "#0d1117",
                   display: "flex",
-                  alignItems: (f as any).phone ? "flex-end" : undefined,
+                  alignItems: (f as any).phone ? "center" : undefined,
                   justifyContent: (f as any).phone ? "center" : undefined,
+                  padding: (f as any).phone ? "16px 0 0" : undefined,
                 }}>
                   {(f as any).video ? (
                     <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
@@ -324,11 +325,10 @@ const Index: React.FC = () => {
                     <img
                       src={f.img} alt={f.label} loading="lazy"
                       style={{
-                        height: "95%",
+                        height: "100%",
                         width: "auto",
                         objectFit: "contain",
-                        objectPosition: "center bottom",
-                        filter: "drop-shadow(0 -8px 32px rgba(124,58,237,0.35))",
+                        filter: "drop-shadow(0 12px 40px rgba(124,58,237,0.45))",
                       }}
                     />
                   ) : f.img ? (
