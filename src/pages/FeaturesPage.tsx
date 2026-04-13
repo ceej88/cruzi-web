@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -42,6 +42,24 @@ const glassCardHighlight: React.CSSProperties = {
   borderTop: `1px solid rgba(189,157,255,0.35)`,
 };
 
+const LazyVideo = ({ src, style, ...rest }: React.VideoHTMLAttributes<HTMLVideoElement> & { src: string; style?: React.CSSProperties }) => {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        el.src = src;
+        el.load();
+        observer.disconnect();
+      }
+    }, { rootMargin: "300px" });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [src]);
+  return <video ref={ref} muted loop playsInline preload="none" style={style} {...rest} onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }} />;
+};
+
 const SectionPill = ({ label }: { label: string }) => (
   <div
     style={{
@@ -81,7 +99,9 @@ export default function FeaturesPage() {
   }, []);
 
   return (
-    <div style={{ background: BG, color: TEXT, minHeight: "100vh", overflowX: "hidden", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+
+      <style>{`html { overflow-x: hidden; }`}</style>
 
       {/* ─── AMBIENT BACKGROUND ─── */}
       <div style={{
@@ -286,11 +306,11 @@ export default function FeaturesPage() {
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
 
                 {/* Media */}
-                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "rgba(0,0,0,0.4)" }}>
+                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "#0d1117" }}>
                   {f.video ? (
-                    <video src={f.video} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
+                    <LazyVideo src={f.video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
                   ) : f.img ? (
-                    <img src={f.img} alt={f.label} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
+                    <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
                   ) : null}
                 </div>
 
@@ -329,11 +349,10 @@ export default function FeaturesPage() {
               </ul>
             </motion.div>
             <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <div style={{ borderRadius: 20, overflow: "hidden", background: "#000", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}` }}>
-                <video
+              <div style={{ borderRadius: 20, overflow: "hidden", background: "#0d1117", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
+                <LazyVideo
                   src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
-                  autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}
-                  onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
+                  autoPlay style={{ width: "100%", display: "block" }}
                 />
               </div>
             </motion.div>
