@@ -8,8 +8,8 @@ import {
   Clock, FileText, Layers, BadgeCheck, Target, Wifi,
 } from "lucide-react";
 import featureCalendar from "@/assets/feature-calendar.jpg";
-import featureConfidence from "@/assets/feature-confidence.jpg";
 import featureNotes from "@/assets/feature-notes.jpg";
+import studentView from "@/assets/student-view.png";
 
 const BG       = "#060e20";
 const GLASS    = "rgba(31, 43, 73, 0.45)";
@@ -279,7 +279,8 @@ export default function FeaturesPage() {
               {
                 icon: ClipboardCheck, label: "Pupil Progress",
                 desc: "Track all 38 DVSA competencies on the official 1–5 scale. Share real-time progress with students and parents. Know exactly when a pupil is test-ready.",
-                img: featureConfidence,
+                img: studentView,
+                phone: true,
                 highlight: ["All 38 DVSA topics scored", "Test readiness indicator", "Shared with students & parents", "Historical progress view"],
               },
               {
@@ -306,9 +307,30 @@ export default function FeaturesPage() {
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
 
                 {/* Media */}
-                <div style={{ height: 200, overflow: "hidden", borderRadius: "24px 24px 0 0", background: "#0d1117" }}>
-                  {f.video ? (
-                    <LazyVideo src={f.video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
+                <div style={{
+                  height: (f as any).phone ? 280 : 200,
+                  overflow: "hidden",
+                  borderRadius: "24px 24px 0 0",
+                  background: (f as any).phone
+                    ? "radial-gradient(ellipse at center 60%, rgba(124,58,237,0.22) 0%, #090d1a 65%)"
+                    : "#0d1117",
+                  display: "flex",
+                  alignItems: (f as any).phone ? "flex-end" : undefined,
+                  justifyContent: (f as any).phone ? "center" : undefined,
+                }}>
+                  {(f as any).video ? (
+                    <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
+                  ) : f.img && (f as any).phone ? (
+                    <img
+                      src={f.img} alt={f.label} loading="lazy"
+                      style={{
+                        height: "95%",
+                        width: "auto",
+                        objectFit: "contain",
+                        objectPosition: "center bottom",
+                        filter: "drop-shadow(0 -8px 32px rgba(124,58,237,0.35))",
+                      }}
+                    />
                   ) : f.img ? (
                     <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
                   ) : null}
