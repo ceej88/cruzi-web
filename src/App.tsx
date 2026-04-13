@@ -45,7 +45,7 @@ const AppRoutes = () => {
       <Route
         path="/auth"
         element={
-          user && role === "instructor" ? (
+          user && !!role ? (
             <Navigate to="/instructor" replace />
           ) : (
             <AuthPage />

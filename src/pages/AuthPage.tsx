@@ -28,7 +28,7 @@ const AuthPage: React.FC = () => {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
+  const redirectTo = new URLSearchParams(location.search).get('redirect') || '/instructor';
 
   const startResendCooldown = () => {
     setResendCooldown(60);
