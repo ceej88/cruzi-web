@@ -313,26 +313,17 @@ export default function FeaturesPage() {
               >
                 {(f as any).phone && f.img ? (
                   <>
-                    <div style={{
-                      width: "55%", maxWidth: 200,
-                      background: "#0a0e1a",
-                      borderRadius: 32,
-                      border: "3px solid rgba(189,157,255,0.2)",
-                      overflow: "hidden",
-                      position: "relative",
-                      boxShadow: "0 20px 60px rgba(124,58,237,0.35), 0 0 80px rgba(124,58,237,0.15)",
-                      marginBottom: -40,
-                      zIndex: 2,
-                    }}>
-                      <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", width: 56, height: 18, borderRadius: 12, background: "#0a0e1a", border: "2px solid rgba(189,157,255,0.15)", zIndex: 2 }} />
-                      <img
-                        src={f.img} alt={f.label} loading="lazy"
-                        style={{ width: "100%", display: "block" }}
-                      />
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, display: "flex", justifyContent: "center", paddingBottom: 6 }}>
-                        <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(189,157,255,0.25)" }} />
-                      </div>
-                    </div>
+                    <img
+                      src={f.img} alt={f.label} loading="lazy"
+                      style={{
+                        width: "75%", maxWidth: 280,
+                        display: "block",
+                        marginBottom: -40,
+                        zIndex: 2,
+                        position: "relative",
+                        filter: "drop-shadow(0 20px 50px rgba(124,58,237,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.15))",
+                      }}
+                    />
                     <div style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
                       <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
