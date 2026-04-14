@@ -12,6 +12,7 @@ import voiceScribePhone from "@/assets/voice-scribe-phone.webp";
 import studentView from "@/assets/student-view-clean.webp";
 import parentPhone from "@/assets/parent-phone.webp";
 import mockTestPhone from "@/assets/mock-test-phone.webp";
+import testRoutesPhone from "@/assets/test-routes-phone.webp";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import SiteNav from "@/components/landing/SiteNav";
 
@@ -368,6 +369,41 @@ export default function FeaturesPage() {
                   filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
                 }}
               />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TEST ROUTES ─── */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <motion.div {...fadeUp} style={{ display: "flex", justifyContent: "center", order: 1 }}>
+              <img
+                src={testRoutesPhone}
+                alt="Test Routes"
+                loading="lazy"
+                style={{
+                  width: "75%",
+                  maxWidth: 280,
+                  display: "block",
+                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                }}
+              />
+            </motion.div>
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }} style={{ order: 2 }}>
+              <SectionPill label="TEST ROUTES" />
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.7rem, 3vw, 2.5rem)", letterSpacing: "-0.02em", margin: "0 0 20px", color: TEXT }}>
+                Record every route.<br />
+                <span style={{ color: P_SEC }}>GPS does the work.</span>
+              </h2>
+              <p style={{ color: MUTED, lineHeight: 1.8, margin: "0 0 32px", fontSize: 15 }}>
+                Drive a test route and Cruzi tracks the GPS path automatically. Build a library of local test centre routes your students can study before the big day.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                {["GPS route recording in real time", "Saved per test centre", "Share routes with students", "Build a full route library"].map(item => <CheckItem key={item} text={item} />)}
+              </ul>
             </motion.div>
           </div>
         </div>
