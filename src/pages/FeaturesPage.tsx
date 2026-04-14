@@ -309,58 +309,72 @@ export default function FeaturesPage() {
                 key={f.label}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                style={{ ...glassCardHighlight, display: "flex", flexDirection: "column" }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: (f as any).phone ? 0 : undefined }}
               >
-                {/* Top shimmer line */}
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
-
-                {/* Media */}
-                <div style={{
-                  height: (f as any).phone ? 420 : 200,
-                  overflow: "hidden",
-                  borderRadius: "24px 24px 0 0",
-                  background: (f as any).phone
-                    ? "radial-gradient(ellipse at center 40%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
-                    : "#0d1117",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: (f as any).phone ? "28px 0 0" : undefined,
-                }}>
-                  {(f as any).video ? (
-                    <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
-                  ) : f.img && (f as any).phone ? (
+                {(f as any).phone && f.img ? (
+                  <>
                     <div style={{
-                      width: "65%", maxWidth: 240,
-                      background: "#0d1117",
-                      borderRadius: "28px 28px 0 0",
-                      border: "3px solid rgba(189,157,255,0.18)",
-                      borderBottom: "none",
+                      width: "55%", maxWidth: 200,
+                      background: "#0a0e1a",
+                      borderRadius: 32,
+                      border: "3px solid rgba(189,157,255,0.2)",
                       overflow: "hidden",
                       position: "relative",
-                      boxShadow: "0 -8px 40px rgba(124,58,237,0.3)",
+                      boxShadow: "0 20px 60px rgba(124,58,237,0.35), 0 0 80px rgba(124,58,237,0.15)",
+                      marginBottom: -40,
+                      zIndex: 2,
                     }}>
-                      <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", width: 60, height: 16, borderRadius: 10, background: "#0d1117", border: "2px solid rgba(189,157,255,0.12)", zIndex: 2 }} />
+                      <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", width: 56, height: 18, borderRadius: 12, background: "#0a0e1a", border: "2px solid rgba(189,157,255,0.15)", zIndex: 2 }} />
                       <img
                         src={f.img} alt={f.label} loading="lazy"
                         style={{ width: "100%", display: "block" }}
                       />
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, display: "flex", justifyContent: "center", paddingBottom: 6 }}>
+                        <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(189,157,255,0.25)" }} />
+                      </div>
                     </div>
-                  ) : f.img ? (
-                    <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
-                  ) : null}
-                </div>
-
-                <div style={{ padding: "28px 28px 32px" }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
-                    <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
+                    <div style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                        <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
+                      </div>
+                      <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
+                      <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>{f.desc}</p>
+                      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {f.highlight.map(h => <CheckItem key={h} text={h} />)}
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ ...glassCardHighlight, display: "flex", flexDirection: "column", width: "100%" }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
+                    <div style={{
+                      height: 200,
+                      overflow: "hidden",
+                      borderRadius: "24px 24px 0 0",
+                      background: "#0d1117",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      {(f as any).video ? (
+                        <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
+                      ) : f.img ? (
+                        <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
+                      ) : null}
+                    </div>
+                    <div style={{ padding: "28px 28px 32px" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                        <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
+                      </div>
+                      <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
+                      <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>{f.desc}</p>
+                      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {f.highlight.map(h => <CheckItem key={h} text={h} />)}
+                      </ul>
+                    </div>
                   </div>
-                  <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
-                  <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>{f.desc}</p>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                    {f.highlight.map(h => <CheckItem key={h} text={h} />)}
-                  </ul>
-                </div>
+                )}
               </motion.div>
             ))}
           </div>
