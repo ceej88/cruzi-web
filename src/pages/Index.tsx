@@ -8,9 +8,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import calendarPhone from "@/assets/calendar-phone.webp";
-import featureNotes from "@/assets/feature-notes.jpg";
+import voiceScribePhone from "@/assets/voice-scribe-phone.webp";
 import studentView from "@/assets/student-view-clean.webp";
+import parentPhone from "@/assets/parent-phone.webp";
+import mockTestPhone from "@/assets/mock-test-phone.webp";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import SiteNav from "@/components/landing/SiteNav";
 
 const BG      = "#060e20";
 const GLASS   = "rgba(31, 43, 73, 0.45)";
@@ -140,24 +143,7 @@ const Index: React.FC = () => {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(189,157,255,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(124,58,237,0.08) 0%, transparent 45%)` }} />
 
       {/* ─── NAV ─── */}
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(6,14,32,0.75)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(189,157,255,0.08)", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button onClick={() => navigate("/")} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, background: "none", border: "none", cursor: "pointer" }}>
-          Cruzi
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <button onClick={() => navigate("/features")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>Features</button>
-          <button onClick={() => navigate("/savings")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>ROI Calculator</button>
-          <button onClick={() => navigate("/auth?mode=login")} style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>Log In</button>
-          <button
-            onClick={() => handleSelectRole("instructor")}
-            style={{ background: P, color: "#fff", border: "none", padding: "10px 22px", borderRadius: 9999, fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", boxShadow: `0 0 16px ${GLOW}`, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 0 28px rgba(124,58,237,0.55)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 16px ${GLOW}`; }}
-          >
-            Get Started
-          </button>
-        </div>
-      </nav>
+      <SiteNav navigate={navigate} onGetStarted={() => handleSelectRole("instructor")} />
 
       {/* ─── HERO ─── */}
       <section style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 24px 60px", textAlign: "center" }}>
@@ -237,15 +223,23 @@ const Index: React.FC = () => {
       </section>
 
       {/* ─── DEMO VIDEO ─── */}
-      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
-        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+      <style>{`
+        @media (max-width: 767px) {
+          .demo-video-wrap { padding: 0 0 80px !important; }
+          .demo-video-inner { max-width: 100% !important; }
+          .demo-video-card { border-radius: 0 !important; box-shadow: 0 32px 80px rgba(0,0,0,0.6) !important; }
+        }
+      `}</style>
+      <section className="demo-video-wrap" style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
+        <div className="demo-video-inner" style={{ maxWidth: 960, margin: "0 auto" }}>
           <motion.div {...fadeUp}>
-            <div style={{ borderRadius: 24, overflow: "hidden", background: "#0d1117", boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
+            <div className="demo-video-card" style={{ borderRadius: 24, overflow: "hidden", background: "#0d1117", boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
               <video
                 src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-demo.mp4"
-                autoPlay muted loop playsInline preload="metadata"
+                autoPlay muted loop playsInline
+                preload="auto"
                 style={{ width: "100%", display: "block" }}
-                onError={e => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
+                ref={el => { if (el) el.play().catch(() => {}); }}
               />
             </div>
           </motion.div>
@@ -296,15 +290,16 @@ const Index: React.FC = () => {
               {
                 icon: Mic, label: "Voice Scribe",
                 desc: "After every session, speak. Cruzi listens, transcribes and formats your notes into professional lesson records.",
-                img: featureNotes,
+                img: voiceScribePhone,
+                phone: true,
                 highlight: ["AI-powered transcription", "Auto-formatted records", "Session analysis included", "Stored against pupil history"],
               },
               {
-                icon: Smartphone, label: "Student App",
-                desc: "Your students live on their phones. Give them progress tracking, lesson booking and direct instructor communication.",
-                img: null,
-                video: "https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-mobile.mp4",
-                highlight: ["Progress across all DVSA skills", "Lesson booking & history", "Theory prep resources", "Direct instructor chat"],
+                icon: Smartphone, label: "Parent App",
+                desc: "Parents stay in the loop. See their teen's progress, test readiness and lesson history in real time — no more guessing how things are going.",
+                img: parentPhone,
+                phone: true,
+                highlight: ["Real-time progress updates", "Test readiness at a glance", "Co-Pilot practice drives", "Direct instructor messaging"],
               },
             ].map((f, i) => (
               <motion.div
@@ -404,13 +399,18 @@ const Index: React.FC = () => {
                 {["All 26 DVSA fault categories covered", "Driver and serious fault tracking", "One-tap report sharing with students", "Stored automatically in pupil history"].map(item => <CheckItem key={item} text={item} />)}
               </ul>
             </motion.div>
-            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <div style={{ borderRadius: 20, overflow: "hidden", background: "#0d1117", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
-                <LazyVideo
-                  src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
-                  autoPlay style={{ width: "100%", display: "block" }}
-                />
-              </div>
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }} style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={mockTestPhone}
+                alt="Mock Test"
+                loading="lazy"
+                style={{
+                  width: "75%",
+                  maxWidth: 280,
+                  display: "block",
+                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                }}
+              />
             </motion.div>
           </div>
         </div>

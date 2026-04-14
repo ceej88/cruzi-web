@@ -8,9 +8,12 @@ import {
   Clock, FileText, Layers, BadgeCheck, Target, Wifi,
 } from "lucide-react";
 import calendarPhone from "@/assets/calendar-phone.webp";
-import featureNotes from "@/assets/feature-notes.jpg";
+import voiceScribePhone from "@/assets/voice-scribe-phone.webp";
 import studentView from "@/assets/student-view-clean.webp";
+import parentPhone from "@/assets/parent-phone.webp";
+import mockTestPhone from "@/assets/mock-test-phone.webp";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import SiteNav from "@/components/landing/SiteNav";
 
 const BG       = "#060e20";
 const GLASS    = "rgba(31, 43, 73, 0.45)";
@@ -121,45 +124,7 @@ export default function FeaturesPage() {
       }} />
 
       {/* ─── NAV ─── */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(6,14,32,0.75)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(189,157,255,0.08)",
-        padding: "0 24px",
-        height: 64, display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <button
-          onClick={() => navigate("/")}
-          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, background: "none", border: "none", cursor: "pointer" }}
-        >
-          Cruzi
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <button
-            onClick={() => navigate("/auth?mode=login")}
-            style={{ color: MUTED, background: "none", border: "none", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "color 0.2s" }}
-            onMouseEnter={e => (e.currentTarget.style.color = TEXT)}
-            onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
-          >
-            Log In
-          </button>
-          <button
-            onClick={() => navigate("/auth?role=instructor")}
-            style={{
-              background: P, color: "#fff", border: "none",
-              padding: "10px 22px", borderRadius: 9999, fontSize: 14, fontWeight: 700,
-              cursor: "pointer", transition: "all 0.25s",
-              boxShadow: `0 0 16px ${GLOW}`,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 0 28px rgba(124,58,237,0.55)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 16px ${GLOW}`; }}
-          >
-            Get Started
-          </button>
-        </div>
-      </nav>
+      <SiteNav navigate={navigate} onGetStarted={() => navigate("/auth?role=instructor")} />
 
       {/* ─── HERO ─── */}
       <section style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 24px 80px", textAlign: "center" }}>
@@ -294,15 +259,16 @@ export default function FeaturesPage() {
               {
                 icon: Mic, label: "Voice Scribe",
                 desc: "After every session, speak. Cruzi listens, transcribes and formats your notes into professional lesson records — before you've left the car park.",
-                img: featureNotes,
+                img: voiceScribePhone,
+                phone: true,
                 highlight: ["AI-powered transcription", "Auto-formatted records", "Session analysis included", "Stored against pupil history"],
               },
               {
-                icon: Smartphone, label: "Student App",
-                desc: "Your students live on their phones. Give them progress tracking, lesson booking, theory prep and direct instructor communication — all in one place.",
-                img: null,
-                video: "https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-mobile.mp4",
-                highlight: ["Progress across all DVSA skills", "Lesson booking & history", "Theory prep resources", "Direct instructor chat"],
+                icon: Smartphone, label: "Parent App",
+                desc: "Parents stay in the loop. See their teen's progress, test readiness and lesson history in real time — no more guessing how things are going.",
+                img: parentPhone,
+                phone: true,
+                highlight: ["Real-time progress updates", "Test readiness at a glance", "Co-Pilot practice drives", "Direct instructor messaging"],
               },
             ].map((f, i) => (
               <motion.div
@@ -375,7 +341,7 @@ export default function FeaturesPage() {
       {/* ─── MOCK TEST ─── */}
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ ...glassCard, padding: "56px 48px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+          <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
             <motion.div {...fadeUp}>
               <SectionPill label="MOCK TEST RECORDING" />
@@ -390,13 +356,18 @@ export default function FeaturesPage() {
                 {["All 26 DVSA fault categories covered", "Driver and serious fault tracking", "One-tap report sharing with students", "Stored automatically in pupil history", "Comparable against previous mocks"].map(item => <CheckItem key={item} text={item} />)}
               </ul>
             </motion.div>
-            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <div style={{ borderRadius: 20, overflow: "hidden", background: "#0d1117", boxShadow: `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
-                <LazyVideo
-                  src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/mocktest-demo.mp4"
-                  autoPlay style={{ width: "100%", display: "block" }}
-                />
-              </div>
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }} style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={mockTestPhone}
+                alt="Mock Test"
+                loading="lazy"
+                style={{
+                  width: "75%",
+                  maxWidth: 280,
+                  display: "block",
+                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                }}
+              />
             </motion.div>
           </div>
         </div>
