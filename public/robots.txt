@@ -12,6 +12,9 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /instructor/
+Disallow: /owner/
+Disallow: /admin-login
 
 # Sitemap
 Sitemap: https://cruzi.co.uk/sitemap.xml

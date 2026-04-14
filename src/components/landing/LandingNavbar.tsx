@@ -33,10 +33,10 @@ const LandingNavbar: React.FC = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-10">
-            <a href="#features" className="text-muted-foreground hover:text-primary font-semibold transition-colors">Features</a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-primary font-semibold transition-colors">How It Works</a>
+            <a href="/features" className="text-muted-foreground hover:text-primary font-semibold transition-colors">Features</a>
+            <a href="/pricing" className="text-muted-foreground hover:text-primary font-semibold transition-colors">Pricing</a>
+            <a href="/savings" className="text-muted-foreground hover:text-primary font-semibold transition-colors">ROI Calculator</a>
             <a href="/blog" className="text-muted-foreground hover:text-primary font-semibold transition-colors">Blog</a>
-            <a href="#portals" className="text-muted-foreground hover:text-primary font-semibold transition-colors">Get Started</a>
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
@@ -71,10 +71,10 @@ const LandingNavbar: React.FC = () => {
       >
         <div className="p-6 flex flex-col gap-8 h-full">
           <div className="flex flex-col gap-6">
-            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">Features</a>
-            <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">How It Works</a>
+            <a href="/features" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">Features</a>
+            <a href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">Pricing</a>
+            <a href="/savings" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">ROI Calculator</a>
             <a href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">Blog</a>
-            <a href="#portals" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-foreground">Get Started</a>
           </div>
           <div className="mt-auto flex flex-col gap-4 pb-8">
             <button

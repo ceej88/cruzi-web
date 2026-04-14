@@ -7,9 +7,10 @@ import {
   Shield, Users, BookOpen, BadgeCheck, PoundSterling, Layers,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import calendarPhone from "@/assets/calendar-phone.png";
+import calendarPhone from "@/assets/calendar-phone.webp";
 import featureNotes from "@/assets/feature-notes.jpg";
-import studentView from "@/assets/student-view-clean.png";
+import studentView from "@/assets/student-view-clean.webp";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const BG      = "#060e20";
 const GLASS   = "rgba(31, 43, 73, 0.45)";
@@ -80,6 +81,12 @@ const Index: React.FC = () => {
     document.head.appendChild(link);
     return () => { document.head.removeChild(link); };
   }, []);
+
+  usePageMeta({
+    title: "Cruzi — Built for Instructors, Students and Parents",
+    description: "The UK platform connecting driving instructors, students and parents. Manage lessons, book sessions, track progress and stay in touch — all in one place.",
+    canonical: "https://cruzi.co.uk/",
+  });
 
   if (isLoading) {
     return (
@@ -309,29 +316,36 @@ const Index: React.FC = () => {
               >
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
                 <div style={{
-                  height: (f as any).phone ? 460 : 200,
+                  height: (f as any).phone ? 420 : 200,
                   overflow: "hidden",
                   borderRadius: "24px 24px 0 0",
                   background: (f as any).phone
-                    ? "radial-gradient(ellipse at center 50%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
+                    ? "radial-gradient(ellipse at center 40%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
                     : "#0d1117",
                   display: "flex",
-                  alignItems: (f as any).phone ? "flex-end" : undefined,
-                  justifyContent: (f as any).phone ? "center" : undefined,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: (f as any).phone ? "28px 0 0" : undefined,
                 }}>
                   {(f as any).video ? (
                     <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
                   ) : f.img && (f as any).phone ? (
-                    <img
-                      src={f.img} alt={f.label} loading="lazy"
-                      style={{
-                        width: "90%",
-                        height: "auto",
-                        objectFit: "contain",
-                        display: "block",
-                        filter: "drop-shadow(0 -4px 32px rgba(124,58,237,0.4))",
-                      }}
-                    />
+                    <div style={{
+                      width: "65%", maxWidth: 240,
+                      background: "#0d1117",
+                      borderRadius: "28px 28px 0 0",
+                      border: "3px solid rgba(189,157,255,0.18)",
+                      borderBottom: "none",
+                      overflow: "hidden",
+                      position: "relative",
+                      boxShadow: "0 -8px 40px rgba(124,58,237,0.3)",
+                    }}>
+                      <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", width: 60, height: 16, borderRadius: 10, background: "#0d1117", border: "2px solid rgba(189,157,255,0.12)", zIndex: 2 }} />
+                      <img
+                        src={f.img} alt={f.label} loading="lazy"
+                        style={{ width: "100%", display: "block" }}
+                      />
+                    </div>
                   ) : f.img ? (
                     <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
                   ) : null}
@@ -620,6 +634,7 @@ const Index: React.FC = () => {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
             {[
               { label: "Features", href: "/features" },
+              { label: "Pricing", href: "/pricing" },
               { label: "ROI Calculator", href: "/savings" },
               { label: "Terms", href: "/terms" },
               { label: "Privacy", href: "/privacy" },

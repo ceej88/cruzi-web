@@ -7,9 +7,10 @@ import {
   CheckCircle, ArrowRight, BookOpen,
   Clock, FileText, Layers, BadgeCheck, Target, Wifi,
 } from "lucide-react";
-import calendarPhone from "@/assets/calendar-phone.png";
+import calendarPhone from "@/assets/calendar-phone.webp";
 import featureNotes from "@/assets/feature-notes.jpg";
-import studentView from "@/assets/student-view-clean.png";
+import studentView from "@/assets/student-view-clean.webp";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const BG       = "#060e20";
 const GLASS    = "rgba(31, 43, 73, 0.45)";
@@ -89,6 +90,12 @@ const CheckItem = ({ text }: { text: string }) => (
 
 export default function FeaturesPage() {
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: "Features — Cruzi",
+    description: "Explore every feature Cruzi offers UK driving instructors — AI lesson planning, DVSA skill tracking, voice scribe, mock tests, student app, parent dashboard and more.",
+    canonical: "https://cruzi.co.uk/features",
+  });
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -309,29 +316,36 @@ export default function FeaturesPage() {
 
                 {/* Media */}
                 <div style={{
-                  height: (f as any).phone ? 460 : 200,
+                  height: (f as any).phone ? 420 : 200,
                   overflow: "hidden",
                   borderRadius: "24px 24px 0 0",
                   background: (f as any).phone
-                    ? "radial-gradient(ellipse at center 50%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
+                    ? "radial-gradient(ellipse at center 40%, rgba(124,58,237,0.18) 0%, #090d1a 70%)"
                     : "#0d1117",
                   display: "flex",
-                  alignItems: (f as any).phone ? "flex-end" : undefined,
-                  justifyContent: (f as any).phone ? "center" : undefined,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: (f as any).phone ? "28px 0 0" : undefined,
                 }}>
                   {(f as any).video ? (
                     <LazyVideo src={(f as any).video} autoPlay style={{ width: "100%", height: "100%", objectFit: "cover" as const, opacity: 0.9 }} />
                   ) : f.img && (f as any).phone ? (
-                    <img
-                      src={f.img} alt={f.label} loading="lazy"
-                      style={{
-                        width: "90%",
-                        height: "auto",
-                        objectFit: "contain",
-                        display: "block",
-                        filter: "drop-shadow(0 -4px 32px rgba(124,58,237,0.4))",
-                      }}
-                    />
+                    <div style={{
+                      width: "65%", maxWidth: 240,
+                      background: "#0d1117",
+                      borderRadius: "28px 28px 0 0",
+                      border: "3px solid rgba(189,157,255,0.18)",
+                      borderBottom: "none",
+                      overflow: "hidden",
+                      position: "relative",
+                      boxShadow: "0 -8px 40px rgba(124,58,237,0.3)",
+                    }}>
+                      <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", width: 60, height: 16, borderRadius: 10, background: "#0d1117", border: "2px solid rgba(189,157,255,0.12)", zIndex: 2 }} />
+                      <img
+                        src={f.img} alt={f.label} loading="lazy"
+                        style={{ width: "100%", display: "block" }}
+                      />
+                    </div>
                   ) : f.img ? (
                     <img src={f.img} alt={f.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
                   ) : null}
