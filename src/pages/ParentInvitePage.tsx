@@ -73,7 +73,7 @@ const ParentInvitePage: React.FC = () => {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: 'https://www.cruzi.co.uk/auth/callback?next=/install',
+          emailRedirectTo: 'https://cruzi.co.uk/auth/callback?next=/install',
           data: { role: 'parent', full_name: name.trim() },
         },
       });

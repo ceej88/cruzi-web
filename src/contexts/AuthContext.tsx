@@ -139,21 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // and user_roles rows from auth.users metadata. No client-side writes here —
         // session is null until the user clicks the verification link, so any RLS-
         // protected insert would fail silently.
-
-        // Send branded verification email (uses anon key, no session required)
-        try {
-          await supabase.functions.invoke('send-auth-email', {
-            body: {
-              type: 'verify-email',
-              email: email,
-              url: redirectUrl,
-              userRole: selectedRole === 'instructor' ? 'instructor' : 'student',
-            },
-          });
-        } catch (emailError) {
-          console.error("Failed to send branded verification email:", emailError);
-          // Non-fatal — Supabase sends its own default verification email as fallback
-        }
+        // Branded verification email is sent automatically by the Supabase Auth Hook
+        // (send-auth-email edge function). No manual call needed here.
       }
 
       return { error: null };
