@@ -16,6 +16,7 @@ import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import OwnerCommandCentre from "./pages/owner/OwnerCommandCentre";
 import NotFound from "./pages/NotFound";
 import JoinPage from "./pages/JoinPage";
+import JoinByCodePage from "./pages/JoinByCodePage";
 import InstallPage from "./pages/InstallPage";
 import ParentInvitePage from "./pages/ParentInvitePage";
 import SavingsCalculator from "./pages/SavingsCalculator";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
       <Route path="/acceptable-use" element={<AcceptableUse />} />
       <Route path="/dpa" element={<DataProcessingAddendum />} />
       <Route path="/join" element={<JoinPage />} />
+      <Route path="/join/:code" element={<JoinByCodePage />} />
       <Route path="/parent/:token" element={<ParentInvitePage />} />
       <Route path="/admin-login" element={<AdminLoginPage />} />
       <Route path="/install" element={<InstallPage />} />
