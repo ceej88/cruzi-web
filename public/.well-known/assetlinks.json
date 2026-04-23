@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cruzi.app",
+      "sha256_cert_fingerprints": [
+        "61:1B:D4:27:AF:1C:CA:F7:92:68:F3:DE:2D:63:D7:97:94:F3:34:59:CC:46:CD:20:BC:6E:85:FC:1B:49:4E:47"
+      ]
+    }
+  }
+]
