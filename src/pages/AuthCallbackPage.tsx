@@ -16,6 +16,29 @@ async function claimPendingParentToken() {
   }
 }
 
+async function claimPendingInstructorCode(userId: string) {
+  const code = localStorage.getItem('pending_instructor_code');
+  if (!code) return;
+  localStorage.removeItem('pending_instructor_code');
+  try {
+    const { data } = await supabase.rpc('claim_instructor_invite', {
+      p_token: code,
+      p_instructor_user_id: userId,
+    });
+    if (data?.ok) {
+      sessionStorage.setItem('cruzi.invite.outcome', 'linked');
+    } else if (data?.error === 'EXPIRED') {
+      sessionStorage.setItem('cruzi.invite.outcome', 'expired');
+    } else if (data?.error === 'ALREADY_CLAIMED') {
+      sessionStorage.setItem('cruzi.invite.outcome', 'already_claimed');
+    } else {
+      sessionStorage.setItem('cruzi.invite.outcome', 'error');
+    }
+  } catch {
+    sessionStorage.setItem('cruzi.invite.outcome', 'error');
+  }
+}
+
 async function getRoleAndRedirect(
   navigate: ReturnType<typeof useNavigate>,
   nextParam: string | null
@@ -25,6 +48,7 @@ async function getRoleAndRedirect(
     if (!user) { navigate('/auth'); return; }
 
     await claimPendingParentToken();
+    await claimPendingInstructorCode(user.id);
 
     // Read role from user_roles (source of truth), fall back to metadata
     const { data: roleRow } = await supabase

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import {
   Calendar, Users, Clock, AlertCircle, MessageSquare,
   Wallet, BarChart2, Settings, Apple, Smartphone
@@ -43,6 +44,26 @@ function useOverviewStats(userId: string) {
 const InstructorOverview: React.FC<Props> = ({ userId }) => {
   const navigate = useNavigate();
   const { data: stats, isLoading } = useOverviewStats(userId);
+
+  useEffect(() => {
+    const outcome = sessionStorage.getItem('cruzi.invite.outcome');
+    if (!outcome) return;
+    sessionStorage.removeItem('cruzi.invite.outcome');
+    switch (outcome) {
+      case 'linked':
+        toast.success('Connected to your new student');
+        break;
+      case 'expired':
+        toast.error('That invite has expired. Ask your student for a new code.');
+        break;
+      case 'already_claimed':
+        toast.error('That invite was already used. Ask your student for a fresh code.');
+        break;
+      case 'error':
+        toast.error('Could not link to your student right now. Try again later.');
+        break;
+    }
+  }, []);
 
   const statCards = [
     { label: "Today's Lessons", value: stats?.today ?? 0, icon: Calendar, color: 'text-blue-500' },

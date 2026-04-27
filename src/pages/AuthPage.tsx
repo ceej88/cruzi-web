@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff, Mail, KeyRound } from "lucide-react";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Please enter a valid email address");
@@ -24,6 +24,9 @@ const AuthPage: React.FC = () => {
   const [showEmailSent, setShowEmailSent] = useState(false);
   const [sentToEmail, setSentToEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [inviteStep, setInviteStep] = useState<'none' | 'question' | 'input'>('none');
+  const [inviteCode, setInviteCode] = useState("");
+  const [inviteError, setInviteError] = useState("");
 
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -85,13 +88,33 @@ const AuthPage: React.FC = () => {
           toast.error(error.message.includes("already registered") ? "This email is already registered. Try signing in." : error.message);
         } else {
           setSentToEmail(email);
-          setShowEmailSent(true);
-          startResendCooldown();
+          setInviteStep('question');
         }
       }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const advanceToCheckEmail = () => {
+    setInviteStep('none');
+    setShowEmailSent(true);
+    startResendCooldown();
+  };
+
+  const handleInviteSkip = () => {
+    localStorage.removeItem('pending_instructor_code');
+    advanceToCheckEmail();
+  };
+
+  const handleInviteConnect = () => {
+    const cleaned = inviteCode.replace(/\s+/g, '').toUpperCase();
+    if (cleaned.length !== 8) {
+      setInviteError('Enter the 8-character code your student sent you.');
+      return;
+    }
+    localStorage.setItem('pending_instructor_code', cleaned);
+    advanceToCheckEmail();
   };
 
   return (
@@ -102,7 +125,70 @@ const AuthPage: React.FC = () => {
       </div>
 
       <GlassCard className="w-full max-w-md" padding="lg">
-        {showEmailSent ? (
+        {inviteStep === 'question' ? (
+          <div className="flex flex-col items-center text-center gap-6 py-4">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+              <KeyRound className="h-10 w-10 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold font-outfit">Account created</h2>
+              <p className="text-muted-foreground text-sm">
+                Has a student sent you an invite code?
+              </p>
+            </div>
+            <button
+              onClick={() => setInviteStep('input')}
+              className="w-full py-3 rounded-xl bg-primary text-white font-semibold transition-all hover:bg-primary/90"
+            >
+              Yes, I have a code
+            </button>
+            <button
+              onClick={handleInviteSkip}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              No, not yet — continue
+            </button>
+          </div>
+        ) : inviteStep === 'input' ? (
+          <div className="flex flex-col items-center text-center gap-5 py-4">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+              <KeyRound className="h-10 w-10 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold font-outfit">Enter your invite code</h2>
+              <p className="text-muted-foreground text-sm">
+                Type the 8-character code from your student
+                <br />(for example, AK9MA65Q)
+              </p>
+            </div>
+            <Input
+              value={inviteCode}
+              onChange={(e) => {
+                setInviteCode(e.target.value.replace(/\s+/g, '').toUpperCase());
+                if (inviteError) setInviteError('');
+              }}
+              maxLength={8}
+              placeholder="AK9MA65Q"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              className="text-center tracking-[0.4em] font-mono text-xl uppercase"
+            />
+            {inviteError && <p className="text-xs text-destructive">{inviteError}</p>}
+            <button
+              onClick={handleInviteConnect}
+              className="w-full py-3 rounded-xl bg-primary text-white font-semibold transition-all hover:bg-primary/90"
+            >
+              Connect
+            </button>
+            <button
+              onClick={handleInviteSkip}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Skip for now
+            </button>
+          </div>
+        ) : showEmailSent ? (
           <div className="flex flex-col items-center text-center gap-6 py-4">
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
               <Mail className="h-10 w-10 text-primary" />
