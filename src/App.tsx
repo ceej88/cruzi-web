@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import JoinPage from "./pages/JoinPage";
 import InstallPage from "./pages/InstallPage";
 import ParentInvitePage from "./pages/ParentInvitePage";
+import InviteInstructorPage from "./pages/InviteInstructorPage";
 import SavingsCalculator from "./pages/SavingsCalculator";
 import ConnectCompletePage from "./pages/ConnectCompletePage";
 import ConnectRefreshPage from "./pages/ConnectRefreshPage";
@@ -75,6 +76,7 @@ const AppRoutes = () => {
       <Route path="/dpa" element={<DataProcessingAddendum />} />
       <Route path="/join" element={<JoinPage />} />
       <Route path="/parent/:token" element={<ParentInvitePage />} />
+      <Route path="/i/:token" element={<InviteInstructorPage />} />
       <Route path="/install" element={<InstallPage />} />
       <Route path="/savings" element={<SavingsCalculator />} />
       <Route path="/features" element={<FeaturesPage />} />
