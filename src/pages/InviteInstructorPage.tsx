@@ -135,7 +135,7 @@ const InviteInstructorPage = () => {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-            If the link does not open the app automatically after install, tap the original text message link again, or share this code with the student who invited you.
+            If the link doesn’t open the app automatically after install, open Cruzi and enter this code manually.
           </p>
         </div>
 
