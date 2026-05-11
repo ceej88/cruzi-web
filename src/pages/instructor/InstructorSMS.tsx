@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { MessageSquare, Send, CreditCard, History, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { MessageSquare, Send, CreditCard, History, CheckCircle, XCircle, Loader2, Star, Trophy } from 'lucide-react';
+import { useSmsCredits, SMS_PACKS, type PackSize } from '@/hooks/useSmsCredits';
 
 interface Props { userId: string; }
 
@@ -13,13 +14,6 @@ const NOTIFICATION_TYPES = [
   { key: 'on_my_way', label: 'On My Way', defaultHours: 0 },
   { key: 'arrived', label: 'Arrived', defaultHours: 0 },
   { key: 'passed_test', label: 'Passed Test', defaultHours: 0 },
-];
-
-const SMS_BUNDLES = [
-  { credits: 50, price: '£4.99', label: 'Starter' },
-  { credits: 150, price: '£12.99', label: 'Standard', popular: true },
-  { credits: 400, price: '£29.99', label: 'Pro' },
-  { credits: 1000, price: '£64.99', label: 'Unlimited' },
 ];
 
 function useSMSCredits(userId: string) {
@@ -254,22 +248,20 @@ const BroadcastTab: React.FC<{ userId: string }> = ({ userId }) => {
   );
 };
 
-const BundlesTab: React.FC<{ userId: string }> = ({ userId }) => {
-  const { data: credits, isLoading } = useSMSCredits(userId);
-  const [buying, setBuying] = useState<number | null>(null);
+const BundlesTab: React.FC<{ userId: string }> = ({ userId: _userId }) => {
+  // Source of truth for pack sizes/prices and the purchase flow lives in useSmsCredits.
+  // This guarantees the request body matches the purchase-sms-credits edge function contract
+  // (which only accepts packSize: '10' | '25' | '50').
+  const { credits, isLoading, isPurchasing, purchaseCredits } = useSmsCredits();
+  const [buyingSize, setBuyingSize] = useState<PackSize | null>(null);
 
-  const handleBuy = async (credits: number) => {
-    setBuying(credits);
+  const handleBuy = async (size: PackSize) => {
+    setBuyingSize(size);
     try {
-      const { data, error } = await supabase.functions.invoke('purchase-sms-credits', {
-        body: { instructor_id: userId, credits, success_url: window.location.href, cancel_url: window.location.href },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
-    } catch (e) {
-      alert('Failed to start checkout. Please try again.');
+      await purchaseCredits(size);
+    } finally {
+      setBuyingSize(null);
     }
-    setBuying(null);
   };
 
   return (
@@ -286,27 +278,43 @@ const BundlesTab: React.FC<{ userId: string }> = ({ userId }) => {
         </div>
       )}
       <div className="space-y-3">
-        {SMS_BUNDLES.map(bundle => (
-          <div key={bundle.credits} className={`bg-white rounded-2xl border shadow-sm p-4 flex items-center justify-between ${bundle.popular ? 'border-[#7c3aed]' : 'border-gray-100'}`}>
-            <div>
-              {bundle.popular && <span className="text-xs font-bold text-[#7c3aed] uppercase tracking-wide">Most Popular</span>}
-              <p className="font-bold text-gray-900">{bundle.label}</p>
-              <p className="text-sm text-gray-500">{bundle.credits} credits</p>
+        {(Object.entries(SMS_PACKS) as [PackSize, typeof SMS_PACKS[PackSize]][]).map(([size, pack]) => {
+          const highlight = pack.popular || pack.bestValue;
+          return (
+            <div
+              key={size}
+              className={`bg-white rounded-2xl border shadow-sm p-4 flex items-center justify-between ${highlight ? 'border-[#7c3aed]' : 'border-gray-100'}`}
+            >
+              <div>
+                {pack.popular && (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#7c3aed] uppercase tracking-wide">
+                    <Star className="w-3 h-3" /> Most Popular
+                  </span>
+                )}
+                {pack.bestValue && (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#7c3aed] uppercase tracking-wide">
+                    <Trophy className="w-3 h-3" /> Best Value
+                  </span>
+                )}
+                <p className="font-bold text-gray-900">{pack.label}</p>
+                <p className="text-sm text-gray-500">{pack.credits} credits · {pack.perSms}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-gray-900 mb-2">{pack.price}</p>
+                <button
+                  onClick={() => handleBuy(size)}
+                  disabled={isPurchasing}
+                  className="flex items-center gap-1.5 bg-[#7c3aed] text-white rounded-xl px-4 py-2 text-sm font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
+                >
+                  {buyingSize === size ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                  Buy
+                </button>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="font-bold text-gray-900 mb-2">{bundle.price}</p>
-              <button
-                onClick={() => handleBuy(bundle.credits)}
-                disabled={buying === bundle.credits}
-                className="flex items-center gap-1.5 bg-[#7c3aed] text-white rounded-xl px-4 py-2 text-sm font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
-              >
-                {buying === bundle.credits ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
-                Buy
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+      <p className="text-center text-[11px] text-gray-400">Credits never expire · Secure payment via Stripe</p>
     </div>
   );
 };
