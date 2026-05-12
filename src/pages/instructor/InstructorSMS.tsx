@@ -55,11 +55,6 @@ function buildPreview(type: ActiveKey, customBody: string, includeReply: boolean
   return `${prefix} ${body}${reply}`.trim();
 }
 
-// PR-4-B: render pence as £x.xx (e.g. 650 → £6.50, 40 → £0.40).
-function fmtGbp(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
-
 // ---------------------------------------------------------------------------
 // Hooks
 // ---------------------------------------------------------------------------
@@ -591,11 +586,15 @@ const BroadcastTab: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 // ---------------------------------------------------------------------------
-// PR-4-B: BundleConfirmModal — required by Erica before any Stripe redirect.
-// Always renders 3 lines (SMS delivery cost / Service & processing fee /
-// Total today). Uses the per-pack `breakdown` from useSmsCredits as the
-// single source of truth. Mobile-safe: max-w-sm + w-[90vw] + overflow-hidden,
-// fixed inset overlay so it never causes horizontal page scroll.
+// PR-4-C: BundleConfirmModal — simplified.
+// Removed delivery/service breakdown rows; show only pack header + Total today.
+// Reason: the 4p-per-SMS delivery split was not properly grounded for legacy
+// 10/25/50 packs (no Stripe `sms_delivery_pence` metadata on those Prices),
+// so showing it as fact would mislead. Stripe Checkout still displays the
+// payment amount on the next screen. Mobile-safe: max-w-sm + w-[90vw] +
+// overflow-hidden, fixed inset overlay so it never causes horizontal page
+// scroll. `pack.price` is the canonical display total (matches the per-card
+// label, e.g. "£1.49").
 // ---------------------------------------------------------------------------
 const BundleConfirmModal: React.FC<{
   pack: typeof SMS_PACKS[PackSize];
@@ -637,26 +636,14 @@ const BundleConfirmModal: React.FC<{
         </div>
 
         <div className="p-4 space-y-2 min-w-0 overflow-y-auto">
-          <div className="flex items-center justify-between text-sm gap-2 min-w-0">
-            <span className="text-gray-600 truncate min-w-0 flex-1">SMS delivery cost</span>
-            <span className="text-gray-900 font-medium flex-shrink-0" data-testid="text-modal-delivery">
-              {fmtGbp(pack.breakdown.deliveryPence)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-sm gap-2 min-w-0">
-            <span className="text-gray-600 truncate min-w-0 flex-1">Service &amp; processing fee</span>
-            <span className="text-gray-900 font-medium flex-shrink-0" data-testid="text-modal-service">
-              {fmtGbp(pack.breakdown.servicePence)}
-            </span>
-          </div>
-          <div className="border-t border-gray-100 pt-2 mt-1 flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
             <span className="text-sm font-semibold text-gray-900 truncate min-w-0 flex-1">Total today</span>
             <span className="text-base font-bold text-gray-900 flex-shrink-0" data-testid="text-modal-total">
-              {fmtGbp(pack.breakdown.totalPence)}
+              {pack.price}
             </span>
           </div>
           <p className="text-[10px] text-gray-400 break-words pt-1">
-            Credits never expire · Secure payment via Stripe
+            Secure payment via Stripe
           </p>
         </div>
 
