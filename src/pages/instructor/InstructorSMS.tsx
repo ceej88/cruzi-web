@@ -94,31 +94,55 @@ function useSMSHistory(userId: string) {
   });
 }
 
-function useStudentsWithPhone(userId: string) {
+// Phase A.5.2: canonical eligibility resolver (single source of truth).
+// Returns one row per candidate learner with `ineligible_reason` (null when
+// eligible). Both Broadcast and the Phone-readiness panel consume this.
+type EligibilityRow = {
+  student_id: string;
+  phone: string | null;
+  full_name: string | null;
+  status: string | null;
+  ineligible_reason:
+    | 'opted_out'
+    | 'not_linked_to_instructor'
+    | 'status_blocks_sms'
+    | 'no_phone'
+    | 'invalid_phone'
+    | null;
+};
+
+function useEligibility(userId: string) {
   return useQuery({
-    queryKey: ['students-phone', userId],
+    queryKey: ['sms-eligibility', userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles').select('id, full_name, phone, email')
-        .eq('instructor_id', userId).or('status.eq.ACTIVE,status.is.null')
-        .not('phone', 'is', null);
-      return data ?? [];
+      const { data, error } = await (supabase as any).rpc('eligible_sms_recipients', {
+        p_instructor_id: userId,
+      });
+      if (error) throw error;
+      return (data ?? []) as EligibilityRow[];
     },
   });
 }
 
+// Broadcast list — only eligible learners. Shape preserved for existing
+// consumers: { id, full_name, phone, email? }.
+function useStudentsWithPhone(userId: string) {
+  const { data: rows = [], ...rest } = useEligibility(userId);
+  const data = rows
+    .filter(r => r.ineligible_reason === null)
+    .map(r => ({
+      id: r.student_id,
+      full_name: r.full_name,
+      phone: r.phone,
+      email: null as string | null,
+    }));
+  return { data, ...rest };
+}
+
+// Readiness panel — every candidate, broken down by reason.
 function useStudentsPhoneReadiness(userId: string) {
-  return useQuery({
-    queryKey: ['students-phone-readiness', userId],
-    enabled: !!userId,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles').select('id, full_name, phone, email')
-        .eq('instructor_id', userId).or('status.eq.ACTIVE,status.is.null');
-      return data ?? [];
-    },
-  });
+  return useEligibility(userId);
 }
 
 // ---------------------------------------------------------------------------
@@ -284,17 +308,46 @@ const ReminderCard: React.FC<{
   );
 };
 
+// Phase A.5.2: readiness panel sourced from canonical eligibility RPC.
+// Groups learners by `ineligible_reason` so Erica can see exactly why each
+// learner won't receive an SMS.
+const REASON_LABEL: Record<NonNullable<EligibilityRow['ineligible_reason']>, string> = {
+  opted_out:                'Opted out',
+  not_linked_to_instructor: 'No longer linked',
+  status_blocks_sms:        'Pending or declined',
+  no_phone:                 'No phone on file',
+  invalid_phone:            'Phone format invalid',
+};
+
 const PhoneReadinessPanel: React.FC<{ userId: string }> = ({ userId }) => {
-  const { data: students = [], isLoading } = useStudentsPhoneReadiness(userId);
-  const { valid, missingList } = useMemo(() => {
-    let valid = 0;
-    const missingList: { id: string; name: string }[] = [];
-    for (const s of students as any[]) {
-      if (isValidUkMobile(s.phone)) valid++;
-      else missingList.push({ id: s.id, name: s.full_name ?? s.email ?? 'Unnamed student' });
+  const { data: rows = [], isLoading } = useStudentsPhoneReadiness(userId);
+
+  const { eligibleCount, missingList, byReason } = useMemo(() => {
+    let eligibleCount = 0;
+    const missingList: { id: string; name: string; reason: string }[] = [];
+    const byReason: Record<string, number> = {
+      opted_out: 0, not_linked_to_instructor: 0, status_blocks_sms: 0,
+      no_phone: 0, invalid_phone: 0,
+    };
+    for (const r of rows) {
+      const name = r.full_name ?? 'Unnamed learner';
+      if (r.ineligible_reason === null) {
+        // Belt-and-braces UK-mobile check, mirrors the format the scheduler
+        // will require at Twilio time. RPC accepts a looser regex; surface
+        // any extra rejections here so Erica fixes them now.
+        if (isValidUkMobile(r.phone)) {
+          eligibleCount += 1;
+        } else {
+          byReason.invalid_phone += 1;
+          missingList.push({ id: r.student_id, name, reason: 'invalid_phone' });
+        }
+      } else {
+        byReason[r.ineligible_reason] += 1;
+        missingList.push({ id: r.student_id, name, reason: r.ineligible_reason });
+      }
     }
-    return { valid, missingList };
-  }, [students]);
+    return { eligibleCount, missingList, byReason };
+  }, [rows]);
   const missing = missingList.length;
 
   if (isLoading) return <div className="h-16 bg-gray-100 rounded-xl animate-pulse" />;
@@ -310,26 +363,37 @@ const PhoneReadinessPanel: React.FC<{ userId: string }> = ({ userId }) => {
       </div>
       <div className="grid grid-cols-2 gap-2 min-w-0">
         <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-center min-w-0">
-          <p className="text-lg font-bold text-green-700" data-testid="text-valid-phone-count">{valid}</p>
-          <p className="text-[10px] text-green-700 truncate">Valid mobile</p>
+          <p className="text-lg font-bold text-green-700" data-testid="text-valid-phone-count">{eligibleCount}</p>
+          <p className="text-[10px] text-green-700 truncate">Eligible</p>
         </div>
         <div className={`rounded-lg p-2 text-center border min-w-0 ${missing > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}>
           <p className={`text-lg font-bold ${missing > 0 ? 'text-red-600' : 'text-gray-400'}`} data-testid="text-missing-phone-count">{missing}</p>
-          <p className={`text-[10px] truncate ${missing > 0 ? 'text-red-600' : 'text-gray-500'}`}>Missing/invalid</p>
+          <p className={`text-[10px] truncate ${missing > 0 ? 'text-red-600' : 'text-gray-500'}`}>Won't receive SMS</p>
         </div>
       </div>
       {missing > 0 && (
-        <details className="text-xs min-w-0" data-testid="details-missing-phones">
-          <summary className="cursor-pointer text-gray-700 font-medium">Show {missing} learner{missing === 1 ? '' : 's'} needing cleanup</summary>
-          <ul className="mt-2 space-y-1 max-h-40 overflow-y-auto min-w-0">
-            {missingList.slice(0, 50).map(s => (
-              <li key={s.id} className="text-[11px] text-gray-600 px-2 py-1 bg-gray-50 rounded break-words" data-testid={`item-missing-phone-${s.id}`}>
-                {s.name}
-              </li>
-            ))}
-            {missingList.length > 50 && <li className="text-[11px] text-gray-400 italic">…and {missingList.length - 50} more</li>}
-          </ul>
-        </details>
+        <div className="space-y-1 text-[11px]" data-testid="readiness-reason-breakdown">
+          {(Object.keys(REASON_LABEL) as (keyof typeof REASON_LABEL)[]).map(k =>
+            byReason[k] > 0 ? (
+              <div key={k} className="flex justify-between text-gray-700" data-testid={`row-reason-${k}`}>
+                <span>{REASON_LABEL[k]}</span>
+                <span className="font-semibold">{byReason[k]}</span>
+              </div>
+            ) : null
+          )}
+          <details className="pt-1" data-testid="details-missing-phones">
+            <summary className="cursor-pointer text-gray-700 font-medium">Show {missing} learner{missing === 1 ? '' : 's'}</summary>
+            <ul className="mt-2 space-y-1 max-h-40 overflow-y-auto min-w-0">
+              {missingList.slice(0, 50).map(s => (
+                <li key={s.id} className="text-[11px] text-gray-600 px-2 py-1 bg-gray-50 rounded break-words flex justify-between gap-2" data-testid={`item-missing-phone-${s.id}`}>
+                  <span className="truncate">{s.name}</span>
+                  <span className="text-[10px] text-gray-400 flex-shrink-0">{REASON_LABEL[s.reason as keyof typeof REASON_LABEL] ?? s.reason}</span>
+                </li>
+              ))}
+              {missingList.length > 50 && <li className="text-[11px] text-gray-400 italic">…and {missingList.length - 50} more</li>}
+            </ul>
+          </details>
+        </div>
       )}
     </div>
   );
