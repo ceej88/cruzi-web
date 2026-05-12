@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   MessageSquare, Send, CreditCard, History, CheckCircle, XCircle,
-  Loader2, Star, Trophy, Phone, Clock, AlertTriangle,
+  Loader2, Star, Trophy, Phone, Clock, AlertTriangle, X,
 } from 'lucide-react';
 import { useSmsCredits, SMS_PACKS, type PackSize } from '@/hooks/useSmsCredits';
 
@@ -53,6 +53,11 @@ function buildPreview(type: ActiveKey, customBody: string, includeReply: boolean
     || (type === 'lesson_reminder' ? ACTIVE_REMINDERS[0].defaultBody : ACTIVE_REMINDERS[1].defaultBody);
   const reply = includeReply ? ' Reply YES to confirm or CANCEL to request cancellation.' : '';
   return `${prefix} ${body}${reply}`.trim();
+}
+
+// PR-4-B: render pence as £x.xx (e.g. 650 → £6.50, 40 → £0.40).
+function fmtGbp(pence: number): string {
+  return `£${(pence / 100).toFixed(2)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -586,15 +591,119 @@ const BroadcastTab: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 // ---------------------------------------------------------------------------
-// Bundles tab — Stripe flow preserved, mobile-fixed layout
+// PR-4-B: BundleConfirmModal — required by Erica before any Stripe redirect.
+// Always renders 3 lines (SMS delivery cost / Service & processing fee /
+// Total today). Uses the per-pack `breakdown` from useSmsCredits as the
+// single source of truth. Mobile-safe: max-w-sm + w-[90vw] + overflow-hidden,
+// fixed inset overlay so it never causes horizontal page scroll.
+// ---------------------------------------------------------------------------
+const BundleConfirmModal: React.FC<{
+  pack: typeof SMS_PACKS[PackSize];
+  isPurchasing: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}> = ({ pack, isPurchasing, onCancel, onConfirm }) => {
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bundle-confirm-title"
+      data-testid="modal-confirm-purchase"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl w-full max-w-sm w-[90vw] max-h-[90vh] overflow-hidden flex flex-col min-w-0"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-2 p-4 border-b border-gray-100 min-w-0">
+          <div className="min-w-0 flex-1">
+            <p id="bundle-confirm-title" className="text-base font-bold text-gray-900 truncate">
+              Confirm purchase
+            </p>
+            <p className="text-xs text-gray-500 truncate" data-testid="text-modal-pack-label">
+              {pack.label} — {pack.credits} credits
+            </p>
+          </div>
+          <button
+            onClick={onCancel}
+            disabled={isPurchasing}
+            className="flex-shrink-0 -m-1 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            aria-label="Close"
+            data-testid="button-modal-close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-2 min-w-0 overflow-y-auto">
+          <div className="flex items-center justify-between text-sm gap-2 min-w-0">
+            <span className="text-gray-600 truncate min-w-0 flex-1">SMS delivery cost</span>
+            <span className="text-gray-900 font-medium flex-shrink-0" data-testid="text-modal-delivery">
+              {fmtGbp(pack.breakdown.deliveryPence)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm gap-2 min-w-0">
+            <span className="text-gray-600 truncate min-w-0 flex-1">Service &amp; processing fee</span>
+            <span className="text-gray-900 font-medium flex-shrink-0" data-testid="text-modal-service">
+              {fmtGbp(pack.breakdown.servicePence)}
+            </span>
+          </div>
+          <div className="border-t border-gray-100 pt-2 mt-1 flex items-center justify-between gap-2 min-w-0">
+            <span className="text-sm font-semibold text-gray-900 truncate min-w-0 flex-1">Total today</span>
+            <span className="text-base font-bold text-gray-900 flex-shrink-0" data-testid="text-modal-total">
+              {fmtGbp(pack.breakdown.totalPence)}
+            </span>
+          </div>
+          <p className="text-[10px] text-gray-400 break-words pt-1">
+            Credits never expire · Secure payment via Stripe
+          </p>
+        </div>
+
+        <div className="p-4 pt-2 border-t border-gray-100 flex flex-col-reverse sm:flex-row gap-2 min-w-0">
+          <button
+            onClick={onCancel}
+            disabled={isPurchasing}
+            className="w-full sm:flex-1 py-2.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 min-w-0"
+            data-testid="button-modal-cancel"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isPurchasing}
+            className="w-full sm:flex-1 flex items-center justify-center gap-1.5 bg-[#7c3aed] text-white rounded-lg py-2.5 text-xs font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 min-w-0"
+            data-testid="button-modal-continue"
+          >
+            {isPurchasing
+              ? <Loader2 className="w-3.5 h-3.5 animate-spin flex-shrink-0" />
+              : <CreditCard className="w-3.5 h-3.5 flex-shrink-0" />}
+            <span className="truncate">Continue to secure checkout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Bundles tab — Stripe flow preserved, mobile-fixed layout.
+// PR-4-B: 3 → 6 packs, "p each" labels removed, BundleConfirmModal inserted
+// between the per-pack Buy click and the Stripe redirect. The actual Stripe
+// purchase still routes through purchase-sms-credits v18 unchanged.
 // ---------------------------------------------------------------------------
 const BundlesTab: React.FC<{ userId: string }> = ({ userId: _userId }) => {
   const { credits, isLoading, isPurchasing, purchaseCredits } = useSmsCredits();
-  const [buyingSize, setBuyingSize] = useState<PackSize | null>(null);
+  const [pendingPack, setPendingPack] = useState<PackSize | null>(null);
 
-  const handleBuy = async (size: PackSize) => {
-    setBuyingSize(size);
-    try { await purchaseCredits(size); } finally { setBuyingSize(null); }
+  const handleConfirm = async () => {
+    if (!pendingPack) return;
+    const size = pendingPack;
+    try {
+      await purchaseCredits(size);
+    } finally {
+      setPendingPack(null);
+    }
   };
 
   return (
@@ -620,27 +729,27 @@ const BundlesTab: React.FC<{ userId: string }> = ({ userId: _userId }) => {
             >
               <div className="min-w-0 flex-1">
                 {pack.popular && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7c3aed] uppercase tracking-wide">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7c3aed] uppercase tracking-wide" data-testid={`badge-popular-${size}`}>
                     <Star className="w-3 h-3" /> Popular
                   </span>
                 )}
                 {pack.bestValue && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7c3aed] uppercase tracking-wide">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7c3aed] uppercase tracking-wide" data-testid={`badge-best-value-${size}`}>
                     <Trophy className="w-3 h-3" /> Best Value
                   </span>
                 )}
                 <p className="font-bold text-sm text-gray-900 truncate">{pack.label}</p>
-                <p className="text-[11px] text-gray-500 truncate">{pack.credits} credits · {pack.perSms}</p>
+                <p className="text-[11px] text-gray-500 truncate">{pack.credits} credits</p>
               </div>
               <div className="text-right flex-shrink-0">
                 <p className="font-bold text-sm text-gray-900 mb-1.5">{pack.price}</p>
                 <button
-                  onClick={() => handleBuy(size)}
-                  disabled={isPurchasing}
+                  onClick={() => setPendingPack(size)}
+                  disabled={isPurchasing || pendingPack !== null}
                   className="flex items-center gap-1 bg-[#7c3aed] text-white rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
                   data-testid={`button-buy-pack-${size}`}
                 >
-                  {buyingSize === size ? <Loader2 className="w-3 h-3 animate-spin" /> : <CreditCard className="w-3 h-3" />}
+                  <CreditCard className="w-3 h-3" />
                   Buy
                 </button>
               </div>
@@ -649,6 +758,15 @@ const BundlesTab: React.FC<{ userId: string }> = ({ userId: _userId }) => {
         })}
       </div>
       <p className="text-center text-[10px] text-gray-400 break-words">Credits never expire · Secure payment via Stripe</p>
+
+      {pendingPack && (
+        <BundleConfirmModal
+          pack={SMS_PACKS[pendingPack]}
+          isPurchasing={isPurchasing}
+          onCancel={() => { if (!isPurchasing) setPendingPack(null); }}
+          onConfirm={handleConfirm}
+        />
+      )}
     </div>
   );
 };

@@ -6,23 +6,44 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
 // SMS Credit Pack type
+//
+// PR-4-B: `perSms` field removed. Per Erica's brief, prominent "Xp each"
+// labels are gone; pricing transparency now lives in the BundleConfirmModal,
+// which always shows a 3-line breakdown (SMS delivery cost / Service &
+// processing fee / Total today). The `breakdown` field below is the source
+// of truth for that modal, in pence, and matches the Stripe Price metadata
+// (`sms_delivery_pence`, `service_fee_pence`) for the new 100/150/200 packs.
+// For the existing 10/25/50 packs the same accounting is back-filled
+// using the same 4p-per-SMS delivery wholesale Erica used for the new packs.
 export interface SmsPack {
   credits: number;
   price: string;
-  perSms: string;
   label: string;
+  breakdown: {
+    deliveryPence: number;
+    servicePence: number;
+    totalPence: number;
+  };
   popular?: boolean;
   bestValue?: boolean;
 }
 
 // SMS Credit Packs configuration
+//
+// PR-4-B: extended from 3 → 6 entries. Existing 10/25/50 priceId / total
+// price unchanged. New 100/150/200 packs target the Stripe Prices created
+// in PR-4 step 1 and validated by purchase-sms-credits v18 backend allow-list.
+// Badges moved per brief: Popular → 100, Best Value → 200.
 export const SMS_PACKS: Record<string, SmsPack> = {
-  '10': { credits: 10, price: '£1.49', perSms: '15p each', label: '10 SMS' },
-  '25': { credits: 25, price: '£2.99', perSms: '12p each', label: '25 SMS', popular: true },
-  '50': { credits: 50, price: '£4.99', perSms: '10p each', label: '50 SMS', bestValue: true },
+  '10':  { credits: 10,  price: '£1.49',  label: '10 SMS',  breakdown: { deliveryPence:  40, servicePence: 109, totalPence:  149 } },
+  '25':  { credits: 25,  price: '£2.99',  label: '25 SMS',  breakdown: { deliveryPence: 100, servicePence: 199, totalPence:  299 } },
+  '50':  { credits: 50,  price: '£4.99',  label: '50 SMS',  breakdown: { deliveryPence: 200, servicePence: 299, totalPence:  499 } },
+  '100': { credits: 100, price: '£6.50',  label: '100 SMS', breakdown: { deliveryPence: 400, servicePence: 250, totalPence:  650 }, popular:   true },
+  '150': { credits: 150, price: '£8.75',  label: '150 SMS', breakdown: { deliveryPence: 600, servicePence: 275, totalPence:  875 } },
+  '200': { credits: 200, price: '£11.00', label: '200 SMS', breakdown: { deliveryPence: 800, servicePence: 300, totalPence: 1100 }, bestValue: true },
 };
 
-export type PackSize = '10' | '25' | '50';
+export type PackSize = '10' | '25' | '50' | '100' | '150' | '200';
 
 interface SmsCreditsData {
   balance: number;
