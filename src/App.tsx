@@ -102,7 +102,7 @@ const AppRoutes = () => {
       <Route
         path="/owner/*"
         element={
-          <ProtectedRoute allowedRoles={["instructor"]}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <Suspense fallback={<LazyFallback />}>
               <OwnerCommandCentre />
             </Suspense>
