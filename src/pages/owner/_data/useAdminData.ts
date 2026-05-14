@@ -43,17 +43,16 @@ export function useUserBaseMetrics() {
       const sevenDays = sevenDaysAgoIso();
       const roleCount = (role: string) =>
         countTable('user_roles', q => q.eq('role', role));
-      const [profilesTotal, profilesNew7d, instructors, students, parents, schoolAdmins, admins] =
+      const [profilesTotal, profilesNew7d, instructors, students, parents, admins] =
         await Promise.all([
           countTable('profiles'),
           countTable('profiles', q => q.gte('created_at', sevenDays)),
           roleCount('instructor'),
           roleCount('student'),
           roleCount('parent'),
-          roleCount('school_admin'),
           roleCount('admin'),
         ]);
-      return { profilesTotal, profilesNew7d, instructors, students, parents, schoolAdmins, admins };
+      return { profilesTotal, profilesNew7d, instructors, students, parents, admins };
     },
   });
 }

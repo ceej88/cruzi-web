@@ -65,7 +65,7 @@ async function getRoleAndRedirect(
       return;
     }
 
-    if (role === 'instructor' || role === 'school_admin') {
+    if (role === 'instructor') {
       navigate('/instructor');
     } else {
       navigate('/install');
