@@ -225,3 +225,36 @@ export function useActivityFeed() {
     },
   });
 }
+
+
+// ---------- Instructor Activity (per-instructor metrics) ----------
+export interface InstructorActivityRow {
+  user_id: string;
+  full_name: string | null;
+  email: string;
+  last_sign_in_at: string | null;
+  signup_at: string | null;
+  students_count: number;
+  lessons_total: number;
+  lessons_scheduled_week: number;
+  lesson_plans_created: number;
+  lesson_plans_sent: number;
+  mock_tests: number;
+  copilot_sessions: number;
+  parents_linked: number | null;
+  sms_credit_balance: number;
+  last_activity_at: string | null;
+  activity_status: 'active' | 'warming_up' | 'at_risk' | 'dormant';
+}
+
+export function useInstructorActivity() {
+  return useQuery<InstructorActivityRow[]>({
+    queryKey: ['admin', 'instructor-activity'],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).rpc('admin_instructor_activity');
+      if (error) throw error;
+      return (data as InstructorActivityRow[]) ?? [];
+    },
+  });
+}
