@@ -6,6 +6,7 @@ import Overview from './Overview';
 
 const AdminUserManagement       = lazy(() => import('./AdminUserManagement'));
 const AdminInstructorVerification = lazy(() => import('./AdminInstructorVerification'));
+const AdminInstructorActivity   = lazy(() => import('./AdminInstructorActivity'));
 const AdminSchoolManagement     = lazy(() => import('./AdminSchoolManagement'));
 const AdminSubscriptionOverview = lazy(() => import('./AdminSubscriptionOverview'));
 const AdminMessaging            = lazy(() => import('./AdminMessaging'));
@@ -29,18 +30,19 @@ export default function OwnerCommandCentre() {
   return (
     <Routes>
       <Route element={<AdminShell />}>
-        <Route index                 element={<Overview />} />
-        <Route path="users"          element={wrap(<AdminUserManagement />)} />
-        <Route path="instructors"    element={wrap(<AdminInstructorVerification />)} />
-        <Route path="schools"        element={wrap(<AdminSchoolManagement />)} />
-        <Route path="subscriptions"  element={wrap(<AdminSubscriptionOverview />)} />
-        <Route path="messaging"      element={wrap(<AdminMessaging />)} />
-        <Route path="notifications"  element={wrap(<AdminNotificationHub />)} />
-        <Route path="feedback"       element={wrap(<AdminFeedback />)} />
-        <Route path="audit"          element={wrap(<AdminSupportAudit />)} />
-        <Route path="blog"           element={wrap(<BlogAdmin />)} />
-        <Route path="growth"         element={wrap(<GrowthLab />)} />
-        <Route path="*"              element={<Navigate to="/owner" replace />} />
+        <Route index                       element={<Overview />} />
+        <Route path="users"                element={wrap(<AdminUserManagement />)} />
+        <Route path="instructors"          element={wrap(<AdminInstructorVerification />)} />
+        <Route path="instructor-activity"  element={wrap(<AdminInstructorActivity />)} />
+        <Route path="schools"              element={wrap(<AdminSchoolManagement />)} />
+        <Route path="subscriptions"        element={wrap(<AdminSubscriptionOverview />)} />
+        <Route path="messaging"            element={wrap(<AdminMessaging />)} />
+        <Route path="notifications"        element={wrap(<AdminNotificationHub />)} />
+        <Route path="feedback"             element={wrap(<AdminFeedback />)} />
+        <Route path="audit"                element={wrap(<AdminSupportAudit />)} />
+        <Route path="blog"                 element={wrap(<BlogAdmin />)} />
+        <Route path="growth"               element={wrap(<GrowthLab />)} />
+        <Route path="*"                    element={<Navigate to="/owner" replace />} />
       </Route>
     </Routes>
   );
