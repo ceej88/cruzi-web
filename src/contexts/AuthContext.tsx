@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Error fetching role:", error);
         setRole(null);
       } else if (data) {
-        const mappedRole: AppRole = data.role === "school_admin" ? "instructor" : data.role;
+        const mappedRole: AppRole = data.role;
         setRole(mappedRole);
       }
     } catch (err) {

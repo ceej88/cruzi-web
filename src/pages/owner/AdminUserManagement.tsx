@@ -30,7 +30,6 @@ const ROLE_LABELS: Record<string, string> = {
   instructor:   'Instructors',
   student:      'Students',
   parent:       'Parents',
-  school_admin: 'School admins',
   admin:        'Admins',
 };
 

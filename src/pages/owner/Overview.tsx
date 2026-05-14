@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  Users, GraduationCap, BabyIcon, School, ShieldCheck,
+  Users, GraduationCap, BabyIcon, ShieldCheck,
   CalendarDays, FileText, Map, Mic, Trophy,
   Coins, BadgeAlert, AlertTriangle, CreditCard, MessageSquare, ScrollText,
   UserPlus, ArrowRight,
@@ -147,13 +147,6 @@ export default function Overview() {
             status={status(base)}
             icon={BabyIcon}
             to="/owner/users?role=parent"
-          />
-          <MetricCard
-            label="School admins"
-            value={base.data?.schoolAdmins}
-            status={status(base)}
-            icon={School}
-            to="/owner/users?role=school_admin"
           />
           <MetricCard
             label="Admins"
