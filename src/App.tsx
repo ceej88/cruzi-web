@@ -60,7 +60,7 @@ const AppRoutes = () => {
         path="/auth"
         element={
           user && !!role ? (
-            <Navigate to="/instructor" replace />
+            <Navigate to={role === "admin" ? "/owner" : "/instructor"} replace />
           ) : (
             <AuthPage />
           )
