@@ -1,337 +1,608 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { useInstructorData } from '@/hooks/useInstructorData';
-import { GlassCard } from '@/components/ui/GlassCard';
-import PageAnalyticsSection from './PageAnalyticsSection';
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 import {
-  Crown,
+  ChevronLeft,
+  LogOut,
   RefreshCw,
+  Users,
+  ShieldCheck,
+  CreditCard,
+  MessageSquare,
+  Bell,
+  Building2,
+  FileText,
   TrendingUp,
-  Shield,
-  Ghost,
-  Sparkles,
+  AlertTriangle,
+  CalendarDays,
+  UserPlus,
+  Send,
+  Activity,
+  PoundSterling,
+  GraduationCap,
+  Brain,
+  ClipboardList,
+  Car,
   ArrowRight,
-  ChevronRight,
-  Shuffle,
-  Factory,
-  Truck,
-  CheckCircle2,
-  Volume2,
-  ArrowLeft,
-  Zap,
 } from 'lucide-react';
 
-const OwnerCommandCentre: React.FC = () => {
+// Lazy-load existing admin sub-pages so the landing dashboard stays fast.
+const AdminUserManagement = lazy(() => import('./AdminUserManagement'));
+const AdminInstructorVerification = lazy(() => import('./AdminInstructorVerification'));
+const AdminSubscriptionOverview = lazy(() => import('./AdminSubscriptionOverview'));
+const AdminFeedback = lazy(() => import('./AdminFeedback'));
+const AdminMessaging = lazy(() => import('./AdminMessaging'));
+const AdminNotificationHub = lazy(() => import('./AdminNotificationHub'));
+const AdminSchoolManagement = lazy(() => import('./AdminSchoolManagement'));
+const AdminSupportAudit = lazy(() => import('./AdminSupportAudit'));
+const BlogAdmin = lazy(() => import('./BlogAdmin'));
+const GrowthLab = lazy(() => import('./GrowthLab'));
+
+// ---- Sub-route registry. Single source of truth for nav + Quick Links. ----
+const SUB_ROUTES = [
+  { path: 'users', title: 'User Management', icon: Users, description: 'View, edit and manage all users', element: <AdminUserManagement /> },
+  { path: 'instructors', title: 'Instructor Verification', icon: ShieldCheck, description: 'Approve pending instructor sign-ups', element: <AdminInstructorVerification /> },
+  { path: 'subscriptions', title: 'Subscriptions', icon: CreditCard, description: 'Stripe plans and billing status', element: <AdminSubscriptionOverview /> },
+  { path: 'schools', title: 'Schools', icon: Building2, description: 'Driving school accounts and admins', element: <AdminSchoolManagement /> },
+  { path: 'feedback', title: 'Feedback', icon: MessageSquare, description: 'Parent and student feedback inbox', element: <AdminFeedback /> },
+  { path: 'messaging', title: 'Messaging', icon: Send, description: 'Broadcast and direct messages', element: <AdminMessaging /> },
+  { path: 'notifications', title: 'Notification Hub', icon: Bell, description: 'Push and email notification controls', element: <AdminNotificationHub /> },
+  { path: 'audit', title: 'Support & Audit', icon: FileText, description: 'Audit log and support tooling', element: <AdminSupportAudit /> },
+  { path: 'blog', title: 'Blog', icon: ClipboardList, description: 'Blog post management', element: <BlogAdmin /> },
+  { path: 'growth', title: 'Growth Lab', icon: TrendingUp, description: 'Growth experiments and analytics', element: <GrowthLab /> },
+] as const;
+
+// =============================================================================
+// Header — shared across landing + sub-pages.
+// =============================================================================
+const OwnerHeader: React.FC<{ subtitle?: string }> = ({ subtitle }) => {
   const navigate = useNavigate();
-  const { students, lessons } = useInstructorData();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const location = useLocation();
+  const { signOut } = useAuth();
+  const isLanding = location.pathname === '/owner' || location.pathname === '/owner/';
 
-  // Calculate live stats
-  const liveStats = useMemo(() => {
-    const totalStudents = students.length;
-    const totalLessons = lessons.length;
-    const activeStudents = students.filter(s => s.status === 'ACTIVE' || !s.status).length;
-    const passedStudents = students.filter(s => s.status === 'PASSED').length;
-    const totalHours = lessons.reduce((acc, l) => acc + (l.duration_minutes || 60) / 60, 0);
-    const revenue = totalHours * 45; // £45/hour estimate
-    
-    // Value calculation (rough estimate based on data assets)
-    const dataValue = totalLessons * 50; // Each lesson data point worth £50
-    const studentValue = totalStudents * 200; // Each student relationship worth £200
-    const estimatedValue = dataValue + studentValue;
-
-    return {
-      totalStudents,
-      activeStudents,
-      passedStudents,
-      totalLessons,
-      totalHours: totalHours.toFixed(1),
-      revenue: revenue.toFixed(0),
-      estimatedValue,
-    };
-  }, [students, lessons]);
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    // Simulate AI analysis
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsRefreshing(false);
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
-  // Partner targets
-  const partners = [
-    { name: 'Admiral Insurance', type: 'Insurance' },
-    { name: 'Tesla UK', type: 'Auto Maker' },
-    { name: 'Uber Safety Team', type: 'Gig Economy' },
-  ];
+  return (
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-20" data-testid="header-owner">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          {!isLanding && (
+            <button
+              onClick={() => navigate('/owner')}
+              className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0"
+              aria-label="Back to dashboard"
+              data-testid="button-back-dashboard"
+            >
+              <ChevronLeft className="w-5 h-5 text-slate-600" />
+            </button>
+          )}
+          <div className="min-w-0">
+            <p className="text-xs text-slate-400 font-medium leading-none">
+              {isLanding ? 'Admin' : <Link to="/owner" className="hover:text-slate-700">Admin</Link>}
+            </p>
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate" data-testid="text-page-title">
+              {isLanding ? 'Dashboard' : (subtitle || 'Admin')}
+            </h1>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-lg sm:text-xl font-black text-[#7c3aed]">Cruzi</span>
+          <button
+            onClick={handleSignOut}
+            title="Sign out"
+            className="ml-1 p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700"
+            data-testid="button-sign-out"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+};
 
-  // Neural Board Agents
-  const agents = [
-    {
-      id: 'strategist',
-      icon: TrendingUp,
-      emoji: '📊',
-      name: 'The Strategist',
-      color: 'bg-blue-500',
-      message: `Start the engine! 🚗 You have ${liveStats.totalStudents} pupils but ${liveStats.totalLessons} lessons. Stop recruiting. Get those ${liveStats.activeStudents} driving NOW. Cash flow is truth. Action over planning. 🧼`,
-    },
-    {
-      id: 'marketing',
-      icon: Ghost,
-      emoji: '👻',
-      name: 'Marketing Ghost',
-      color: 'bg-violet-500',
-      message: 'Anxious teens with parents who pay bills 💳.',
-    },
-    {
-      id: 'prophet',
-      icon: Sparkles,
-      emoji: '🔮',
-      name: 'Tech Prophet',
-      color: 'bg-purple-600',
-      message: 'Voice-to-text grading. 🎙️ Speak the feedback, don\'t write it. Save time.',
-    },
-  ];
+// =============================================================================
+// Helpers
+// =============================================================================
+const startOfTodayISO = (): string => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+};
+const endOfTodayISO = (): string => {
+  const d = new Date();
+  d.setHours(23, 59, 59, 999);
+  return d.toISOString();
+};
+const sevenDaysAgoISO = (): string => {
+  const d = new Date();
+  d.setDate(d.getDate() - 7);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+};
 
-  // Industry pivot opportunities
-  const pivotOpportunities = [
-    {
-      name: 'Delivery Driver Training 📦',
-      subtitle: 'Training',
-      quote: '"Amazon needs safe drivers fast."',
-      potential: 'HIGH',
-      icon: Factory,
-    },
-    {
-      name: 'Corporate Fleet Safety 🚚',
-      subtitle: 'Training',
-      quote: '"Companies hate insurance claims."',
-      potential: 'MEDIUM',
-      icon: Truck,
-    },
-  ];
+const fmtNum = (n: number | null | undefined): string =>
+  n === null || n === undefined || Number.isNaN(n) ? '—' : n.toLocaleString();
 
-  // Unbeatable AI features
-  const aiFeatures = [
-    'Predictive Telemetry',
-    'Psychology Mapping',
-    'Cross-Industry PIVOT',
-    'Partnership Playbook',
-    'Exit Strategy',
+// Count helper using a head=true select. Returns null on error so the UI can show "—".
+const countTable = async (
+  table: 'profiles' | 'lessons' | 'lesson_plans' | 'co_pilot_sessions' | 'mock_test_results' | 'practice_sessions' | 'sms_credits' | 'sms_transactions' | 'parent_feedback' | 'user_roles',
+  filter?: (q: any) => any,
+): Promise<number | null> => {
+  let q: any = (supabase as any).from(table).select('*', { count: 'exact', head: true });
+  if (filter) q = filter(q);
+  const { count, error } = await q;
+  if (error) return null;
+  return count ?? 0;
+};
+
+// =============================================================================
+// Section: Today
+// =============================================================================
+const TodaySection: React.FC = () => {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['owner-dashboard', 'today'],
+    queryFn: async () => {
+      const today0 = startOfTodayISO();
+      const today1 = endOfTodayISO();
+      const [lessonsToday, signupsToday, smsToday] = await Promise.all([
+        countTable('lessons', q => q.gte('scheduled_at', today0).lte('scheduled_at', today1)),
+        countTable('profiles', q => q.gte('created_at', today0)),
+        countTable('sms_transactions', q => q.gte('created_at', today0)),
+      ]);
+      return { lessonsToday, signupsToday, smsToday };
+    },
+  });
+
+  return (
+    <SectionCard
+      title="Today"
+      icon={CalendarDays}
+      onRefresh={refetch}
+      refreshing={isFetching}
+      subtitle={format(new Date(), 'EEEE, d MMMM yyyy')}
+      testId="section-today"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Stat label="Lessons scheduled" value={data?.lessonsToday ?? null} loading={isLoading} icon={Car} testId="stat-lessons-today" />
+        <Stat label="New sign-ups" value={data?.signupsToday ?? null} loading={isLoading} icon={UserPlus} testId="stat-signups-today" />
+        <Stat label="SMS transactions" value={data?.smsToday ?? null} loading={isLoading} icon={MessageSquare} testId="stat-sms-today" />
+      </div>
+    </SectionCard>
+  );
+};
+
+// =============================================================================
+// Section: Needs Attention
+// =============================================================================
+const NeedsAttentionSection: React.FC = () => {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['owner-dashboard', 'needs-attention'],
+    queryFn: async () => {
+      const [{ data: pendingRows, error: pendingErr }, lowCredits, failedSms] = await Promise.all([
+        (supabase as any).rpc('admin_list_pending_instructors'),
+        countTable('sms_credits', q => q.lt('balance', 10)),
+        countTable('sms_transactions', q => q.eq('status', 'failed').gte('created_at', sevenDaysAgoISO())),
+      ]);
+      const pendingCount = pendingErr ? null : (Array.isArray(pendingRows) ? pendingRows.length : 0);
+      const pendingPreview = Array.isArray(pendingRows) ? pendingRows.slice(0, 3) : [];
+      return { pendingCount, pendingPreview, lowCredits, failedSms };
+    },
+  });
+
+  const items = [
+    { label: 'Instructors awaiting approval', value: data?.pendingCount ?? null, link: '/owner/instructors', tone: (data?.pendingCount ?? 0) > 0 ? 'warn' as const : 'ok' as const },
+    { label: 'Instructors with < 10 SMS credits', value: data?.lowCredits ?? null, link: '/owner/users', tone: (data?.lowCredits ?? 0) > 0 ? 'warn' as const : 'ok' as const },
+    { label: 'Failed SMS (last 7 days)', value: data?.failedSms ?? null, link: '/owner/audit', tone: (data?.failedSms ?? 0) > 0 ? 'alert' as const : 'ok' as const },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100 pb-24">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-4 py-4">
-        <div className="flex items-center justify-between max-w-2xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-12 h-12 rounded-2xl border border-slate-200"
-            onClick={() => navigate('/instructor')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <span className="text-lg font-black tracking-tighter text-primary">CRUZI</span>
-          <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl border border-slate-200">
-            <Volume2 className="h-5 w-5 text-muted-foreground" />
-          </Button>
-        </div>
-      </div>
+    <SectionCard title="Needs Attention" icon={AlertTriangle} onRefresh={refetch} refreshing={isFetching} testId="section-needs-attention">
+      <ul className="divide-y divide-slate-100">
+        {items.map((it) => (
+          <li key={it.label}>
+            <Link
+              to={it.link}
+              className="flex items-center justify-between py-3 px-1 -mx-1 hover:bg-slate-50 rounded transition-colors"
+              data-testid={`link-attention-${it.link.split('/').pop()}`}
+            >
+              <span className="text-sm text-slate-700 pr-2 min-w-0 truncate">{it.label}</span>
+              <span className="flex items-center gap-2 flex-shrink-0">
+                <span
+                  className={
+                    'inline-flex items-center justify-center min-w-[2rem] h-7 px-2 rounded-full text-sm font-semibold ' +
+                    (it.tone === 'alert'
+                      ? 'bg-rose-100 text-rose-700'
+                      : it.tone === 'warn'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-slate-100 text-slate-600')
+                  }
+                >
+                  {isLoading ? '…' : fmtNum(it.value)}
+                </span>
+                <ArrowRight className="w-4 h-4 text-slate-400" />
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
 
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-        {/* Master Command Header */}
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg">
-            <Crown className="h-8 w-8 text-white" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-4xl font-black tracking-tight text-slate-900">Master Command</h1>
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">
-              EXECUTIVE OVERVIEW • DYSLEXIA FRIENDLY HUD
-            </p>
-          </div>
-        </div>
-
-        {/* Refresh Button */}
-        <Button
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest"
-        >
-          <RefreshCw className={`h-4 w-4 mr-3 ${isRefreshing ? 'animate-spin' : ''}`} />
-          {isRefreshing ? 'Analysing...' : 'Refresh Neural State'}
-        </Button>
-
-        {/* Project Live Worth Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl -mr-20 -mt-20" />
-          <p className="text-[11px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-4">
-            PROJECT LIVE WORTH
-          </p>
-          <h2 className="text-5xl md:text-6xl font-black tracking-tight leading-none mb-2">
-            £{liveStats.estimatedValue > 0 ? liveStats.estimatedValue.toLocaleString() : '0'} 
-            <span className="text-2xl text-slate-400 ml-2">{liveStats.estimatedValue === 0 ? '(Pre-Revenue)' : ''}</span>
-          </h2>
-          <p className="text-xl font-black text-slate-400 italic mt-4">
-            "No lessons = No value 📉. Prove the concept first."
-          </p>
-        </motion.div>
-
-        {/* Partner Radar */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-6">
-            <Shield className="h-4 w-4 text-rose-500" />
-            <p className="text-[11px] font-black text-rose-500 uppercase tracking-[0.3em]">
-              PARTNER RADAR
-            </p>
-          </div>
-          <div className="space-y-3">
-            {partners.map((partner) => (
-              <div
-                key={partner.name}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
-              >
-                <span className="font-bold text-slate-900">{partner.name}</span>
-                <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
-              </div>
+      {(data?.pendingPreview?.length ?? 0) > 0 && (
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Pending instructors (preview)</p>
+          <ul className="space-y-1.5">
+            {data!.pendingPreview.map((p: any) => (
+              <li key={p.user_id} className="text-sm text-slate-700 flex items-center justify-between gap-2">
+                <span className="truncate min-w-0">{p.full_name || p.email || p.user_id}</span>
+                <span className="text-xs text-slate-400 flex-shrink-0">{p.adi_number || '—'}</span>
+              </li>
             ))}
-          </div>
-          <Button className="w-full mt-4 h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest">
-            Draft Partnership Proposal
-          </Button>
+          </ul>
         </div>
-
-        {/* The Neural Board */}
-        <div>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6 px-2">
-            THE NEURAL BOARD
-          </p>
-          <div className="space-y-4">
-            {agents.map((agent, idx) => (
-              <motion.div
-                key={agent.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100"
-              >
-                <div className={`w-20 h-20 rounded-2xl ${agent.color} flex items-center justify-center text-4xl mb-4 shadow-lg`}>
-                  {agent.emoji}
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-3">{agent.name}</h3>
-                <p className="text-lg text-slate-600 leading-relaxed mb-4">{agent.message}</p>
-                <div className="border-t border-slate-100 pt-4">
-                  <button className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest hover:gap-3 transition-all">
-                    DEEP DIVE REASONING
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Cruzi Unbeatable Features */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-primary rounded-[2.5rem] p-8 text-white relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
-          <h2 className="text-3xl font-black tracking-tight mb-6">
-            Cruzi<br />Unbeatable<br />Features
-          </h2>
-          <div className="space-y-3">
-            {aiFeatures.map((feature) => (
-              <div key={feature} className="flex items-center gap-3">
-                <CheckCircle2 className="h-5 w-5 text-emerald-300" />
-                <span className="font-bold text-lg">{feature}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Industry Pivot */}
-        <div>
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Shuffle className="h-6 w-6 text-emerald-500" />
-            <h2 className="text-3xl font-black text-slate-900 italic">Industry Pivot</h2>
-          </div>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] text-center mb-6">
-            CROSS-SECTOR CODE REUSABILITY
-          </p>
-          <div className="space-y-4">
-            {pivotOpportunities.map((opp) => (
-              <div
-                key={opp.name}
-                className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 flex items-start gap-4"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
-                  <opp.icon className="h-7 w-7 text-slate-900" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-slate-900">{opp.name}</h3>
-                  <p className="text-slate-600 italic mb-2">{opp.quote}</p>
-                  <p className={`text-xs font-black uppercase tracking-widest ${
-                    opp.potential === 'HIGH' ? 'text-emerald-500' : 'text-amber-500'
-                  }`}>
-                    POTENTIAL: {opp.potential}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Exit Velocity Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden"
-        >
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-10 w-24 h-24 bg-primary rounded-full blur-3xl" />
-          </div>
-          <div className="relative z-10 text-center">
-            <div className="inline-block bg-slate-700/50 px-4 py-2 rounded-xl mb-6">
-              <p className="text-xs font-black uppercase tracking-widest">
-                EXIT VELOCITY: <span className="text-emerald-400">HIGH</span>
-              </p>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 italic">
-              Your <span className="text-emerald-400">Future</span> is Built.
-            </h2>
-            <p className="text-lg text-slate-300 leading-relaxed">
-              The AI Brain is managing the scale. Every lesson logged increases the value of your Data IP. 
-              You are currently on track for a Series A exit in Year 3.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Page Analytics */}
-        <PageAnalyticsSection />
-
-        {/* Back to Dashboard */}
-        <Button
-          onClick={() => navigate('/instructor')}
-          variant="outline"
-          className="w-full h-14 rounded-2xl text-xs font-black uppercase tracking-widest"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Return to Instructor View
-        </Button>
-      </div>
-    </div>
+      )}
+    </SectionCard>
   );
 };
+
+// =============================================================================
+// Section: User Base
+// =============================================================================
+const UserBaseSection: React.FC = () => {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['owner-dashboard', 'user-base'],
+    queryFn: async () => {
+      const { data: rows, error } = await (supabase as any)
+        .from('user_roles')
+        .select('role');
+      const counts: Record<string, number> = {};
+      if (!error && Array.isArray(rows)) {
+        for (const r of rows) counts[r.role] = (counts[r.role] || 0) + 1;
+      }
+      const totalProfiles = await countTable('profiles');
+      const newWeek = await countTable('profiles', q => q.gte('created_at', sevenDaysAgoISO()));
+      return {
+        counts,
+        totalProfiles,
+        newWeek,
+        rolesAvailable: !error,
+      };
+    },
+  });
+
+  const tiles: { key: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { key: 'admin', label: 'Admins', icon: ShieldCheck },
+    { key: 'instructor', label: 'Instructors', icon: GraduationCap },
+    { key: 'student', label: 'Students', icon: Users },
+    { key: 'parent', label: 'Parents', icon: UserPlus },
+    { key: 'school_admin', label: 'School admins', icon: Building2 },
+  ];
+
+  return (
+    <SectionCard title="User Base" icon={Users} onRefresh={refetch} refreshing={isFetching} testId="section-user-base">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {tiles.map((t) => (
+          <Stat
+            key={t.key}
+            label={t.label}
+            value={data?.rolesAvailable ? (data.counts[t.key] ?? 0) : null}
+            loading={isLoading}
+            icon={t.icon}
+            testId={`stat-role-${t.key}`}
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-3 mt-3">
+        <Stat label="Total profiles" value={data?.totalProfiles ?? null} loading={isLoading} icon={Users} testId="stat-total-profiles" />
+        <Stat label="New this week" value={data?.newWeek ?? null} loading={isLoading} icon={UserPlus} testId="stat-new-week" />
+      </div>
+    </SectionCard>
+  );
+};
+
+// =============================================================================
+// Section: Product Usage
+// =============================================================================
+const ProductUsageSection: React.FC = () => {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['owner-dashboard', 'product-usage'],
+    queryFn: async () => {
+      const [lessons, lessonPlans, copilot, mocks, practice, copilotWeek] = await Promise.all([
+        countTable('lessons'),
+        countTable('lesson_plans'),
+        countTable('co_pilot_sessions'),
+        countTable('mock_test_results'),
+        countTable('practice_sessions'),
+        countTable('co_pilot_sessions', q => q.gte('created_at', sevenDaysAgoISO())),
+      ]);
+      return { lessons, lessonPlans, copilot, mocks, practice, copilotWeek };
+    },
+  });
+
+  return (
+    <SectionCard title="Product Usage" icon={Activity} onRefresh={refetch} refreshing={isFetching} testId="section-product-usage">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <Stat label="Lessons (all-time)" value={data?.lessons ?? null} loading={isLoading} icon={Car} testId="stat-lessons-total" />
+        <Stat label="Lesson plans" value={data?.lessonPlans ?? null} loading={isLoading} icon={ClipboardList} testId="stat-lesson-plans" />
+        <Stat label="Co-Pilot sessions" value={data?.copilot ?? null} loading={isLoading} icon={Brain} testId="stat-copilot" />
+        <Stat label="Mock tests" value={data?.mocks ?? null} loading={isLoading} icon={GraduationCap} testId="stat-mocks" />
+        <Stat label="Practice sessions" value={data?.practice ?? null} loading={isLoading} icon={Activity} testId="stat-practice" />
+        <Stat label="Co-Pilot (last 7 days)" value={data?.copilotWeek ?? null} loading={isLoading} icon={TrendingUp} testId="stat-copilot-week" />
+      </div>
+    </SectionCard>
+  );
+};
+
+// =============================================================================
+// Section: Money / SMS
+// =============================================================================
+const MoneySmsSection: React.FC = () => {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['owner-dashboard', 'money-sms'],
+    queryFn: async () => {
+      const [{ data: credits, error: cErr }, { data: txns, error: tErr }] = await Promise.all([
+        (supabase as any).from('sms_credits').select('balance, lifetime_purchased, lifetime_used'),
+        (supabase as any).from('sms_transactions').select('id, amount, price_paid, status, created_at').order('created_at', { ascending: false }).limit(5),
+      ]);
+
+      let totalBalance: number | null = null;
+      let totalPurchased: number | null = null;
+      let totalUsed: number | null = null;
+      if (!cErr && Array.isArray(credits)) {
+        totalBalance = credits.reduce((acc: number, r: any) => acc + (r.balance || 0), 0);
+        totalPurchased = credits.reduce((acc: number, r: any) => acc + (r.lifetime_purchased || 0), 0);
+        totalUsed = credits.reduce((acc: number, r: any) => acc + (r.lifetime_used || 0), 0);
+      }
+
+      let recentTxns: any[] = [];
+      let revenuePence: number | null = null;
+      if (!tErr && Array.isArray(txns)) {
+        recentTxns = txns;
+      }
+      // Lifetime SMS revenue (all-time, not just last 5)
+      const { data: allTxns, error: allErr } = await (supabase as any)
+        .from('sms_transactions')
+        .select('price_paid, status')
+        .eq('status', 'completed');
+      if (!allErr && Array.isArray(allTxns)) {
+        revenuePence = allTxns.reduce((acc: number, r: any) => acc + (r.price_paid || 0), 0);
+      }
+
+      // Subscription overview (existing RPC). Optional — do not crash if blocked.
+      const { data: subRows, error: subErr } = await (supabase as any).rpc('admin_subscription_overview');
+      const activeSubs = !subErr && Array.isArray(subRows)
+        ? subRows.filter((r: any) => r.status === 'active' || r.subscription_status === 'active').length
+        : null;
+
+      return { totalBalance, totalPurchased, totalUsed, recentTxns, revenuePence, activeSubs };
+    },
+  });
+
+  const fmtPence = (p: number | null): string =>
+    p === null || p === undefined ? '—' : '£' + (p / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return (
+    <SectionCard title="Money & SMS" icon={PoundSterling} onRefresh={refetch} refreshing={isFetching} testId="section-money-sms">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Stat label="SMS credits in circulation" value={data?.totalBalance ?? null} loading={isLoading} icon={MessageSquare} testId="stat-sms-balance" />
+        <Stat label="SMS purchased (lifetime)" value={data?.totalPurchased ?? null} loading={isLoading} icon={Send} testId="stat-sms-purchased" />
+        <Stat label="SMS used (lifetime)" value={data?.totalUsed ?? null} loading={isLoading} icon={Activity} testId="stat-sms-used" />
+        <Stat label="Active subscriptions" value={data?.activeSubs ?? null} loading={isLoading} icon={CreditCard} testId="stat-active-subs" />
+      </div>
+
+      <div className="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-100">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">SMS revenue (lifetime, completed only)</p>
+        <p className="text-2xl font-bold text-slate-900" data-testid="text-sms-revenue">{isLoading ? '…' : fmtPence(data?.revenuePence ?? null)}</p>
+      </div>
+
+      <div className="mt-4">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Recent SMS transactions</p>
+        {isLoading ? (
+          <Skeleton className="h-24 w-full" />
+        ) : (data?.recentTxns?.length ?? 0) === 0 ? (
+          <p className="text-sm text-slate-400">No transactions yet.</p>
+        ) : (
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <table className="w-full text-sm" data-testid="table-recent-sms">
+              <thead>
+                <tr className="text-xs text-slate-500 uppercase tracking-wide">
+                  <th className="text-left font-semibold py-1.5 px-2">Date</th>
+                  <th className="text-right font-semibold py-1.5 px-2">Credits</th>
+                  <th className="text-right font-semibold py-1.5 px-2">Paid</th>
+                  <th className="text-left font-semibold py-1.5 px-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data!.recentTxns.map((t: any) => (
+                  <tr key={t.id} className="border-t border-slate-100">
+                    <td className="py-1.5 px-2 text-slate-600 whitespace-nowrap">{format(new Date(t.created_at), 'd MMM HH:mm')}</td>
+                    <td className="py-1.5 px-2 text-right text-slate-700">{t.amount ?? '—'}</td>
+                    <td className="py-1.5 px-2 text-right text-slate-700">{fmtPence(t.price_paid)}</td>
+                    <td className="py-1.5 px-2">
+                      <span
+                        className={
+                          'inline-block px-2 py-0.5 rounded text-xs font-medium ' +
+                          (t.status === 'completed'
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : t.status === 'failed'
+                            ? 'bg-rose-100 text-rose-700'
+                            : 'bg-slate-100 text-slate-600')
+                        }
+                      >
+                        {t.status || '—'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+};
+
+// =============================================================================
+// Section: Quick Links
+// =============================================================================
+const QuickLinksSection: React.FC = () => (
+  <SectionCard title="Quick Links" icon={ArrowRight} testId="section-quick-links">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {SUB_ROUTES.map((r) => (
+        <Link
+          key={r.path}
+          to={`/owner/${r.path}`}
+          className="group flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-white hover:border-[#7c3aed] hover:shadow-sm transition-all min-w-0"
+          data-testid={`link-quick-${r.path}`}
+        >
+          <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-violet-50 flex items-center justify-center flex-shrink-0">
+            <r.icon className="w-4 h-4 text-slate-700 group-hover:text-[#7c3aed]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-slate-900 text-sm leading-tight">{r.title}</p>
+            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{r.description}</p>
+          </div>
+        </Link>
+      ))}
+    </div>
+  </SectionCard>
+);
+
+// =============================================================================
+// Reusable primitives
+// =============================================================================
+const SectionCard: React.FC<{
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  subtitle?: string;
+  onRefresh?: () => void;
+  refreshing?: boolean;
+  testId?: string;
+  children: React.ReactNode;
+}> = ({ title, icon: Icon, subtitle, onRefresh, refreshing, testId, children }) => (
+  <Card data-testid={testId}>
+    <CardHeader className="pb-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <CardTitle className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Icon className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <span className="truncate">{title}</span>
+          </CardTitle>
+          {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
+        </div>
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0"
+            aria-label={`Refresh ${title}`}
+            data-testid={`button-refresh-${(testId || title).toLowerCase().replace(/\s+/g, '-')}`}
+            disabled={refreshing}
+          >
+            <RefreshCw className={'w-4 h-4 ' + (refreshing ? 'animate-spin' : '')} />
+          </button>
+        )}
+      </div>
+    </CardHeader>
+    <CardContent>{children}</CardContent>
+  </Card>
+);
+
+const Stat: React.FC<{
+  label: string;
+  value: number | null;
+  loading?: boolean;
+  icon?: React.ComponentType<{ className?: string }>;
+  testId?: string;
+}> = ({ label, value, loading, icon: Icon, testId }) => (
+  <div className="rounded-lg border border-slate-200 bg-white p-3 min-w-0" data-testid={testId}>
+    <div className="flex items-center gap-2 mb-1.5">
+      {Icon && <Icon className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />}
+      <p className="text-xs font-medium text-slate-500 uppercase tracking-wide truncate">{label}</p>
+    </div>
+    {loading ? (
+      <Skeleton className="h-7 w-16" />
+    ) : (
+      <p className="text-2xl font-bold text-slate-900 tabular-nums">{fmtNum(value)}</p>
+    )}
+  </div>
+);
+
+// =============================================================================
+// Landing page (index route at /owner)
+// =============================================================================
+const OwnerLanding: React.FC = () => (
+  <div className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+    <TodaySection />
+    <NeedsAttentionSection />
+    <UserBaseSection />
+    <ProductUsageSection />
+    <MoneySmsSection />
+    <QuickLinksSection />
+  </div>
+);
+
+// =============================================================================
+// Sub-page wrapper (lazy loading + per-page header subtitle)
+// =============================================================================
+const SubPageWrapper: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <>
+    <OwnerHeader subtitle={title} />
+    <main className="max-w-6xl mx-auto px-4 py-6">
+      <Suspense fallback={<div className="space-y-3"><Skeleton className="h-8 w-48" /><Skeleton className="h-64 w-full" /></div>}>
+        {children}
+      </Suspense>
+    </main>
+  </>
+);
+
+// =============================================================================
+// Top-level component (mounted at /owner/*)
+// =============================================================================
+const OwnerCommandCentre: React.FC = () => (
+  <div className="min-h-screen bg-slate-50">
+    <Routes>
+      <Route
+        index
+        element={
+          <>
+            <OwnerHeader />
+            <main>
+              <OwnerLanding />
+            </main>
+          </>
+        }
+      />
+      {SUB_ROUTES.map((r) => (
+        <Route
+          key={r.path}
+          path={r.path}
+          element={<SubPageWrapper title={r.title}>{r.element}</SubPageWrapper>}
+        />
+      ))}
+      <Route
+        path="*"
+        element={
+          <>
+            <OwnerHeader subtitle="Not found" />
+            <main className="max-w-6xl mx-auto px-4 py-12 text-center">
+              <p className="text-slate-600 mb-4">That admin page does not exist.</p>
+              <Button onClick={() => window.history.back()}>Go back</Button>
+            </main>
+          </>
+        }
+      />
+    </Routes>
+  </div>
+);
 
 export default OwnerCommandCentre;
