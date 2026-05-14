@@ -28,7 +28,7 @@ const AuthPage: React.FC = () => {
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState("");
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = new URLSearchParams(location.search).get('redirect') || '/instructor';
