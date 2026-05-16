@@ -16,14 +16,14 @@ import testRoutesPhone from "@/assets/test-routes-phone.webp";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import SiteNav from "@/components/landing/SiteNav";
 
-const BG      = "#060e20";
-const GLASS   = "rgba(31, 43, 73, 0.45)";
-const GLASS_B = "rgba(189, 157, 255, 0.12)";
-const P       = "#7c3aed";
-const P_SEC   = "#bd9dff";
-const TEXT    = "#dee5ff";
-const MUTED   = "#a3aac4";
-const GLOW    = "rgba(124,58,237,0.35)";
+const BG      = "#F8F9FF";                          /* Vision surface */
+const GLASS   = "rgba(255, 255, 255, 0.85)";        /* frosted white card on light bg */
+const GLASS_B = "rgba(115, 49, 223, 0.18)";         /* soft lavender border */
+const P       = "#5300B7";                          /* Vision primary */
+const P_SEC   = "#6D28D9";                          /* Vision primary-container (used for chip text/accents) */
+const TEXT    = "#0D1C2F";                          /* on-surface */
+const MUTED   = "#4A4455";                          /* on-surface-variant */
+const GLOW    = "rgba(115, 49, 223, 0.28)";         /* restrained lavender glow */
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -43,7 +43,7 @@ const glassCard: React.CSSProperties = {
 };
 
 const SectionPill = ({ label }: { label: string }) => (
-  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 9999, padding: "6px 16px", marginBottom: 20 }}>
+  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(115,49,223,0.15)", border: "1px solid rgba(115,49,223,0.4)", borderRadius: 9999, padding: "6px 16px", marginBottom: 20 }}>
     <span style={{ width: 6, height: 6, borderRadius: "50%", background: P_SEC, display: "inline-block" }} />
     <span style={{ color: P_SEC, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{label}</span>
   </div>
@@ -119,29 +119,29 @@ const Index: React.FC = () => {
         html { overflow-x: hidden; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes heroGlow { 0%,100% { opacity:0.6; transform:scale(1) } 50% { opacity:1; transform:scale(1.08) } }
-        @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(124,58,237,0.5),0 0 32px rgba(124,58,237,0.2) } 50% { box-shadow:0 0 28px rgba(124,58,237,0.75),0 0 56px rgba(124,58,237,0.35) } }
+        @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(115,49,223,0.5),0 0 32px rgba(115,49,223,0.2) } 50% { box-shadow:0 0 28px rgba(115,49,223,0.75),0 0 56px rgba(115,49,223,0.35) } }
         @keyframes gradShift { 0% { background-position:0% 50% } 50% { background-position:100% 50% } 100% { background-position:0% 50% } }
         @keyframes floatA { 0%,100% { transform:translate(0,0) } 50% { transform:translate(20px,-18px) } }
         @keyframes floatB { 0%,100% { transform:translate(0,0) } 50% { transform:translate(-16px,14px) } }
-        .hero-grad { background: linear-gradient(90deg, #7c3aed, #bd9dff, #a78bfa, #7c3aed); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation: gradShift 5s ease infinite; }
+        .hero-grad { background: linear-gradient(90deg, #5300B7, #7331DF, #6D28D9, #5300B7); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation: gradShift 5s ease infinite; }
         .btn-pulse { animation: btnPulse 3s ease-in-out infinite; }
         .orb-a { animation: heroGlow 9s ease-in-out infinite; }
         .orb-b { animation: heroGlow 12s ease-in-out infinite reverse; }
         .float-a { animation: floatA 8s ease-in-out infinite; }
         .float-b { animation: floatB 10s ease-in-out infinite 1s; }
-        .role-card:hover { border-color: rgba(124,58,237,0.5) !important; transform: translateY(-4px); }
+        .role-card:hover { border-color: rgba(115,49,223,0.5) !important; transform: translateY(-4px); }
         .role-card { transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
-        .role-card:hover { box-shadow: 0 16px 48px rgba(124,58,237,0.18); }
-        .feat-card:hover { border-color: rgba(124,58,237,0.4) !important; }
+        .role-card:hover { box-shadow: 0 16px 48px rgba(115,49,223,0.18); }
+        .feat-card:hover { border-color: rgba(115,49,223,0.4) !important; }
         .feat-card { transition: border-color 0.25s, box-shadow 0.25s; }
-        .feat-card:hover { box-shadow: 0 0 36px rgba(124,58,237,0.12); }
-        .price-card:hover { border-color: rgba(124,58,237,0.5) !important; transform: translateY(-4px); }
+        .feat-card:hover { box-shadow: 0 0 36px rgba(115,49,223,0.12); }
+        .price-card:hover { border-color: rgba(115,49,223,0.5) !important; transform: translateY(-4px); }
         .price-card { transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
-        .step-num { background: rgba(124,58,237,0.18); border: 1px solid rgba(124,58,237,0.4); }
+        .step-num { background: rgba(115,49,223,0.18); border: 1px solid rgba(115,49,223,0.4); }
       `}</style>
 
       {/* ─── AMBIENT BG ─── */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(189,157,255,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(124,58,237,0.08) 0%, transparent 45%)` }} />
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(115,49,223,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(115,49,223,0.08) 0%, transparent 45%)` }} />
 
       {/* ─── NAV ─── */}
       <SiteNav navigate={navigate} onGetStarted={() => handleSelectRole("instructor")} />
@@ -150,8 +150,8 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 24px 60px", textAlign: "center" }}>
 
         {/* Orbs */}
-        <div className="orb-a" style={{ position: "absolute", top: "12%", left: "6%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div className="orb-b" style={{ position: "absolute", bottom: "15%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(189,157,255,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div className="orb-a" style={{ position: "absolute", top: "12%", left: "6%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(115,49,223,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div className="orb-b" style={{ position: "absolute", bottom: "15%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(115,49,223,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         <motion.div {...fadeUp}>
           <SectionPill label="BUILT FOR UK ADIS" />
@@ -160,7 +160,7 @@ const Index: React.FC = () => {
         <motion.h1
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2.8rem, 6.5vw, 5.4rem)", lineHeight: 1.06, letterSpacing: "-0.03em", margin: "0 0 28px", maxWidth: 860, textShadow: "0 0 40px rgba(124,58,237,0.2)" }}
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2.8rem, 6.5vw, 5.4rem)", lineHeight: 1.06, letterSpacing: "-0.03em", margin: "0 0 28px", maxWidth: 860, textShadow: "0 0 40px rgba(115,49,223,0.2)" }}
         >
           The app UK driving<br />
           <span className="hero-grad">instructors actually</span><br />
@@ -188,8 +188,8 @@ const Index: React.FC = () => {
           </button>
           <button
             onClick={() => handleSelectRole("student")}
-            style={{ background: "rgba(255,255,255,0.05)", color: TEXT, border: `1px solid ${GLASS_B}`, padding: "17px 40px", borderRadius: 9999, fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.09)"; e.currentTarget.style.borderColor = "rgba(189,157,255,0.3)"; }}
+            style={{ background: "rgba(255, 255, 255, 0.7)", color: TEXT, border: `1px solid ${GLASS_B}`, padding: "17px 40px", borderRadius: 9999, fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(115,49,223,0.10)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.3)"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = GLASS_B; }}
           >
             Get the Student App
@@ -201,13 +201,13 @@ const Index: React.FC = () => {
           {[
             { icon: BookOpen, label: "I'm a driving instructor", desc: "Diary, pupils, finances and compliance — all in one place.", cta: "Start Free Trial", onClick: () => handleSelectRole("instructor"), accent: P },
             { icon: ClipboardCheck, label: "I'm learning to drive", desc: "Track your progress, book lessons and prepare for your test.", cta: "Get the App", onClick: () => handleSelectRole("student"), accent: P_SEC },
-            { icon: Shield, label: "I'm a parent", desc: "Support your child's learning with guided Co-Pilot practice sessions.", cta: "Find Out More", onClick: () => handleSelectRole("student"), accent: "#a78bfa" },
+            { icon: Shield, label: "I'm a parent", desc: "Support your child's learning with guided Co-Pilot practice sessions.", cta: "Find Out More", onClick: () => handleSelectRole("student"), accent: "#6D28D9" },
           ].map((card) => (
             <button
               key={card.label}
               className="role-card"
               onClick={card.onClick}
-              style={{ ...glassCard, padding: "28px 24px", textAlign: "left", cursor: "pointer", background: "rgba(31,43,73,0.35)", border: `1px solid ${GLASS_B}` }}
+              style={{ ...glassCard, padding: "28px 24px", textAlign: "left", cursor: "pointer", background: "rgba(255, 255, 255, 0.85)", border: `1px solid ${GLASS_B}` }}
             >
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${card.accent}88, transparent)` }} />
               <div style={{ width: 44, height: 44, borderRadius: 12, background: `${card.accent}22`, border: `1px solid ${card.accent}44`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: `0 0 16px ${card.accent}30` }}>
@@ -228,13 +228,13 @@ const Index: React.FC = () => {
         @media (max-width: 767px) {
           .demo-video-wrap { padding: 0 0 80px !important; }
           .demo-video-inner { max-width: 100% !important; }
-          .demo-video-card { border-radius: 0 !important; box-shadow: 0 32px 80px rgba(0,0,0,0.6) !important; }
+          .demo-video-card { border-radius: 0 !important; box-shadow: 0 32px 80px rgba(13,28,47,0.18) !important; }
         }
       `}</style>
       <section className="demo-video-wrap" style={{ position: "relative", zIndex: 1, padding: "0 24px 80px" }}>
         <div className="demo-video-inner" style={{ maxWidth: 960, margin: "0 auto" }}>
           <motion.div {...fadeUp}>
-            <div className="demo-video-card" style={{ borderRadius: 24, overflow: "hidden", background: "#0d1117", boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
+            <div className="demo-video-card" style={{ borderRadius: 24, overflow: "hidden", background: "#0d1117", boxShadow: `0 32px 80px rgba(13,28,47,0.18), 0 0 0 1px ${GLASS_B}`, isolation: "isolate" }}>
               <video
                 src="https://rolbqirsfgfsuuxptmbh.supabase.co/storage/v1/object/public/website-assets/hero-demo.mp4"
                 autoPlay muted loop playsInline
@@ -264,7 +264,7 @@ const Index: React.FC = () => {
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <motion.div {...fadeUp} style={{ marginBottom: 60, textAlign: "center" }}>
             <SectionPill label="CORE FEATURES" />
-            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px", textShadow: "0 0 30px rgba(124,58,237,0.15)" }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px", textShadow: "0 0 30px rgba(115,49,223,0.15)" }}>
               The tools that run your business
             </h2>
             <p style={{ color: MUTED, fontSize: 17, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
@@ -320,12 +320,12 @@ const Index: React.FC = () => {
                         marginBottom: -40,
                         zIndex: 2,
                         position: "relative",
-                        filter: "drop-shadow(0 20px 50px rgba(124,58,237,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.15))",
+                        filter: "drop-shadow(0 20px 50px rgba(115,49,223,0.4)) drop-shadow(0 0 80px rgba(115,49,223,0.15))",
                       }}
                     />
-                    <div style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                    <div style={{ ...glassCard, borderTop: "1px solid rgba(115,49,223,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                         <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
                       </div>
                       <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
@@ -336,8 +336,8 @@ const Index: React.FC = () => {
                     </div>
                   </>
                 ) : (
-                  <div style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", display: "flex", flexDirection: "column", width: "100%" }}>
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
+                  <div style={{ ...glassCard, borderTop: "1px solid rgba(115,49,223,0.35)", display: "flex", flexDirection: "column", width: "100%" }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
                     <div style={{
                       height: 200,
                       overflow: "hidden",
@@ -354,7 +354,7 @@ const Index: React.FC = () => {
                       ) : null}
                     </div>
                     <div style={{ padding: "28px 28px 32px" }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                         <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
                       </div>
                       <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
@@ -372,9 +372,9 @@ const Index: React.FC = () => {
           <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }} style={{ textAlign: "center", marginTop: 48 }}>
             <button
               onClick={() => navigate("/features")}
-              style={{ background: "rgba(255,255,255,0.05)", color: P_SEC, border: `1px solid rgba(124,58,237,0.35)`, padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.12)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.6)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.35)"; }}
+              style={{ background: "rgba(255, 255, 255, 0.7)", color: P_SEC, border: `1px solid rgba(115,49,223,0.35)`, padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 600, cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(115,49,223,0.12)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.35)"; }}
             >
               See all features <ArrowRight style={{ width: 16, height: 16 }} />
             </button>
@@ -386,7 +386,7 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.4), transparent)" }} />
             <motion.div {...fadeUp}>
               <SectionPill label="MOCK TEST RECORDING" />
               <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.7rem, 3vw, 2.5rem)", letterSpacing: "-0.02em", margin: "0 0 20px", color: TEXT }}>
@@ -409,7 +409,7 @@ const Index: React.FC = () => {
                   width: "75%",
                   maxWidth: 280,
                   display: "block",
-                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                  filter: "drop-shadow(0 0 32px rgba(115,49,223,0.35))",
                 }}
               />
             </motion.div>
@@ -421,7 +421,7 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.4), transparent)" }} />
             <motion.div {...fadeUp} style={{ display: "flex", justifyContent: "center", order: 1 }}>
               <img
                 src={testRoutesPhone}
@@ -431,7 +431,7 @@ const Index: React.FC = () => {
                   width: "75%",
                   maxWidth: 280,
                   display: "block",
-                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                  filter: "drop-shadow(0 0 32px rgba(115,49,223,0.35))",
                 }}
               />
             </motion.div>
@@ -480,8 +480,8 @@ const Index: React.FC = () => {
                 className="feat-card"
                 style={{ ...glassCard, padding: "28px 24px" }}
               >
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.35), transparent)" }} />
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.35), transparent)" }} />
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(115,49,223,0.18)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                   <item.icon style={{ color: P_SEC, width: 18, height: 18 }} />
                 </div>
                 <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 8px", color: TEXT }}>{item.label}</h3>
@@ -509,7 +509,7 @@ const Index: React.FC = () => {
               { step: "3", title: "Invite your students", desc: "Share a PIN or link. They join instantly and see their progress live." },
             ].map((item, i) => (
               <motion.div key={item.step} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.15 }} style={{ textAlign: "center" }}>
-                <div className="step-num" style={{ width: 60, height: 60, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 0 24px rgba(124,58,237,0.2)" }}>
+                <div className="step-num" style={{ width: 60, height: 60, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 0 24px rgba(115,49,223,0.2)" }}>
                   <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 22, color: P_SEC }}>{item.step}</span>
                 </div>
                 <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 17, margin: "0 0 10px", color: TEXT }}>{item.title}</h3>
@@ -557,12 +557,12 @@ const Index: React.FC = () => {
                 style={{
                   ...glassCard,
                   padding: "36px 28px",
-                  border: plan.pro ? `1px solid rgba(124,58,237,0.6)` : `1px solid ${GLASS_B}`,
-                  boxShadow: plan.pro ? `0 0 40px rgba(124,58,237,0.2)` : "none",
+                  border: plan.pro ? `1px solid rgba(115,49,223,0.6)` : `1px solid ${GLASS_B}`,
+                  boxShadow: plan.pro ? `0 0 40px rgba(115,49,223,0.2)` : "none",
                   transform: plan.pro ? "scale(1.03)" : "scale(1)",
                 }}
               >
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: plan.pro ? `linear-gradient(90deg, transparent, rgba(124,58,237,0.7), transparent)` : "linear-gradient(90deg, transparent, rgba(189,157,255,0.3), transparent)" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: plan.pro ? `linear-gradient(90deg, transparent, rgba(115,49,223,0.7), transparent)` : "linear-gradient(90deg, transparent, rgba(115,49,223,0.3), transparent)" }} />
                 {plan.pro && (
                   <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: P, color: "#fff", fontSize: 11, fontWeight: 800, padding: "5px 16px", borderRadius: 9999, letterSpacing: "0.06em", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", boxShadow: `0 0 16px ${GLOW}` }}>
                     MOST POPULAR
@@ -588,7 +588,7 @@ const Index: React.FC = () => {
                     boxShadow: plan.pro ? `0 0 20px ${GLOW}` : "none",
                     border: plan.pro ? "none" : `1px solid ${GLASS_B}` as any,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; if (plan.pro) e.currentTarget.style.boxShadow = "0 0 32px rgba(124,58,237,0.55)"; }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; if (plan.pro) e.currentTarget.style.boxShadow = "0 0 32px rgba(115,49,223,0.55)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; if (plan.pro) e.currentTarget.style.boxShadow = `0 0 20px ${GLOW}`; }}
                 >
                   Get Started
@@ -603,8 +603,8 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(36px, 6vw, 60px)", textAlign: "center" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.45), transparent)" }} />
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", boxShadow: "0 0 20px rgba(124,58,237,0.25)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.45), transparent)" }} />
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", boxShadow: "0 0 20px rgba(115,49,223,0.25)" }}>
               <PoundSterling style={{ color: P_SEC, width: 24, height: 24 }} />
             </div>
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT }}>
@@ -615,9 +615,9 @@ const Index: React.FC = () => {
             </p>
             <button
               onClick={() => navigate("/savings")}
-              style={{ background: "rgba(124,58,237,0.2)", color: P_SEC, border: "1px solid rgba(124,58,237,0.4)", padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.3)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.6)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(124,58,237,0.2)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)"; }}
+              style={{ background: "rgba(115,49,223,0.2)", color: P_SEC, border: "1px solid rgba(115,49,223,0.4)", padding: "14px 36px", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.25s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(115,49,223,0.3)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(115,49,223,0.2)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.4)"; }}
             >
               Try the Calculator <ArrowRight style={{ width: 16, height: 16 }} />
             </button>
@@ -629,7 +629,7 @@ const Index: React.FC = () => {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(36px, 6vw, 56px)" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.45), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.45), transparent)" }} />
             <div style={{ fontSize: "7rem", lineHeight: 0.8, fontFamily: "Georgia, serif", color: P_SEC, opacity: 0.25, marginBottom: 24 }}>&ldquo;</div>
             <blockquote style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.35rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.75, margin: "0 0 36px", fontWeight: 400 }}>
               I switched from TD Drive the same week I tried Cruzi. My students are more engaged between lessons than they have ever been. Parents are now messaging me asking questions they never asked before.
@@ -639,7 +639,7 @@ const Index: React.FC = () => {
                 <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, margin: "0 0 2px", color: TEXT }}>Erica Vale</p>
                 <p style={{ color: MUTED, fontSize: 13, margin: 0 }}>Independent ADI, Chester</p>
               </div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 9999, padding: "5px 12px", fontSize: 11, fontWeight: 700, color: P_SEC }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.4)", borderRadius: 9999, padding: "5px 12px", fontSize: 11, fontWeight: 700, color: P_SEC }}>
                 <BadgeCheck style={{ width: 12, height: 12 }} /> Verified
               </span>
             </div>
@@ -650,7 +650,7 @@ const Index: React.FC = () => {
       {/* ─── FINAL CTA ─── */}
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 120px", textAlign: "center" }}>
         <motion.div {...fadeUp} style={{ maxWidth: 640, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.02em", margin: "0 0 20px", textShadow: "0 0 40px rgba(124,58,237,0.25)" }}>
+          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.02em", margin: "0 0 20px", textShadow: "0 0 40px rgba(115,49,223,0.25)" }}>
             Start free today.<br />
             <span style={{ color: P_SEC }}>No card required.</span>
           </h2>
@@ -670,7 +670,7 @@ const Index: React.FC = () => {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(189,157,255,0.08)", padding: "40px 24px" }}>
+      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(115,49,223,0.08)", padding: "40px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
           <div>
             <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>Cruzi</span>
@@ -692,7 +692,7 @@ const Index: React.FC = () => {
             ))}
           </div>
         </div>
-        <div style={{ maxWidth: 1100, margin: "24px auto 0", paddingTop: 24, borderTop: "1px solid rgba(189,157,255,0.06)", textAlign: "center" }}>
+        <div style={{ maxWidth: 1100, margin: "24px auto 0", paddingTop: 24, borderTop: "1px solid rgba(115,49,223,0.06)", textAlign: "center" }}>
           <p style={{ color: MUTED, fontSize: 12, margin: 0 }}>© {new Date().getFullYear()} Cruzi. All rights reserved.</p>
         </div>
       </footer>
