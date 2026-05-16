@@ -1,62 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Cruzi AI Design System
-   - Primary Violet: #8B5CF6 (hsl 262 83% 66%)
-   - Electric Purple: #A855F7 (hsl 271 81% 56%)
-   - Cyber Teal: #2DD4BF (hsl 166 76% 50%)
-   - Dark Headers: #0F172A (hsl 222 47% 11%)
-   - Success Green: #10B981 (hsl 160 84% 39%)
-   - Gold: #FFBF00 (hsl 45 100% 50%)
-   - Fonts: Outfit (headings), Inter (body)
-   - Style: Glassmorphism cards with blur effects, gradient buttons
-*/
+/* Cruzi Vision Design System
+   ============================================================
+   Primary CTA Purple:      #6D28D9  (--primary)
+   Deep Brand Purple:       #5300B7  (--primary-container)
+   Glow Tint:               #7331DF  (--surface-tint)
+   On Primary:              #FFFFFF
+   On Primary Container:    #DAC5FF
+   Inverse Primary:         #D3BBFF
+   Surface (base):          #F8F9FF
+   On Surface:              #0D1C2F
+   On Surface Variant:      #4A4455
+   Outline:                 #7B7486
+   Outline Variant:         #CCC3D7
+   Typography:              Inter (headings + body), bold editorial
+   Style:                   Minimalist, soft glassmorphism, restrained purple glow
+   ============================================================ */
 
 @layer base {
   :root {
-    /* ========== CRUZI BRAND IDENTITY ========== */
-    --cruzi-violet: 262 83% 66%;     /* #8B5CF6 - Deep Violet (Primary) */
-    --cruzi-purple: 271 81% 56%;     /* #A855F7 - Electric Purple */
-    --cruzi-teal: 166 76% 50%;       /* #2DD4BF - Cyber Teal (Success) */
-    --cruzi-dark: 222 47% 11%;       /* #0F172A - Slate 900 (Headers) */
-    --cruzi-light: 210 20% 98%;      /* #F8FAFC - Slate 50 (Background) */
+    /* ========== CRUZI BRAND IDENTITY (legacy, retained for back-compat) ========== */
+    --cruzi-violet: 263 73% 50%;     /* aligned to new primary #6D28D9 */
+    --cruzi-purple: 263 100% 36%;    /* aligned to primary-container #5300B7 */
+    --cruzi-teal: 166 76% 50%;
+    --cruzi-dark: 213 57% 12%;       /* aligned to on-surface #0D1C2F */
+    --cruzi-light: 230 100% 99%;     /* aligned to surface #F8F9FF */
     --cruzi-success: 160 84% 39%;
     --cruzi-gold: 45 100% 50%;
-    --cruzi-danger: 0 84% 60%;
+    --cruzi-danger: 0 75% 41%;       /* aligned to vision error #BA1A1A */
+    --cruzi-blue: 263 73% 50%;       /* mapped to brand primary so sidebar mesh stays on-brand */
+    --cruzi-cyan: 263 73% 53%;       /* mapped to glow tint #7331DF */
+    --cruzi-indigo: 263 100% 36%;    /* mapped to primary-container #5300B7 */
 
-    /* Core Theme - Light Mode */
-    --background: 210 20% 98%;       /* #F8FAFC exact */
-    --foreground: 222 47% 11%;       /* #0F172A */
+    /* ========== CRUZI VISION — M3 SURFACE LADDER ========== */
+    --surface: 230 100% 99%;                       /* #F8F9FF */
+    --surface-dim: 217 65% 88%;                    /* #CCDBF4 */
+    --surface-bright: 230 100% 99%;                /* #F8F9FF */
+    --surface-container-lowest: 0 0% 100%;         /* #FFFFFF */
+    --surface-container-low: 222 100% 97%;         /* #EFF4FF */
+    --surface-container: 222 100% 95%;             /* #E6EEFF */
+    --surface-container-high: 219 100% 93%;        /* #DDE9FF */
+    --surface-container-highest: 217 89% 92%;      /* #D5E3FD */
+    --on-surface: 213 57% 12%;                     /* #0D1C2F */
+    --on-surface-variant: 268 11% 31%;             /* #4A4455 */
+    --inverse-surface: 213 32% 20%;                /* #233144 */
+    --inverse-on-surface: 222 100% 96%;            /* #EBF1FF */
+    --outline: 264 6% 50%;                         /* #7B7486 */
+    --outline-variant: 263 18% 80%;                /* #CCC3D7 */
+    --surface-variant: 217 89% 92%;                /* #D5E3FD */
+    --surface-tint: 263 73% 53%;                   /* #7331DF (glow tint) */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --card-dark: 222 47% 11%;
-    --card-dark-foreground: 0 0% 100%;
+    /* ========== CRUZI VISION — PRIMARY / SECONDARY / TERTIARY ========== */
+    --primary-container: 263 100% 36%;             /* #5300B7 - deep brand */
+    --on-primary-container: 263 100% 89%;          /* #DAC5FF */
+    --inverse-primary: 263 100% 87%;               /* #D3BBFF */
+    --secondary-container: 250 17% 91%;            /* #E3E1ED */
+    --on-secondary-container: 248 4% 41%;          /* #64636D */
+    --tertiary: 27 100% 21%;                       /* #6B3000 */
+    --on-tertiary: 0 0% 100%;
+    --tertiary-container: 28 100% 28%;             /* #8F4200 */
+    --on-tertiary-container: 22 100% 81%;          /* #FFC19E */
+    --error-container: 6 100% 92%;                 /* #FFDAD6 */
+    --on-error-container: 357 100% 29%;            /* #93000A */
+    --primary-fixed: 263 100% 93%;                 /* #EBDDFF */
+    --primary-fixed-dim: 263 100% 87%;             /* #D3BBFF */
+    --on-primary-fixed: 263 100% 17%;              /* #250059 */
+    --on-primary-fixed-variant: 268 100% 39%;      /* #5B00C5 */
+    --secondary-fixed: 250 17% 91%;                /* #E3E1ED */
+    --secondary-fixed-dim: 244 9% 80%;             /* #C7C5D1 */
+    --on-secondary-fixed: 232 13% 12%;             /* #1A1B23 */
+    --on-secondary-fixed-variant: 240 4% 30%;     /* #46464F */
+    --tertiary-fixed: 21 100% 89%;                 /* #FFDBC8 */
+    --tertiary-fixed-dim: 22 100% 77%;             /* #FFB68B */
+    --on-tertiary-fixed: 22 100% 10%;              /* #321300 */
+    --on-tertiary-fixed-variant: 27 100% 23%;      /* #743400 */
+
+    /* ========== SHADCN CORE TOKENS — REMAPPED TO CRUZI VISION ========== */
+    --background: 230 100% 99%;                    /* #F8F9FF - surface */
+    --foreground: 213 57% 12%;                     /* #0D1C2F - on-surface */
+
+    --card: 0 0% 100%;                             /* #FFFFFF - surface-container-lowest */
+    --card-foreground: 213 57% 12%;
+    --card-dark: 213 32% 20%;                      /* inverse-surface */
+    --card-dark-foreground: 222 100% 96%;          /* inverse-on-surface */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 213 57% 12%;
 
-    --primary: 262 83% 66%;          /* #8B5CF6 - Deep Violet */
-    --primary-foreground: 0 0% 100%;
+    --primary: 263 73% 50%;                        /* #6D28D9 - CTA PURPLE (LOCKED) */
+    --primary-foreground: 0 0% 100%;               /* #FFFFFF - on-primary */
 
-    --secondary: 210 20% 96%;        /* Slate 100 */
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 240 4% 38%;                       /* #5D5D67 - vision secondary */
+    --secondary-foreground: 0 0% 100%;             /* on-secondary */
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 222 100% 95%;                         /* surface-container */
+    --muted-foreground: 268 11% 31%;               /* on-surface-variant */
 
-    --accent: 262 83% 96%;           /* Violet 50 */
-    --accent-foreground: 262 83% 66%;
+    --accent: 263 100% 93%;                        /* primary-fixed #EBDDFF - soft lavender */
+    --accent-foreground: 263 100% 36%;             /* primary-container #5300B7 */
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 75% 41%;                      /* #BA1A1A - vision error */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 262 83% 66%;             /* Violet focus ring */
+    --border: 263 18% 80%;                         /* outline-variant #CCC3D7 */
+    --input: 263 18% 80%;
+    --ring: 263 73% 50%;                           /* #6D28D9 - 2px purple focus ring */
 
     --radius: 0.75rem;
 
@@ -71,62 +123,62 @@
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
     --safe-area-inset-right: env(safe-area-inset-right, 0px);
 
-    /* Sidebar variables - Updated to violet */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 262 83% 66%;          /* Violet */
+    /* Sidebar variables - on-brand with Cruzi Vision primary */
+    --sidebar-background: 222 100% 97%;            /* surface-container-low */
+    --sidebar-foreground: 213 57% 12%;             /* on-surface */
+    --sidebar-primary: 263 73% 50%;                /* #6D28D9 */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 262 83% 95%;           /* Violet 50 */
-    --sidebar-accent-foreground: 262 83% 66%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 262 83% 66%;             /* Violet */
+    --sidebar-accent: 263 100% 93%;                /* primary-fixed */
+    --sidebar-accent-foreground: 263 100% 36%;     /* primary-container */
+    --sidebar-border: 263 18% 80%;                 /* outline-variant */
+    --sidebar-ring: 263 73% 50%;                   /* #6D28D9 */
   }
 
   .dark {
-    /* Cruzi Dark Mode */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    /* Cruzi Vision — dark mode (tuned, light-mode is canonical) */
+    --background: 213 32% 8%;
+    --foreground: 222 100% 96%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-    --card-dark: 222 47% 15%;
+    --card: 213 32% 11%;
+    --card-foreground: 222 100% 96%;
+    --card-dark: 213 32% 20%;
     --card-dark-foreground: 0 0% 100%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 213 32% 11%;
+    --popover-foreground: 222 100% 96%;
 
-    --primary: 262 83% 70%;          /* Lighter violet for dark mode */
-    --primary-foreground: 0 0% 100%;
+    --primary: 263 100% 87%;                       /* inverse-primary #D3BBFF for AA contrast */
+    --primary-foreground: 263 100% 17%;            /* on-primary-fixed #250059 */
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4% 30%;                       /* on-secondary-fixed-variant */
+    --secondary-foreground: 222 100% 96%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 213 32% 17%;
+    --muted-foreground: 263 18% 80%;
 
-    --accent: 262 83% 50%;           /* Violet accent for dark */
-    --accent-foreground: 0 0% 100%;
+    --accent: 268 100% 39%;                        /* on-primary-fixed-variant #5B00C5 */
+    --accent-foreground: 263 100% 93%;             /* primary-fixed */
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 41%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 262 83% 70%;             /* Violet focus ring */
+    --border: 213 32% 20%;
+    --input: 213 32% 20%;
+    --ring: 263 100% 87%;
 
     /* Dark Glassmorphism */
-    --glass-bg: 222 47% 11% / 0.8;
+    --glass-bg: 213 32% 11% / 0.8;
     --glass-border: 0 0% 100% / 0.1;
 
-    /* Dark Sidebar - Violet themed */
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 262 83% 70%;          /* Violet */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 262 83% 70%;             /* Violet */
+    /* Dark Sidebar */
+    --sidebar-background: 213 32% 8%;
+    --sidebar-foreground: 222 100% 96%;
+    --sidebar-primary: 263 100% 87%;
+    --sidebar-primary-foreground: 263 100% 17%;
+    --sidebar-accent: 213 32% 17%;
+    --sidebar-accent-foreground: 222 100% 96%;
+    --sidebar-border: 213 32% 20%;
+    --sidebar-ring: 263 100% 87%;
   }
 }
 
@@ -145,7 +197,7 @@
 
   body {
     @apply bg-background text-foreground font-inter antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
     overflow: auto;
     overscroll-behavior-y: none;
     touch-action: pan-x pan-y;
@@ -161,16 +213,19 @@
     flex-direction: column;
   }
 
+  /* Cruzi Vision typography — Inter everywhere, bold editorial */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-outfit font-semibold tracking-tight;
+    @apply font-inter font-semibold tracking-tight;
   }
 
   h1 {
     @apply text-3xl md:text-4xl font-bold;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    @apply text-2xl md:text-3xl;
+    @apply text-2xl md:text-3xl font-bold;
+    letter-spacing: -0.01em;
   }
 
   h3 {
@@ -190,8 +245,8 @@
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid hsl(var(--glass-border));
-    box-shadow: 
-      0 4px 30px rgba(0, 0, 0, 0.1),
+    box-shadow:
+      0 4px 30px rgba(0, 0, 0, 0.06),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
@@ -199,26 +254,33 @@
     @apply glass-card bg-card/95;
   }
 
-  /* Gradient Button Variants */
+  /* Cruzi Vision primary button — solid #6D28D9 with restrained purple glow */
   .btn-gradient-primary {
-    @apply relative overflow-hidden font-medium transition-all duration-300;
-    background: #7c3aed;
-    @apply text-white shadow-lg;
+    @apply relative overflow-hidden font-semibold transition-all duration-200;
+    background: hsl(var(--primary));
+    box-shadow: 0 0 24px 0 hsl(var(--surface-tint) / 0.35);
+    @apply text-white;
   }
 
   .btn-gradient-primary:hover {
-    @apply scale-[1.02] shadow-xl;
-    background: #6d28d9;
+    background: hsl(var(--primary-container));
+    box-shadow: 0 0 32px 4px hsl(var(--surface-tint) / 0.55);
   }
 
   .btn-gradient-primary:active {
     @apply scale-[0.98];
+    box-shadow: 0 0 18px 0 hsl(var(--surface-tint) / 0.4);
   }
 
+  /* Accent button — soft lavender secondary per Cruzi Vision spec */
   .btn-gradient-accent {
-    @apply relative overflow-hidden font-medium transition-all duration-300;
-    background: #7c3aed;
-    @apply text-white shadow-lg;
+    @apply relative overflow-hidden font-semibold transition-all duration-200;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  .btn-gradient-accent:hover {
+    background: hsl(var(--primary-fixed-dim));
   }
 
   .btn-gradient-gold {
@@ -287,25 +349,22 @@
   .card-glow::before {
     content: '';
     @apply absolute -inset-1 rounded-3xl opacity-0 blur-xl transition-opacity duration-300;
-    background: rgba(124, 58, 237, 0.3);
+    background: hsl(var(--surface-tint) / 0.3);
   }
 
   .card-glow:hover::before {
     @apply opacity-100;
   }
 
-  /* Animated gradient text */
+  /* Cruzi Vision gradient text — primary → glow-tint → primary-container */
   .gradient-text {
-    color: #7c3aed;
-  }
-
-  @keyframes gradient-shift {
-    0%, 100% {
-      background-position: 0% center;
-    }
-    50% {
-      background-position: 100% center;
-    }
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--surface-tint)) 50%,
+      hsl(var(--primary-container)) 100%
+    );
   }
 
   /* Cruzi Branded Sidebar - Solid background with mesh gradient overlay */
@@ -313,10 +372,11 @@
     @apply relative overflow-hidden bg-card;
     isolation: isolate;
 
-    /* Solid mesh gradient on top of card background */
+    /* On-brand mesh gradient using Cruzi Vision tokens */
     background:
-      radial-gradient(ellipse 90% 60% at 15% 0%, rgba(124, 58, 237, 0.25) 0%, transparent 60%),
-      radial-gradient(ellipse 80% 50% at 85% 40%, rgba(124, 58, 237, 0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 15% 0%, hsl(var(--primary) / 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 85% 40%, hsl(var(--surface-tint) / 0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 70% 100%, hsl(var(--primary-container) / 0.2) 0%, transparent 65%),
       hsl(var(--card));
 
     box-shadow: 0 1px 0 hsl(var(--border));
@@ -332,7 +392,7 @@
     content: "";
     @apply absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none;
     z-index: 0;
-    background: radial-gradient(circle, rgba(124, 58, 237, 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, hsl(var(--primary) / 0.35) 0%, transparent 70%);
     filter: blur(46px);
     mix-blend-mode: screen;
     animation: float-glow 10s ease-in-out infinite;
@@ -342,7 +402,7 @@
     content: "";
     @apply absolute -bottom-28 -left-28 w-80 h-80 rounded-full pointer-events-none;
     z-index: 0;
-    background: radial-gradient(circle, rgba(109, 40, 217, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, hsl(var(--primary-container) / 0.3) 0%, transparent 70%);
     filter: blur(52px);
     mix-blend-mode: screen;
     animation: float-glow 9s ease-in-out infinite reverse;
@@ -362,8 +422,8 @@
 
   .dark .sidebar-cruzi-brand {
     background:
-      radial-gradient(ellipse 90% 60% at 15% 0%, rgba(124, 58, 237, 0.2) 0%, transparent 60%),
-      radial-gradient(ellipse 80% 50% at 85% 40%, rgba(124, 58, 237, 0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 15% 0%, hsl(var(--primary) / 0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 85% 40%, hsl(var(--surface-tint) / 0.12) 0%, transparent 55%),
       hsl(var(--card));
 
     box-shadow: 0 1px 0 hsl(var(--border));
@@ -371,20 +431,45 @@
 }
 
 @layer utilities {
-  /* Cruzi Brand - Solid Purple */
-  .neural-gradient-text {
-    color: #7c3aed;
+  /* ========== CRUZI VISION — RESTRAINED PURPLE GLOW UTILITIES ========== */
+  /* Use sparingly — only on important CTAs and active states */
+  .purple-glow {
+    box-shadow: 0 0 24px 0 hsl(var(--surface-tint) / 0.35);
+    transition: box-shadow 200ms ease-in-out;
   }
-  
+
+  .purple-glow-sm {
+    box-shadow: 0 0 12px 0 hsl(var(--surface-tint) / 0.25);
+    transition: box-shadow 200ms ease-in-out;
+  }
+
+  .purple-glow-hover:hover {
+    box-shadow: 0 0 32px 4px hsl(var(--surface-tint) / 0.55);
+  }
+
+  /* Lavender pill chip — Cruzi Vision badge style */
+  .glass-tag {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border: 1px solid hsl(var(--outline-variant));
+    letter-spacing: 0.02em;
+  }
+
+  /* Cruzi Brand — Solid Purple (legacy class names retained, tokenised) */
+  .neural-gradient-text {
+    color: hsl(var(--primary));
+  }
+
   .neural-gradient-bg {
-    background-color: #7c3aed;
+    background-color: hsl(var(--primary));
   }
 
   /* Safe area padding utilities */
   .pt-safe {
     padding-top: var(--safe-area-inset-top);
   }
-  
+
   .pb-safe {
     padding-bottom: var(--safe-area-inset-bottom);
     padding-bottom: max(env(safe-area-inset-bottom), 16px);
@@ -453,7 +538,7 @@
   }
 
   .epiphany-text-glow {
-    text-shadow: 
+    text-shadow:
       0 0 20px currentColor,
       0 0 40px currentColor,
       0 0 60px currentColor;
@@ -482,24 +567,27 @@
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .epiphany-glow-breathe,
-    .neural-orb {
+    .neural-orb,
+    .purple-glow,
+    .purple-glow-hover {
       animation: none;
+      transition: none;
     }
   }
 
   /* Infinite Neural Canvas - Drifting Atmospheric Auras */
   @keyframes drift {
-    0%, 100% { 
-      transform: translate(-50%, -50%) scale(1); 
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
     }
-    25% { 
-      transform: translate(-48%, -52%) scale(1.02); 
+    25% {
+      transform: translate(-48%, -52%) scale(1.02);
     }
-    50% { 
-      transform: translate(-52%, -48%) scale(1.05); 
+    50% {
+      transform: translate(-52%, -48%) scale(1.05);
     }
-    75% { 
-      transform: translate(-50%, -50%) scale(1.03); 
+    75% {
+      transform: translate(-50%, -50%) scale(1.03);
     }
   }
 
@@ -516,18 +604,18 @@
   }
 
   /* ========== THREE-MODE RESPONSIVE UTILITIES ========== */
-  
+
   /* Responsive touch/click targets */
   /* Mobile: 48px (touch), Desktop: 36px (mouse) */
   .touch-target-responsive {
     @apply min-h-[48px] min-w-[48px] lg:min-h-[36px] lg:min-w-[36px];
   }
-  
+
   /* Active states: mobile = scale, desktop = bg change */
   .interactive-responsive {
     @apply active:scale-95 lg:active:scale-100 lg:hover:bg-muted/50;
   }
-  
+
   /* Desktop readable text (slightly larger on big screens) */
   .text-desktop-readable {
     @apply text-sm lg:text-base;
