@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
 
-const BG_NAV = "rgba(6,14,32,0.75)";
-const TEXT = "#dee5ff";
-const MUTED = "#a3aac4";
-const P = "#7c3aed";
-const GLOW = "rgba(124,58,237,0.35)";
+const BG_NAV = "rgba(248, 249, 255, 0.78)";        /* Vision surface, frosted */
+const TEXT = "#0D1C2F";                             /* on-surface */
+const MUTED = "#4A4455";                            /* on-surface-variant */
+const P = "#5300B7";                                /* Vision primary */
+const GLOW = "rgba(115, 49, 223, 0.28)";            /* restrained lavender glow */
 
 interface SiteNavProps {
   navigate: (path: string) => void;
@@ -32,7 +32,7 @@ const SiteNav: React.FC<SiteNavProps> = ({ navigate, onGetStarted }) => {
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         background: BG_NAV,
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(189,157,255,0.08)",
+        borderBottom: "1px solid rgba(115,49,223,0.08)",
         padding: "0 24px", height: 64,
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
@@ -90,7 +90,7 @@ const SiteNav: React.FC<SiteNavProps> = ({ navigate, onGetStarted }) => {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               display: "inline-flex", alignItems: "center", gap: 6,
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 0 28px rgba(124,58,237,0.55)"; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 0 28px rgba(115,49,223,0.55)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 16px ${GLOW}`; }}
           >
             Get Started <ArrowRight size={14} />
@@ -115,7 +115,7 @@ const SiteNav: React.FC<SiteNavProps> = ({ navigate, onGetStarted }) => {
           className="site-nav-mobile"
           style={{
             position: "fixed", top: 64, left: 0, right: 0, bottom: 0,
-            zIndex: 99, background: "rgba(6,14,32,0.97)",
+            zIndex: 99, background: "rgba(248, 249, 255, 0.97)",
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             display: "flex", flexDirection: "column",
             padding: "32px 24px", gap: 8,
@@ -133,7 +133,7 @@ const SiteNav: React.FC<SiteNavProps> = ({ navigate, onGetStarted }) => {
                 color: TEXT, background: "none", border: "none",
                 fontSize: 20, fontWeight: 600, cursor: "pointer",
                 textAlign: "left", padding: "14px 0",
-                borderBottom: "1px solid rgba(189,157,255,0.08)",
+                borderBottom: "1px solid rgba(115,49,223,0.08)",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
@@ -146,7 +146,7 @@ const SiteNav: React.FC<SiteNavProps> = ({ navigate, onGetStarted }) => {
               style={{
                 width: "100%", padding: "16px 0", fontSize: 17, fontWeight: 700,
                 color: TEXT, background: "none",
-                border: `1px solid rgba(189,157,255,0.2)`,
+                border: `1px solid rgba(115,49,223,0.2)`,
                 borderRadius: 14, cursor: "pointer",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}

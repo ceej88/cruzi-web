@@ -55,7 +55,7 @@
     --surface-tint: 263 73% 53%;                   /* #7331DF (glow tint) */
 
     /* ========== CRUZI VISION — PRIMARY / SECONDARY / TERTIARY ========== */
-    --primary-container: 263 100% 36%;             /* #5300B7 - deep brand */
+    --primary-container: 263 73% 50%;             /* #6D28D9 - Vision spec primary-container (CTA) */
     --on-primary-container: 263 100% 89%;          /* #DAC5FF */
     --inverse-primary: 263 100% 87%;               /* #D3BBFF */
     --secondary-container: 250 17% 91%;            /* #E3E1ED */
@@ -91,7 +91,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 213 57% 12%;
 
-    --primary: 263 73% 50%;                        /* #6D28D9 - CTA PURPLE (LOCKED) */
+    --primary: 263 100% 36%;                       /* #5300B7 - Vision spec primary */
     --primary-foreground: 0 0% 100%;               /* #FFFFFF - on-primary */
 
     --secondary: 240 4% 38%;                       /* #5D5D67 - vision secondary */
