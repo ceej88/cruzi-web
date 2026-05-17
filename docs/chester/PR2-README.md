@@ -1,94 +1,93 @@
-# PR 2 — Chester learner waiting list page (UI only)
+# PR2 — Chester learner funnel (staged lead-gen, UI only)
 
-Scope: a new standalone page at `/chester` for Chester-area learners,
-plus the route wiring. Strictly UI — **no** account creation, **no**
-Stripe, **no** backend writes, **no** mobile changes, **no** edits to
-the existing instructor landing page.
+`/chester` is a **local lead-generation funnel** for learner drivers in the
+Chester region. It is not a product homepage and intentionally avoids
+SaaS / startup framing.
 
-## Files
+## Strategic shape
 
-- `src/pages/ChesterLearnerPage.tsx` *(new, 390 lines)* — the learner page.
-- `src/App.tsx` *(+2 lines)* — registers `/chester` and imports the page.
-- `docs/chester/PR2-README.md` *(new, this file)*.
+The primary job is to capture **local learner demand by area**, build a
+**waiting list**, and prove **instructor demand** for the region. The
+Cruzi app appears as a **secondary offer** once a learner has joined the
+waitlist — never before.
 
-## Page structure (in order)
+The funnel has 5 stages in total. This PR ships the public-facing first
+three (no backend, no payments, no auth):
 
-1. **Hero** — headline “Pass Faster With Smart Driving Practice”,
-   subheading per spec, primary CTA *Join Chester Waiting List*,
-   secondary CTA *Download Cruzi*.
-2. **Practice gap** — DVSA 22-hour guidance, Cruzi as the tool that
-   makes private practice structured.
-3. **What learners get** — six feature cards: Private practice support,
-   AI Driving Co-Pilot, Theory prep, Show Me Tell Me, Progress tracking,
-   Chester local guidance.
-4. **Practice with parents** — supervising-driver framing + example
-   session plan card.
-5. **Chester local** — chips for Chester, Ellesmere Port, Wrexham,
-   Northwich, and surrounding areas. No fake route or instructor counts.
-6. **Waitlist form** — `full_name` + `email`, plus hidden `city=chester`
-   and `source=chester_landing` context fields.
-7. **Joined state** — “You’re on the Chester waiting list.” plus an
-   *optional* Practice Pass card priced at £9.99 (one-time), CTA disabled
-   with “Coming soon”.
+| Stage | Where | What happens |
+|------:|-------|--------------|
+| 1 | `/chester` — `landing` view | Regional local instructor lead capture: hero + lead form (name, email, phone, area). |
+| 2 | `/chester` — `submitted` view | Calm pivot: "Right now, all local instructors are fully booked." Waitlist spot acknowledged. |
+| 3 | `/chester` — `submitted` view (inline below) | "While you wait — start practising with family." Family Practice Access £9.99. |
+| 4 | `/chester/start` (placeholder) | Real Stripe checkout + account creation lands here in **PR3 + PR4**. |
+| 5 | `/chester/welcome` | Success state — built in **PR4**. |
 
-## Submit behaviour (PR2 only)
+## Terminology rules (locked)
 
-The submit handler is a **local-only mock**: it transitions to the
-joined-state UI via React state. **Nothing is written to Supabase** and
-no network request is made. A small disclaimer under the form and at
-the bottom of the joined state makes this explicit:
+- ✅ "Family Practice", "Start Family Practice", "Practise with family while you wait"
+- ✅ "Family Practice Access — £9.99"
+- ✅ "Guided private driving sessions", "Parent / family supervision support"
+- ❌ Never: "Practice Mode", "AI coach", "learning ecosystem", "platform"
 
-> Preview — your details aren’t being saved yet. Backend wiring lands
-> in the next update.
+## Regional framing
 
-This satisfies the brief’s rule: *“either disabled with ‘Coming soon’,
-or local mock only — do not pretend real data was saved unless it
-actually writes to the backend safely.”*
+Chester is the **hub**, not the only city. The hero, areas section, and
+form `<select>` cover Chester city centre, Hoole, Upton, Blacon, Saltney,
+Boughton, Vicars Cross, Christleton, Ellesmere Port, Queensferry,
+Wrexham, Flintshire, plus "other nearby area".
 
-## Copy rules honoured
+## Design rules (matches `src/pages/Index.tsx`)
 
-- No fake stats, testimonials, queue numbers, or instructor counts.
-- No “guaranteed instructor” claims — both the local section and the
-  Practice Pass card explicitly state availability is not guaranteed.
-- Payment is positioned as *optional* (“start private practice while
-  you wait”), never as required.
-- Cruzi remains free to try.
+- `SiteNav` for nav, inline minimal footer
+- Inline styles only — no Tailwind class soup, no shadcn `Button`/`Card`/`Input`
+- Plus Jakarta Sans 800 headlines (dynamic `<link>` injection) + Inter body
+- Hardcoded constants `BG / GLASS / GLASS_B / P / P_SEC / TEXT / MUTED` — no new colours
+- Glass cards (24 px radius, lavender hairline, blur 20)
+- `SectionPill` chip eyebrow on every section
+- `btn-pulse` only on the **primary** conversion CTA (lead form submit, Family Practice CTA)
+- **One quiet orb in the hero only** — no orbs sprayed across the page
+- Hero is ~70vh — headline + subhead + form + CTA visible above the fold on a laptop
+- Compact `@media (max-width: 900px)` collapse for the 2-col hero
+- `fadeUp` motion (y:24, 0.55s easeOut, viewport once)
 
-## Design system
+## Funnel state
 
-- Uses the Cruzi Vision tokens already shipped in PR #13: `bg-background`
-  (`#F8F9FF`), `text-foreground`, `bg-primary` for primary CTAs
-  (`#5300B7`), `text-primary-container` (`#6D28D9`) for accents,
-  `font-inter`, `rounded-card`, `rounded-chip`, `rounded-pill`,
-  `text-headline-display / -lg / -md`, `text-body-lg / -md`, `text-label-md / -sm`,
-  `shadow-purple-glow` / `shadow-purple-glow-hover` for the subtle CTA glow,
-  `bg-surface-container-low` for alternating sections.
-- White / light background throughout, generous spacing, rounded cards,
-  Inter typography, purple CTA hierarchy. No dark-mode override needed.
+Funnel context is held in `sessionStorage` under the key
+`cruzi.chester.funnel.v1` as JSON:
 
-## Out of scope (intentionally not in this PR)
-
-- Account creation
-- Stripe / checkout / £9.99 charge
-- Success / post-payment flow
-- Edge functions / API routes
-- Mobile repo changes
-- Instructor landing page changes
-- Production migration application
-
-## What was *not* touched
-
-- The two existing `ChesterLandingPage.tsx` files at root and `src/pages/`
-  (an instructor-focused SEO page) are unchanged. They’re still not
-  registered in any route.
-- All other pages, components, and the Tailwind config are unchanged.
-
-## Verification
-
+```ts
+{
+  firstName: string;
+  email: string;
+  phone: string;
+  area: string;
+  interestedInFamilyPractice: boolean;
+  joinedAt: string; // ISO timestamp
+}
 ```
-$ npx tsc --noEmit
-(exit 0)
 
-$ npm run build
-✓ built in 18.96s
-```
+- Written on lead-form submit (`interestedInFamilyPractice: false`).
+- Flipped to `true` when the user clicks **"Start Family Practice"** —
+  then `/chester/start` is opened.
+- Read by `/chester/start` to confirm the waitlist spot, name the area
+  and personalise the message. If absent (cold landing), `/chester/start`
+  nudges the visitor back to `/chester`.
+
+PR3 will lift this same shape into the backend (Supabase) and PR4 will
+hand it off to Stripe checkout.
+
+## Files in this PR
+
+- `src/pages/ChesterLearnerPage.tsx` — staged-funnel page (landing + submitted views)
+- `src/pages/ChesterStartPlaceholder.tsx` — Family Practice handoff page
+- `src/App.tsx` — adds `<Route path="/chester/start" …/>` (+2 lines)
+- `docs/chester/PR2-README.md` — this file
+
+## Out of scope (deferred)
+
+- ❌ Backend, Supabase persistence, edge functions → **PR3**
+- ❌ Account creation, password capture → **PR3**
+- ❌ Stripe checkout, success page → **PR4**
+- ❌ Production DB migration → not yet (PR1 schema sits in `main` but is not pushed live)
+- ❌ Mobile repo changes
+- ❌ Instructor dashboard work
