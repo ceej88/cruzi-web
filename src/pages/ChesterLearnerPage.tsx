@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, BadgeCheck, CheckCircle, Clock, Shield } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCircle, Clock, CreditCard, Lock, Shield, Users } from "lucide-react";
 import SiteNav from "@/components/landing/SiteNav";
 import PhoneMockup from "@/components/landing/PhoneMockup";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -10,6 +10,11 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import parentPhone from "@/assets/parent-phone.webp";
 import studentView from "@/assets/student-view-clean.webp";
 import testRoutesPhone from "@/assets/test-routes-phone.webp";
+
+// Stage 2 collage — real learner photos supplied for the Chester region.
+import chesterPass1 from "@/assets/chester-pass-1.jpg";
+import chesterPass2 from "@/assets/chester-pass-2.jpg";
+import chesterPass3 from "@/assets/chester-pass-3.jpg";
 
 const BG      = "#F8F9FF";
 const GLASS   = "rgba(255, 255, 255, 0.85)";
@@ -126,6 +131,10 @@ const ChesterLearnerPage: React.FC = () => {
         .field::placeholder { color: #8a8694; }
         .field:focus { border-color: rgba(115,49,223,0.55); box-shadow: 0 0 0 4px rgba(115,49,223,0.10); }
         .field-label { font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:${MUTED}; margin-bottom:6px; display:block; }
+        .wyw-grid { grid-template-columns: 1fr; gap: 28px; }
+        @media (min-width: 820px) { .wyw-grid { grid-template-columns: 1.05fr 1fr; gap: 40px; } }
+        .cta-row { display:flex; flex-direction:column; gap:18px; align-items:stretch; }
+        @media (min-width: 560px) { .cta-row { flex-direction:row; align-items:center; justify-content:space-between; } }
       `}</style>
 
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(115,49,223,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(115,49,223,0.08) 0%, transparent 45%)` }} />
@@ -311,87 +320,134 @@ interface SubmittedViewProps {
   onStartFamilyPractice: () => void;
   onJustWait: () => void;
 }
-const SubmittedView: React.FC<SubmittedViewProps> = ({ firstName, email, area, onStartFamilyPractice, onJustWait }) => (
-  <>
-    <section style={{ position: "relative", zIndex: 1, padding: "120px 24px 56px" }}>
-      <div style={{ maxWidth: 680, margin: "0 auto" }}>
-        <motion.div id="confirmation-card" {...fadeUp} data-testid="status-confirmation" style={{ ...glassCard, padding: "clamp(28px, 4vw, 40px)" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+const SubmittedView: React.FC<SubmittedViewProps> = ({ firstName, email, area, onStartFamilyPractice, onJustWait }) => {
+  const firstNameOnly = (firstName || "").split(" ")[0] || "there";
+  const collageTile: React.CSSProperties = {
+    borderRadius: 18,
+    overflow: "hidden",
+    border: `1px solid ${GLASS_B}`,
+    background: "#fff",
+    boxShadow: "0 12px 36px -18px rgba(115,49,223,0.35)",
+  };
+  const collageImg: React.CSSProperties = { width: "100%", height: "100%", objectFit: "cover", display: "block" };
 
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 9999, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.32)", color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 18 }}>
-            <Clock style={{ width: 11, height: 11 }} /> CURRENT AVAILABILITY · CHESTER REGION
-          </div>
-
-          <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem, 3vw, 2.1rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT, lineHeight: 1.15 }}>
-            Right now, all local instructors are fully booked.
-          </h1>
-          <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.7, margin: "0 0 22px" }}>
-            Thanks, {firstName.split(" ")[0]}. You're on the waiting list for the <strong style={{ color: TEXT }}>{area}</strong> area. We'll email <strong style={{ color: TEXT }}>{email}</strong> the moment a verified local ADI has a space.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, padding: "16px 0 4px", borderTop: `1px solid ${GLASS_B}` }}>
-            <div style={{ paddingTop: 14 }}>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, lineHeight: 1.1 }}>2–4 weeks</div>
-              <div style={{ color: MUTED, fontSize: 12.5, marginTop: 4 }}>Typical wait in your area</div>
+  return (
+    <>
+      <section style={{ position: "relative", zIndex: 1, padding: "120px 24px 24px" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+          <motion.div id="confirmation-card" {...fadeUp} data-testid="status-confirmation" style={{ ...glassCard, padding: "clamp(28px, 4vw, 36px)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 9999, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.32)", color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 18 }}>
+              <Clock style={{ width: 11, height: 11 }} /> CURRENT AVAILABILITY · CHESTER REGION
             </div>
-            <div style={{ paddingTop: 14 }}>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, lineHeight: 1.1 }}>Verified ADIs only</div>
-              <div style={{ color: MUTED, fontSize: 12.5, marginTop: 4 }}>DVSA-approved, qualifications checked</div>
+            <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.65rem, 3.2vw, 2.15rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT, lineHeight: 1.12 }}>
+              Right now, all local instructors are fully booked.
+            </h1>
+            <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.65, margin: "0 0 22px" }}>
+              Thanks, {firstNameOnly}. You're on the waiting list for the <strong style={{ color: P_SEC }} data-testid="text-area">{area}</strong> area. We'll email <strong style={{ color: TEXT }} data-testid="text-email">{email}</strong> as soon as a verified local ADI has a space.
+            </p>
+            <div style={{ borderTop: `1px solid ${GLASS_B}`, paddingTop: 18, display: "flex", flexDirection: "column", gap: 16 }}>
+              {([
+                { Icon: Clock,      title: "2–4 weeks",          sub: "Typical wait in your area" },
+                { Icon: Shield,     title: "Verified ADIs only", sub: "All instructors are DVSA-approved" },
+                { Icon: CreditCard, title: "No payment today",   sub: "You'll pay your instructor once lessons start" },
+              ] as const).map(({ Icon, title, sub }) => (
+                <div key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                  <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon style={{ width: 20, height: 20, color: P_SEC }} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15.5, color: TEXT, lineHeight: 1.25 }}>{title}</div>
+                    <div style={{ color: MUTED, fontSize: 13.5, marginTop: 2, lineHeight: 1.5 }}>{sub}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div style={{ paddingTop: 14 }}>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, lineHeight: 1.1 }}>No payment yet</div>
-              <div style={{ color: MUTED, fontSize: 12.5, marginTop: 4 }}>You only pay your instructor once lessons start</div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
+          </motion.div>
+        </div>
+      </section>
 
-    <section style={{ position: "relative", zIndex: 1, padding: "8px 24px 64px" }}>
-      <div style={{ maxWidth: 680, margin: "0 auto" }}>
-        <motion.div {...fadeUp} style={{ marginBottom: 18, textAlign: "left" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, color: MUTED, fontSize: 12.5, fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 700 }}>
-            <span style={{ width: 24, height: 1, background: "rgba(115,49,223,0.4)" }} /> WHILE YOU WAIT
-          </div>
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.75rem, 3.4vw, 2.5rem)", letterSpacing: "-0.02em", margin: "14px 0 10px", color: TEXT }}>Start practising with family.</h2>
-          <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.7, margin: 0, maxWidth: 620 }}>
-            Don't lose momentum. Cruzi gives families guided private driving sessions you can do with a parent or supervisor — built on the same DVSA syllabus your instructor will use.
-          </p>
-        </motion.div>
-
-        <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(24px, 4vw, 36px)" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
-
-          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
-            <CheckItem text="Guided private driving sessions — step-by-step prompts your supervisor follows" />
-            <CheckItem text="Parent / family supervision support — no driving-instructor knowledge needed" />
-            <CheckItem text="Lesson tracking against the DVSA syllabus" />
-            <CheckItem text="Local mock routes around Chester, Wrexham and Flintshire" />
-            <CheckItem text="Theory & hazard perception prep" />
-          </ul>
-
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 16, padding: "20px 0 0", borderTop: `1px solid ${GLASS_B}` }}>
-            <div>
-              <div style={{ color: MUTED, fontSize: 12.5, fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Family Practice Access</div>
-              <div style={{ display: "inline-flex", alignItems: "flex-end", gap: 6 }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 36, color: P_SEC, lineHeight: 1, letterSpacing: "-0.02em" }}>£9.99</span>
-                <span style={{ color: MUTED, fontSize: 13, marginBottom: 6 }}>one-off · no subscription</span>
+      <section style={{ position: "relative", zIndex: 1, padding: "12px 24px 20px" }}>
+        <div style={{ maxWidth: 980, margin: "0 auto" }}>
+          <motion.div {...fadeUp} data-testid="card-while-you-wait" style={{ ...glassCard, padding: "clamp(24px, 4vw, 36px)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+            <div className="wyw-grid" style={{ display: "grid", alignItems: "start" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11.5, letterSpacing: "0.12em", fontWeight: 700, textTransform: "uppercase", marginBottom: 14 }}>
+                  <span style={{ width: 24, height: 1, background: "rgba(115,49,223,0.55)" }} /> WHILE YOU WAIT
+                </div>
+                <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.75rem, 3.4vw, 2.15rem)", letterSpacing: "-0.02em", margin: "0 0 12px", color: TEXT, lineHeight: 1.1 }}>
+                  Start practising<br />between lessons.
+                </h2>
+                <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.65, margin: "0 0 22px", maxWidth: 460 }}>
+                  Learners who practise regularly between lessons often progress faster and feel more confident before their test.
+                </p>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    "Guided practice sessions you can do with a parent or supervisor",
+                    "Build confidence on real local roads",
+                    "Track your progress as you improve",
+                    "Practise around Chester, Wrexham and nearby areas",
+                    "Theory and hazard perception support included",
+                  ].map(t => (
+                    <li key={t} style={{ display: "flex", alignItems: "flex-start", gap: 10, color: TEXT, fontSize: 14.5, lineHeight: 1.55 }}>
+                      <CheckCircle style={{ color: P_SEC, width: 18, height: 18, flexShrink: 0, marginTop: 1 }} />
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div data-testid="collage-while-you-wait" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ gridColumn: "1 / -1", aspectRatio: "4 / 3", ...collageTile }}>
+                  <img src={chesterPass1} alt="Cruzi learner after passing their driving test in Chester" loading="lazy" style={collageImg} />
+                </div>
+                <div style={{ aspectRatio: "1 / 1", ...collageTile }}>
+                  <img src={chesterPass2} alt="Cruzi learner holding their pass certificate" loading="lazy" style={collageImg} />
+                </div>
+                <div style={{ aspectRatio: "1 / 1", ...collageTile }}>
+                  <img src={chesterPass3} alt="Cruzi learner with their lesson car" loading="lazy" style={collageImg} />
+                </div>
               </div>
             </div>
-            <button data-testid="button-start-family-practice" className="btn-pulse" onClick={onStartFamilyPractice} style={{ background: P, color: "#fff", border: "none", padding: "14px 28px", borderRadius: 9999, fontSize: 14.5, fontWeight: 700, cursor: "pointer", transition: "transform 0.2s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", gap: 8 }} onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-1px)")} onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-              Start Family Practice <ArrowRight style={{ width: 16, height: 16 }} />
+          </motion.div>
+        </div>
+      </section>
+
+      <section style={{ position: "relative", zIndex: 1, padding: "8px 24px 40px" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+          <motion.div {...fadeUp} data-testid="card-family-practice-cta" style={{ ...glassCard, padding: "clamp(20px, 3vw, 26px)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+            <div className="cta-row">
+              <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0 }}>
+                <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Users style={{ width: 22, height: 22, color: P_SEC }} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Family Practice Access</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 2 }}>
+                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 30, color: TEXT, lineHeight: 1, letterSpacing: "-0.02em" }}>£9.99</span>
+                  </div>
+                  <div style={{ color: MUTED, fontSize: 12.5, marginTop: 4 }}>One payment. Lifetime access.</div>
+                </div>
+              </div>
+              <button data-testid="button-start-family-practice" className="btn-pulse" onClick={onStartFamilyPractice} style={{ background: P, color: "#fff", border: "none", padding: "15px 26px", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "transform 0.2s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, flexShrink: 0 }} onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-1px)")} onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                Start Family Practice <ArrowRight style={{ width: 16, height: 16 }} />
+              </button>
+            </div>
+          </motion.div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: MUTED, fontSize: 12.5, marginTop: 14 }}>
+            <Lock style={{ width: 12, height: 12, color: P_SEC }} />
+            <span>Secure. Safe. Built for learner drivers and their families.</span>
+          </div>
+          <div style={{ textAlign: "center", marginTop: 10 }}>
+            <button data-testid="button-just-wait" onClick={onJustWait} style={{ background: "none", border: "none", color: MUTED, fontSize: 13, fontWeight: 500, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 3 }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>
+              No thanks — just email me when an instructor opens up
             </button>
           </div>
-        </motion.div>
-
-        <div style={{ textAlign: "center", marginTop: 20 }}>
-          <button data-testid="button-just-wait" onClick={onJustWait} style={{ background: "none", border: "none", color: MUTED, fontSize: 13, fontWeight: 500, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 3 }} onMouseEnter={e => (e.currentTarget.style.color = TEXT)} onMouseLeave={e => (e.currentTarget.style.color = MUTED)}>
-            No thanks — just email me when an instructor opens up
-          </button>
         </div>
-      </div>
-    </section>
-  </>
-);
+      </section>
+    </>
+  );
+};
 
 export default ChesterLearnerPage;
