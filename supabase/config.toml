@@ -1,0 +1,9 @@
+# Supabase project config — Chester funnel edge functions.
+# Only Chester funnel functions are listed here; legacy deployed functions
+# (e.g. create-checkout-session for Elite tier) are managed out-of-band.
+
+[functions.chester-create-checkout-session]
+verify_jwt = true
+
+[functions.chester-stripe-webhook]
+verify_jwt = false
