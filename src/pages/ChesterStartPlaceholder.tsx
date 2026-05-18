@@ -1,25 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, BadgeCheck, Smartphone, Mail, Users } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  CreditCard,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Smartphone,
+  User as UserIcon,
+} from "lucide-react";
+import { toast } from "sonner";
 import SiteNav from "@/components/landing/SiteNav";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { supabase } from "@/integrations/supabase/client";
 
-const BG      = "#F8F9FF";
-const GLASS   = "rgba(255, 255, 255, 0.85)";
-const GLASS_B = "rgba(115, 49, 223, 0.18)";
-const P       = "#5300B7";
-const P_SEC   = "#6D28D9";
-const TEXT    = "#0D1C2F";
-const MUTED   = "#4A4455";
+const BG       = "#F8F9FF";
+const GLASS    = "rgba(255, 255, 255, 0.92)";
+const GLASS_B  = "rgba(115, 49, 223, 0.18)";
+const P        = "#5300B7";
+const P_SEC    = "#6D28D9";
+const TEXT     = "#0D1C2F";
+const MUTED    = "#4A4455";
+const FIELD_BG = "#FFFFFF";
 
 const FUNNEL_KEY = "cruzi.chester.funnel.v1";
 
 const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5, ease: "easeOut" as const },
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, ease: "easeOut" as const },
 };
 
 const glassCard: React.CSSProperties = {
@@ -30,13 +43,22 @@ const glassCard: React.CSSProperties = {
   borderRadius: 24,
   position: "relative",
   overflow: "hidden",
+  boxShadow: "0 24px 60px rgba(13, 28, 47, 0.08)",
 };
 
 interface FunnelState {
   firstName?: string;
   email?: string;
+  phone?: string;
   area?: string;
   interestedInFamilyPractice?: boolean;
+}
+
+interface FormErrors {
+  fullName?: string;
+  password?: string;
+  confirmPassword?: string;
+  submit?: string;
 }
 
 const ChesterStartPlaceholder: React.FC = () => {
@@ -45,132 +67,235 @@ const ChesterStartPlaceholder: React.FC = () => {
   useEffect(() => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
     document.head.appendChild(link);
     return () => { document.head.removeChild(link); };
   }, []);
 
   usePageMeta({
-    title: "Family Practice — Opens Soon | Cruzi",
-    description: "Your Chester waiting list spot is secured. Family Practice opens to learners soon — we'll email you the moment access is available.",
+    title: "Create your account — Family Practice | Cruzi",
+    description:
+      "Create your Cruzi learner account to unlock Family Practice. The same email and password let you sign in on the mobile app.",
     canonical: "https://cruzi.co.uk/chester/start",
   });
 
-  const [state, setState] = useState<FunnelState>({});
+  const [funnel, setFunnel] = useState<FunnelState>({});
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(FUNNEL_KEY);
-      if (raw) setState(JSON.parse(raw));
+      if (raw) setFunnel(JSON.parse(raw));
     } catch { /* ignore */ }
+    finally { setHydrated(true); }
   }, []);
 
-  // If someone lands here cold without a funnel record, send them back to /chester.
-  const hasFunnel = !!(state.firstName && state.email);
+  const hasFunnel = !!(funnel.firstName && funnel.email);
+
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [signedUp, setSignedUp] = useState(false);
+
+  useEffect(() => {
+    if (funnel.firstName && !fullName) setFullName(funnel.firstName);
+  }, [funnel.firstName, fullName]);
+
+  const email = (funnel.email || "").trim();
+
+  const passwordIsStrong = useMemo(
+    () => password.length >= 8 && /[0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(password),
+    [password],
+  );
+
+  const validate = (): boolean => {
+    const next: FormErrors = {};
+    if (fullName.trim().length < 2) next.fullName = "Please enter your full name.";
+    if (!passwordIsStrong) next.password = "Use at least 8 characters with a number or symbol.";
+    if (confirmPassword !== password) next.confirmPassword = "Passwords don't match.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hasFunnel) return;
+    const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailLooksValid) {
+      const msg = "Your saved email looks invalid. Please go back and rejoin the waiting list.";
+      setErrors({ submit: msg });
+      toast.error(msg);
+      return;
+    }
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setErrors({});
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: { role: "student", full_name: fullName.trim() },
+        },
+      });
+
+      if (error) {
+        const friendly = error.message.toLowerCase().includes("already registered")
+          ? "This email is already registered. Try signing in inside the Cruzi app instead."
+          : error.message;
+        setErrors({ submit: friendly });
+        toast.error(friendly);
+        return;
+      }
+
+      try { localStorage.setItem("cruzi_signup_name", fullName.trim()); } catch { /* ignore */ }
+      try {
+        const updated: FunnelState = {
+          ...funnel,
+          firstName: fullName.trim(),
+          email,
+          interestedInFamilyPractice: true,
+        };
+        sessionStorage.setItem(FUNNEL_KEY, JSON.stringify(updated));
+      } catch { /* ignore */ }
+
+      setSignedUp(true);
+      toast.success("Account created. Check your email to verify.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setErrors({ submit: msg });
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
       <style>{`
         html { overflow-x: hidden; }
-        .phone-mock { aspect-ratio: 9 / 18; max-width: 220px; border-radius: 36px; background: linear-gradient(180deg, #1b1230 0%, #0d0820 100%); border: 1px solid rgba(115,49,223,0.4); padding: 14px; box-shadow: 0 24px 60px rgba(13, 28, 47, 0.18), 0 0 0 6px rgba(255,255,255,0.6); margin: 0 auto; position: relative; }
-        .phone-screen { width:100%; height:100%; border-radius: 24px; background: linear-gradient(180deg, #1d1438 0%, #0a061a 100%); padding: 16px; display:flex; flex-direction:column; gap: 10px; }
-        .phone-notch { position:absolute; top: 14px; left:50%; transform: translateX(-50%); width: 80px; height: 20px; background:#000; border-radius: 0 0 12px 12px; }
-        .phone-line { height:10px; border-radius:6px; background: rgba(255,255,255,0.06); }
-        .phone-line.lavender { background: linear-gradient(90deg, rgba(115,49,223,0.6), rgba(115,49,223,0.18)); }
+        .field { width: 100%; background: ${FIELD_BG}; border: 1px solid ${GLASS_B}; border-radius: 14px; padding: 14px 14px 14px 44px; font-size: 15.5px; color: ${TEXT}; font-family: 'Inter', sans-serif; outline: none; transition: border-color .15s ease, box-shadow .15s ease; -webkit-appearance: none; appearance: none; }
+        .field::placeholder { color: rgba(74, 68, 85, 0.55); }
+        .field:focus { border-color: ${P_SEC}; box-shadow: 0 0 0 3px rgba(115,49,223,0.12); }
+        .field[readonly] { background: #FAFAFE; color: ${TEXT}; cursor: default; }
+        .field-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; color: ${TEXT}; margin-bottom: 8px; }
+        .field-wrap { position: relative; }
+        .field-icon-left, .field-icon-right { position: absolute; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: ${P_SEC}; pointer-events: none; }
+        .field-icon-left { left: 14px; }
+        .field-icon-right { right: 14px; pointer-events: auto; background: none; border: 0; padding: 0; cursor: pointer; color: ${MUTED}; }
+        .field-icon-right:hover { color: ${P_SEC}; }
+        .field-helper { color: ${MUTED}; font-size: 12.5px; margin: 6px 0 0; line-height: 1.45; }
+        .field-error { color: #B91C1C; font-size: 12.5px; margin: 6px 0 0; line-height: 1.45; }
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: ${P}; color: #fff; border: 0; padding: 16px 24px; border-radius: 9999px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15.5px; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease; box-shadow: 0 12px 28px rgba(83, 0, 183, 0.28); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
       `}</style>
 
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: `radial-gradient(ellipse at 15% 25%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(115,49,223,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(115,49,223,0.08) 0%, transparent 45%)` }} />
+      <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse at 12% 18%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 88% 82%, rgba(115,49,223,0.10) 0%, transparent 50%)" }} />
 
       <SiteNav navigate={navigate} onGetStarted={() => navigate("/chester")} />
 
-      <section style={{ position: "relative", zIndex: 1, padding: "112px 24px 64px" }}>
-        <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          {!hasFunnel ? (
-            <motion.div {...fadeUp} style={{ ...glassCard, padding: 32, textAlign: "center" }} data-testid="status-cold-landing">
-              <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.4rem, 2.6vw, 1.8rem)", margin: "0 0 12px", color: TEXT, letterSpacing: "-0.02em" }}>
-                Looks like you haven't joined the Chester list yet.
-              </h1>
-              <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.65, margin: "0 0 22px" }}>
-                Pop your details in and we'll match you with a verified local driving instructor.
-              </p>
-              <Link
-                to="/chester"
-                data-testid="link-back-to-chester"
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: P, color: "#fff", padding: "13px 26px", borderRadius: 9999, fontSize: 14.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif", textDecoration: "none", boxShadow: "0 0 16px rgba(115,49,223,0.28)" }}
-              >
-                Go to the Chester page
-              </Link>
-            </motion.div>
+      <section style={{ position: "relative", zIndex: 1, padding: "104px 20px 56px" }}>
+        <div style={{ maxWidth: 480, margin: "0 auto" }}>
+          {!hydrated ? null : !hasFunnel ? (
+            <ColdLandingCard />
+          ) : signedUp ? (
+            <SuccessCard email={email} fullName={fullName} />
           ) : (
-            <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(28px, 4vw, 44px)" }} data-testid="status-spot-secured">
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
-
-              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(220px, 0.9fr)", gap: 36, alignItems: "center" }} className="start-grid">
-                <style>{`@media (max-width: 820px) { .start-grid { grid-template-columns: 1fr !important; gap: 28px !important; } .phone-side { order: -1; } }`}</style>
-
-                <div>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 9999, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.32)", color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 16 }}>
-                    <BadgeCheck style={{ width: 12, height: 12 }} /> WAITLIST SPOT SECURED
-                  </div>
-                  <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.7rem, 3.2vw, 2.3rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT, lineHeight: 1.15 }}>
-                    Family Practice opens soon.
-                  </h1>
-                  <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.7, margin: "0 0 20px" }}>
-                    Thanks{state.firstName ? `, ${state.firstName.split(" ")[0]}` : ""} — your spot for the <strong style={{ color: TEXT }}>{state.area || "Chester region"}</strong> waiting list is locked in. We'll email <strong style={{ color: TEXT }}>{state.email}</strong> the moment Family Practice is available to buy.
-                  </p>
-
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 22px", display: "flex", flexDirection: "column", gap: 10 }}>
-                    {[
-                      { icon: Mail, t: "We'll email you when access opens" },
-                      { icon: Smartphone, t: "Cruzi runs on iPhone and Android" },
-                      { icon: Users, t: "One purchase covers you and your family supervisor" },
-                    ].map(({ icon: Icon, t }) => (
-                      <li key={t} style={{ display: "flex", alignItems: "center", gap: 10, color: MUTED, fontSize: 14 }}>
-                        <span style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <Icon style={{ width: 14, height: 14, color: P_SEC }} />
-                        </span>
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    to="/chester"
-                    data-testid="link-back-to-chester"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 8, color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, fontWeight: 700, textDecoration: "none" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = P)}
-                    onMouseLeave={e => (e.currentTarget.style.color = P_SEC)}
-                  >
-                    <ArrowLeft style={{ width: 14, height: 14 }} /> Back to the Chester page
-                  </Link>
-                </div>
-
-                {/* Phone preview — restrained, no fake screenshots */}
-                <div className="phone-side" style={{ display: "flex", justifyContent: "center" }}>
-                  <div className="phone-mock" aria-hidden="true">
-                    <div className="phone-notch" />
-                    <div className="phone-screen">
-                      <div style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", opacity: 0.7 }}>CRUZI · FAMILY PRACTICE</div>
-                      <div style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, fontWeight: 800, lineHeight: 1.25 }}>Tonight's session</div>
-                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, lineHeight: 1.4 }}>Roundabouts · Hoole loop · 30 min</div>
-                      <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "4px 0" }} />
-                      <div className="phone-line lavender" style={{ width: "82%" }} />
-                      <div className="phone-line" style={{ width: "68%" }} />
-                      <div className="phone-line" style={{ width: "74%" }} />
-                      <div className="phone-line" style={{ width: "54%" }} />
-                      <div style={{ marginTop: "auto", padding: "10px 12px", borderRadius: 12, background: "rgba(115,49,223,0.18)", border: "1px solid rgba(115,49,223,0.4)", color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, textAlign: "center", letterSpacing: "0.02em" }}>
-                        Start tonight's session
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <motion.form {...fadeUp} onSubmit={onSubmit} noValidate data-testid="form-create-account" style={{ ...glassCard, padding: "clamp(24px, 5vw, 36px)" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 9999, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.32)", color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", marginBottom: 14 }} data-testid="pill-family-practice-access">
+                <Lock style={{ width: 12, height: 12 }} /> FAMILY PRACTICE ACCESS
               </div>
-            </motion.div>
+
+              <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem, 3.4vw, 2rem)", letterSpacing: "-0.02em", margin: "0 0 10px", color: TEXT, lineHeight: 1.15 }} data-testid="text-heading">
+                Create your account
+              </h1>
+              <p style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.55, margin: "0 0 22px" }}>
+                Use the same email and password later inside the Cruzi app.
+              </p>
+
+              <div style={{ marginBottom: 16 }}>
+                <label className="field-label" htmlFor="fullName">Full name</label>
+                <div className="field-wrap">
+                  <UserIcon className="field-icon-left" />
+                  <input id="fullName" data-testid="input-full-name" className="field" type="text" autoComplete="name" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                </div>
+                {errors.fullName && <p className="field-error" data-testid="error-full-name">{errors.fullName}</p>}
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label className="field-label" htmlFor="email">Email address</label>
+                <div className="field-wrap">
+                  <Mail className="field-icon-left" />
+                  <input id="email" data-testid="input-email" className="field" type="email" autoComplete="email" value={email} readOnly aria-readonly="true" style={{ paddingRight: 44 }} />
+                  <Lock style={{ position: "absolute", top: "50%", right: 14, transform: "translateY(-50%)", width: 18, height: 18, color: P_SEC, pointerEvents: "none" }} aria-hidden="true" />
+                </div>
+                <p className="field-helper">We'll use this email to sign you in.</p>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label className="field-label" htmlFor="password">Password</label>
+                <div className="field-wrap">
+                  <Lock className="field-icon-left" />
+                  <input id="password" data-testid="input-password" className="field" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ paddingRight: 44 }} />
+                  <button type="button" className="field-icon-right" data-testid="button-toggle-password" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                    {showPassword ? <EyeOff style={{ width: 20, height: 20 }} /> : <Eye style={{ width: 20, height: 20 }} />}
+                  </button>
+                </div>
+                {errors.password ? <p className="field-error" data-testid="error-password">{errors.password}</p> : <p className="field-helper">At least 8 characters with a number or symbol.</p>}
+              </div>
+
+              <div style={{ marginBottom: 18 }}>
+                <label className="field-label" htmlFor="confirmPassword">Confirm password</label>
+                <div className="field-wrap">
+                  <Lock className="field-icon-left" />
+                  <input id="confirmPassword" data-testid="input-confirm-password" className="field" type={showConfirm ? "text" : "password"} autoComplete="new-password" placeholder="Confirm your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required style={{ paddingRight: 44 }} />
+                  <button type="button" className="field-icon-right" data-testid="button-toggle-confirm-password" onClick={() => setShowConfirm(v => !v)} aria-label={showConfirm ? "Hide password" : "Show password"}>
+                    {showConfirm ? <EyeOff style={{ width: 20, height: 20 }} /> : <Eye style={{ width: 20, height: 20 }} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className="field-error" data-testid="error-confirm-password">{errors.confirmPassword}</p>}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, padding: 14, marginBottom: 18, borderRadius: 16, background: "rgba(115,49,223,0.06)", border: "1px solid rgba(115,49,223,0.14)" }} data-testid="trust-row">
+                {([
+                  { Icon: CheckCircle, title: "One-time payment", sub: "No subscription" },
+                  { Icon: ShieldCheck, title: "Secure checkout",  sub: "Powered by Stripe" },
+                  { Icon: Smartphone,  title: "Use inside the app", sub: "iOS & Android" },
+                ] as const).map(({ Icon, title, sub }) => (
+                  <div key={title} style={{ minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                      <Icon style={{ width: 14, height: 14, color: P_SEC, flexShrink: 0 }} />
+                      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12.5, color: TEXT, lineHeight: 1.2 }}>{title}</div>
+                    </div>
+                    <div style={{ color: MUTED, fontSize: 11.5, lineHeight: 1.35 }}>{sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {errors.submit && <p className="field-error" data-testid="error-submit" style={{ marginTop: -8, marginBottom: 12 }}>{errors.submit}</p>}
+
+              <button type="submit" className="btn-primary" data-testid="button-continue-checkout" disabled={submitting}>
+                {submitting ? "Creating account…" : (<>Continue to secure checkout <ArrowRight style={{ width: 16, height: 16 }} /></>)}
+              </button>
+
+              <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: MUTED, fontSize: 12.5 }}>
+                <Lock style={{ width: 12, height: 12, color: P_SEC }} />
+                Secure. Safe. Built for learner drivers and their families.
+              </div>
+            </motion.form>
           )}
         </div>
       </section>
 
-      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(115,49,223,0.08)", padding: "32px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
+      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(115,49,223,0.08)", padding: "28px 24px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Cruzi</span>
           <p style={{ color: MUTED, fontSize: 12, margin: 0 }}>© {new Date().getFullYear()} Cruzi. All rights reserved.</p>
         </div>
@@ -178,5 +303,42 @@ const ChesterStartPlaceholder: React.FC = () => {
     </div>
   );
 };
+
+const ColdLandingCard: React.FC = () => (
+  <motion.div {...fadeUp} style={{ ...glassCard, padding: 28, textAlign: "center" }} data-testid="status-cold-landing">
+    <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.4rem, 2.6vw, 1.7rem)", margin: "0 0 12px", color: TEXT, letterSpacing: "-0.02em" }}>
+      Looks like you haven't joined the Chester list yet.
+    </h1>
+    <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.65, margin: "0 0 22px" }}>
+      Pop your details in and we'll match you with a verified local driving instructor.
+    </p>
+    <Link to="/chester" data-testid="link-back-to-chester" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: P, color: "#fff", padding: "13px 26px", borderRadius: 9999, fontSize: 14.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif", textDecoration: "none", boxShadow: "0 0 16px rgba(115,49,223,0.28)" }}>
+      Go to the Chester page
+    </Link>
+  </motion.div>
+);
+
+const SuccessCard: React.FC<{ email: string; fullName: string }> = ({ email, fullName }) => (
+  <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(28px, 5vw, 40px)", textAlign: "left" }} data-testid="status-account-created">
+    <div style={{ width: 52, height: 52, borderRadius: 16, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.28)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+      <CheckCircle style={{ width: 28, height: 28, color: P_SEC }} />
+    </div>
+    <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.5rem, 3vw, 1.9rem)", letterSpacing: "-0.02em", margin: "0 0 10px", color: TEXT, lineHeight: 1.18 }}>
+      Account created{fullName ? `, ${fullName.split(" ")[0]}` : ""}.
+    </h1>
+    <p style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.6, margin: "0 0 20px" }}>
+      We've sent a verification email to <strong style={{ color: P_SEC }} data-testid="text-success-email">{email}</strong>. Tap the link to confirm your account — the same email and password will sign you in on the Cruzi mobile app.
+    </p>
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 16, borderRadius: 16, background: "rgba(115,49,223,0.06)", border: "1px solid rgba(115,49,223,0.18)" }} data-testid="status-checkout-next">
+      <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: "rgba(115,49,223,0.16)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CreditCard style={{ width: 20, height: 20, color: P_SEC }} />
+      </div>
+      <div>
+        <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14.5, color: TEXT, lineHeight: 1.3 }}>Secure checkout opens next.</div>
+        <div style={{ color: MUTED, fontSize: 13, marginTop: 2, lineHeight: 1.5 }}>One-time £9.99 payment. We'll redirect you to Stripe shortly.</div>
+      </div>
+    </div>
+  </motion.div>
+);
 
 export default ChesterStartPlaceholder;
