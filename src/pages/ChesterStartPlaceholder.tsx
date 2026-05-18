@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle,
-  CreditCard,
   Eye,
   EyeOff,
   Lock,
@@ -166,7 +165,7 @@ const ChesterStartPlaceholder: React.FC = () => {
       } catch { /* ignore */ }
 
       setSignedUp(true);
-      toast.success("Account created. Check your email to verify.");
+      // No success toast — keep the user in motion toward checkout.
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setErrors({ submit: msg });
@@ -318,26 +317,48 @@ const ColdLandingCard: React.FC = () => (
   </motion.div>
 );
 
-const SuccessCard: React.FC<{ email: string; fullName: string }> = ({ email, fullName }) => (
-  <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(28px, 5vw, 40px)", textAlign: "left" }} data-testid="status-account-created">
-    <div style={{ width: 52, height: 52, borderRadius: 16, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.28)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-      <CheckCircle style={{ width: 28, height: 28, color: P_SEC }} />
-    </div>
-    <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.5rem, 3vw, 1.9rem)", letterSpacing: "-0.02em", margin: "0 0 10px", color: TEXT, lineHeight: 1.18 }}>
-      Account created{fullName ? `, ${fullName.split(" ")[0]}` : ""}.
-    </h1>
-    <p style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.6, margin: "0 0 20px" }}>
-      We've sent a verification email to <strong style={{ color: P_SEC }} data-testid="text-success-email">{email}</strong>. Tap the link to confirm your account — the same email and password will sign you in on the Cruzi mobile app.
+const SuccessCard: React.FC<{ email: string; fullName: string }> = () => (
+  <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(28px, 5vw, 40px)", textAlign: "center" }} data-testid="status-securing-checkout" role="status" aria-live="polite">
+    <style>{`
+      @keyframes cruziSpin { to { transform: rotate(360deg); } }
+      .securing-spinner {
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 3px solid rgba(115,49,223,0.18);
+        border-top-color: ${P};
+        margin: 4px auto 18px;
+        animation: cruziSpin 0.9s linear infinite;
+      }
+      @keyframes cruziProgress {
+        0%   { transform: translateX(-100%); }
+        50%  { transform: translateX(20%); }
+        100% { transform: translateX(110%); }
+      }
+      .securing-bar {
+        position: relative;
+        margin: 18px auto 0;
+        width: 70%;
+        height: 4px;
+        border-radius: 9999px;
+        background: rgba(115,49,223,0.12);
+        overflow: hidden;
+      }
+      .securing-bar::after {
+        content: "";
+        position: absolute; top: 0; left: 0;
+        width: 40%; height: 100%;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, ${P_SEC}, ${P});
+        animation: cruziProgress 1.4s ease-in-out infinite;
+      }
+    `}</style>
+    <div className="securing-spinner" aria-hidden="true" />
+    <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.25rem, 2.6vw, 1.55rem)", letterSpacing: "-0.02em", margin: "0 0 8px", color: TEXT, lineHeight: 1.2 }} data-testid="text-securing-heading">
+      Securing checkout…
+    </h2>
+    <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.55, margin: 0 }}>
+      One moment while we set up your secure payment.
     </p>
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 16, borderRadius: 16, background: "rgba(115,49,223,0.06)", border: "1px solid rgba(115,49,223,0.18)" }} data-testid="status-checkout-next">
-      <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: "rgba(115,49,223,0.16)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <CreditCard style={{ width: 20, height: 20, color: P_SEC }} />
-      </div>
-      <div>
-        <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14.5, color: TEXT, lineHeight: 1.3 }}>Secure checkout opens next.</div>
-        <div style={{ color: MUTED, fontSize: 13, marginTop: 2, lineHeight: 1.5 }}>One-time £9.99 payment. We'll redirect you to Stripe shortly.</div>
-      </div>
-    </div>
+    <div className="securing-bar" aria-hidden="true" />
   </motion.div>
 );
 
