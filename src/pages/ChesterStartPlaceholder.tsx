@@ -141,7 +141,7 @@ const ChesterStartPlaceholder: React.FC = () => {
     setSubmitting(true);
     setErrors({});
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -150,10 +150,10 @@ const ChesterStartPlaceholder: React.FC = () => {
         },
       });
 
-      if (error) {
-        const friendly = error.message.toLowerCase().includes("already registered")
+      if (signUpErr) {
+        const friendly = signUpErr.message.toLowerCase().includes("already registered")
           ? "This email is already registered. Try signing in inside the Cruzi app instead."
-          : error.message;
+          : signUpErr.message;
         setErrors({ submit: friendly });
         toast.error(friendly);
         return;
@@ -170,8 +170,45 @@ const ChesterStartPlaceholder: React.FC = () => {
         sessionStorage.setItem(FUNNEL_KEY, JSON.stringify(updated));
       } catch { /* ignore */ }
 
-      // Show the continuous "Securing checkout…" state while we hit Stripe.
+      // Show the continuous "Securing checkout…" state immediately so the UI
+      // stays calm while we ensure a session and open Stripe Checkout.
       setSignedUp(true);
+
+      // ---- Ensure we have an authenticated session before calling the
+      // JWT-protected checkout function. signUp returns a session only when
+      // email confirmation is disabled; when it's enabled, signUp returns
+      // session: null and we must sign in explicitly. Mirrors the mobile app.
+      let session = signUpData?.session ?? null;
+
+      if (!session) {
+        const attemptSignIn = async () => {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (error || !data?.session) return null;
+          return data.session;
+        };
+
+        // First attempt — may race the auth row landing in the backend.
+        session = await attemptSignIn();
+
+        // Single retry after a short backoff for the timing race.
+        if (!session) {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          session = await attemptSignIn();
+        }
+      }
+
+      if (!session) {
+        const msg =
+          "We created your account but couldn't sign you in for checkout. Please try again in a moment.";
+        setErrors({ submit: msg });
+        toast.error(msg);
+        setSignedUp(false);
+        return;
+      }
+      // ---- End session-ensure block.
 
       // Create the Stripe Checkout Session and redirect. The user lands on
       // /chester/success on completion, or back here with ?canceled=1.
