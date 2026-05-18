@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, BadgeCheck, CheckCircle, Clock, CreditCard, Lock, Shield, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCircle, Clock, Lock, Mail, Shield, Users } from "lucide-react";
 import SiteNav from "@/components/landing/SiteNav";
 import PhoneMockup from "@/components/landing/PhoneMockup";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -333,7 +333,7 @@ const SubmittedView: React.FC<SubmittedViewProps> = ({ firstName, email, area, o
 
   return (
     <>
-      <section style={{ position: "relative", zIndex: 1, padding: "120px 24px 24px" }}>
+      <section style={{ position: "relative", zIndex: 1, padding: "120px 24px 16px" }}>
         <div style={{ maxWidth: 680, margin: "0 auto" }}>
           <motion.div id="confirmation-card" {...fadeUp} data-testid="status-confirmation" style={{ ...glassCard, padding: "clamp(28px, 4vw, 36px)" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
@@ -341,27 +341,19 @@ const SubmittedView: React.FC<SubmittedViewProps> = ({ firstName, email, area, o
               <Clock style={{ width: 11, height: 11 }} /> CURRENT AVAILABILITY · CHESTER REGION
             </div>
             <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.65rem, 3.2vw, 2.15rem)", letterSpacing: "-0.02em", margin: "0 0 14px", color: TEXT, lineHeight: 1.12 }}>
-              Right now, all local instructors are fully booked.
+              You’re on the Chester waiting list!
             </h1>
-            <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.65, margin: "0 0 22px" }}>
-              Thanks, {firstNameOnly}. You're on the waiting list for the <strong style={{ color: P_SEC }} data-testid="text-area">{area}</strong> area. We'll email <strong style={{ color: TEXT }} data-testid="text-email">{email}</strong> as soon as a verified local ADI has a space.
+            <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.65, margin: "0 0 20px" }}>
+              Thanks, {firstNameOnly}. We’ll email <strong style={{ color: P_SEC }} data-testid="text-email">{email}</strong> as soon as a verified local ADI has a space.
             </p>
-            <div style={{ borderTop: `1px solid ${GLASS_B}`, paddingTop: 18, display: "flex", flexDirection: "column", gap: 16 }}>
-              {([
-                { Icon: Clock,      title: "2–4 weeks",          sub: "Typical wait in your area" },
-                { Icon: Shield,     title: "Verified ADIs only", sub: "All instructors are DVSA-approved" },
-                { Icon: CreditCard, title: "No payment today",   sub: "You'll pay your instructor once lessons start" },
-              ] as const).map(({ Icon, title, sub }) => (
-                <div key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                  <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon style={{ width: 20, height: 20, color: P_SEC }} />
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15.5, color: TEXT, lineHeight: 1.25 }}>{title}</div>
-                    <div style={{ color: MUTED, fontSize: 13.5, marginTop: 2, lineHeight: 1.5 }}>{sub}</div>
-                  </div>
-                </div>
-              ))}
+            <div style={{ borderTop: `1px solid ${GLASS_B}`, paddingTop: 16, display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Mail style={{ width: 20, height: 20, color: P_SEC }} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14.5, color: TEXT, lineHeight: 1.3 }}>We’ll be in touch soon.</div>
+                <div style={{ color: MUTED, fontSize: 13.5, marginTop: 2, lineHeight: 1.5 }}>Thanks for your patience.</div>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -417,23 +409,22 @@ const SubmittedView: React.FC<SubmittedViewProps> = ({ firstName, email, area, o
         <div style={{ maxWidth: 680, margin: "0 auto" }}>
           <motion.div {...fadeUp} data-testid="card-family-practice-cta" style={{ ...glassCard, padding: "clamp(20px, 3vw, 26px)" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
-            <div className="cta-row">
-              <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0 }}>
-                <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Users style={{ width: 22, height: 22, color: P_SEC }} />
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Family Practice Access</div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 2 }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 30, color: TEXT, lineHeight: 1, letterSpacing: "-0.02em" }}>£9.99</span>
-                  </div>
-                  <div style={{ color: MUTED, fontSize: 12.5, marginTop: 4 }}>One payment. Lifetime access.</div>
-                </div>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+              <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 14, background: "rgba(115,49,223,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Users style={{ width: 24, height: 24, color: P_SEC }} />
               </div>
-              <button data-testid="button-start-family-practice" className="btn-pulse" onClick={onStartFamilyPractice} style={{ background: P, color: "#fff", border: "none", padding: "15px 26px", borderRadius: 9999, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "transform 0.2s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, flexShrink: 0 }} onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-1px)")} onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                Start Family Practice <ArrowRight style={{ width: 16, height: 16 }} />
-              </button>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Family Practice Access</div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 34, color: P_SEC, lineHeight: 1.05, letterSpacing: "-0.02em", marginTop: 4 }}>£9.99</div>
+                <div style={{ color: MUTED, fontSize: 13, marginTop: 4 }}>One payment. No subscription.</div>
+              </div>
             </div>
+            <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.6, margin: "0 0 18px" }}>
+              Get access to Cruzi’s family practice tools and start making progress today.
+            </p>
+            <button data-testid="button-start-family-practice" className="btn-pulse" onClick={onStartFamilyPractice} style={{ width: "100%", background: P, color: "#fff", border: "none", padding: "16px 26px", borderRadius: 9999, fontSize: 15.5, fontWeight: 700, cursor: "pointer", transition: "transform 0.2s", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }} onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-1px)")} onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+              Start Family Practice <ArrowRight style={{ width: 16, height: 16 }} />
+            </button>
           </motion.div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: MUTED, fontSize: 12.5, marginTop: 14 }}>
             <Lock style={{ width: 12, height: 12, color: P_SEC }} />
