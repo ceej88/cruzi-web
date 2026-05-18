@@ -1,20 +1,19 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Smartphone } from "lucide-react";
+import { SiAppstore, SiGoogleplay } from "react-icons/si";
 import SiteNav from "@/components/landing/SiteNav";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 const BG      = "#F8F9FF";
 const GLASS   = "rgba(255, 255, 255, 0.92)";
 const GLASS_B = "rgba(115, 49, 223, 0.18)";
-const P       = "#5300B7";
 const P_SEC   = "#6D28D9";
 const TEXT    = "#0D1C2F";
 const MUTED   = "#4A4455";
 
-const APP_STORE_URL  = "https://apps.apple.com/gb/app/cruzi/id6478977298";
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=co.uk.cruzi.app";
+const APP_STORE_URL  = "https://apps.apple.com/gb/app/cruzi/id6759689036";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.cruzi.app&pli=1";
 
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
@@ -33,53 +32,215 @@ const glassCard: React.CSSProperties = {
   boxShadow: "0 24px 60px rgba(13, 28, 47, 0.08)",
 };
 
+const StoreButton: React.FC<{
+  href: string;
+  icon: React.ReactNode;
+  topLine: string;
+  bottomLine: string;
+  testId: string;
+  ariaLabel: string;
+}> = ({ href, icon, topLine, bottomLine, testId, ariaLabel }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    data-testid={testId}
+    aria-label={ariaLabel}
+    className="store-badge"
+  >
+    <span className="store-badge__icon" aria-hidden="true">{icon}</span>
+    <span className="store-badge__text">
+      <span className="store-badge__top">{topLine}</span>
+      <span className="store-badge__bottom">{bottomLine}</span>
+    </span>
+  </a>
+);
+
 const ChesterSuccessPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
     document.head.appendChild(link);
     return () => { document.head.removeChild(link); };
   }, []);
 
   usePageMeta({
-    title: "You're in — Family Practice | Cruzi",
-    description: "Your Cruzi Family Practice access is confirmed. Download the app and sign in with the email and password you just created.",
+    title: "You're already ahead of most learners — Cruzi Family Practice",
+    description:
+      "Your Cruzi Family Practice access is ready. Download Cruzi and sign in with the same email and password you just created.",
     canonical: "https://cruzi.co.uk/chester/success",
   });
 
   return (
     <div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+      <style>{`
+        .store-row {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          margin: 22px 0 18px;
+        }
+        @media (min-width: 520px) {
+          .store-row { flex-direction: row; justify-content: center; }
+        }
+        .store-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          background: #000;
+          color: #fff;
+          padding: 12px 20px;
+          border-radius: 14px;
+          text-decoration: none;
+          font-family: 'Inter', sans-serif;
+          min-height: 56px;
+          min-width: 0;
+          flex: 1 1 auto;
+          transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+          box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+          border: 1px solid rgba(255,255,255,0.06);
+        }
+        @media (min-width: 520px) {
+          .store-badge { flex: 0 0 auto; min-width: 200px; }
+        }
+        .store-badge:hover, .store-badge:focus-visible {
+          transform: translateY(-1px);
+          background: #111;
+          outline: none;
+          box-shadow: 0 14px 30px rgba(0,0,0,0.24);
+        }
+        .store-badge__icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          color: #fff;
+          flex-shrink: 0;
+        }
+        .store-badge__icon svg { width: 28px; height: 28px; }
+        .store-badge__text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.05;
+          text-align: left;
+          min-width: 0;
+        }
+        .store-badge__top {
+          font-size: 10.5px;
+          letter-spacing: 0.04em;
+          opacity: 0.85;
+          text-transform: none;
+          margin-bottom: 3px;
+        }
+        .store-badge__bottom {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 17px;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+        }
+        .stat-row {
+          display: flex;
+          align-items: baseline;
+          gap: 10px;
+          padding: 14px 16px;
+          margin: 0 0 18px;
+          background: rgba(115,49,223,0.06);
+          border: 1px solid rgba(115,49,223,0.18);
+          border-radius: 16px;
+        }
+        .stat-row__big {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-weight: 800;
+          font-size: 28px;
+          letter-spacing: -0.02em;
+          color: ${P_SEC};
+          line-height: 1;
+          flex-shrink: 0;
+        }
+        .stat-row__copy {
+          color: ${TEXT};
+          font-size: 14px;
+          line-height: 1.45;
+          margin: 0;
+          text-align: left;
+        }
+      `}</style>
+
       <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse at 12% 18%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 88% 82%, rgba(115,49,223,0.10) 0%, transparent 50%)" }} />
 
       <SiteNav navigate={navigate} onGetStarted={() => navigate("/chester")} />
 
       <section style={{ position: "relative", zIndex: 1, padding: "104px 20px 56px" }}>
-        <div style={{ maxWidth: 520, margin: "0 auto" }}>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(28px, 5vw, 40px)", textAlign: "center" }} data-testid="status-purchase-success">
-            <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.28)", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
-              <CheckCircle style={{ width: 34, height: 34, color: P_SEC }} aria-hidden="true" />
+            <div
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 9999, background: "rgba(115,49,223,0.12)", border: "1px solid rgba(115,49,223,0.32)", color: P_SEC, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", marginBottom: 18 }}
+              data-testid="pill-family-practice-ready"
+            >
+              FAMILY PRACTICE — UNLOCKED
             </div>
 
-            <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.9rem, 4vw, 2.4rem)", letterSpacing: "-0.02em", margin: "0 0 12px", color: TEXT, lineHeight: 1.1 }} data-testid="text-heading">
-              You're in.
+            <h1
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.9rem, 4.4vw, 2.5rem)", letterSpacing: "-0.025em", margin: "0 0 14px", color: TEXT, lineHeight: 1.1 }}
+              data-testid="text-heading"
+            >
+              You're already ahead of most learners.
             </h1>
-            <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.6, margin: "0 0 22px" }}>
+
+            <p
+              style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.6, margin: "0 0 22px" }}
+              data-testid="text-supporting"
+            >
+              Nearly half of learner drivers fail their driving test. Consistent practice between lessons can make a real difference.
+            </p>
+
+            <div className="stat-row" data-testid="stat-row">
+              <span className="stat-row__big">~50%</span>
+              <p className="stat-row__copy">
+                of UK learners fail first time. Steady practice between lessons is one of the biggest things that shifts the odds.
+              </p>
+            </div>
+
+            <h2
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.2rem, 2.6vw, 1.5rem)", letterSpacing: "-0.015em", margin: "20px 0 8px", color: TEXT, lineHeight: 1.2 }}
+              data-testid="text-access-ready"
+            >
+              Your Family Practice access is ready.
+            </h2>
+
+            <p
+              style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 4px" }}
+              data-testid="text-download-instruction"
+            >
               Download Cruzi and sign in with the same email and password you just created.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginBottom: 18 }} data-testid="store-buttons">
-              <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" data-testid="link-app-store" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: P, color: "#fff", padding: "13px 22px", borderRadius: 9999, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14.5, fontWeight: 700, textDecoration: "none", boxShadow: "0 12px 28px rgba(83, 0, 183, 0.22)" }}>
-                <Smartphone style={{ width: 16, height: 16 }} /> Download on App Store
-              </a>
-              <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" data-testid="link-play-store" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#fff", color: P_SEC, padding: "13px 22px", borderRadius: 9999, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14.5, fontWeight: 700, textDecoration: "none", border: `1px solid ${GLASS_B}` }}>
-                <Smartphone style={{ width: 16, height: 16 }} /> Get it on Google Play
-              </a>
+            <div className="store-row" data-testid="store-buttons">
+              <StoreButton
+                href={APP_STORE_URL}
+                icon={<SiAppstore />}
+                topLine="Download on the"
+                bottomLine="App Store"
+                testId="link-app-store"
+                ariaLabel="Download Cruzi on the App Store"
+              />
+              <StoreButton
+                href={PLAY_STORE_URL}
+                icon={<SiGoogleplay />}
+                topLine="GET IT ON"
+                bottomLine="Google Play"
+                testId="link-play-store"
+                ariaLabel="Get Cruzi on Google Play"
+              />
             </div>
 
-            <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.55, margin: 0 }}>
+            <p style={{ color: MUTED, fontSize: 12.5, lineHeight: 1.55, margin: "10px 0 0" }}>
               A payment receipt has been emailed to you. If you can't find it, check your spam folder.
             </p>
           </motion.div>
