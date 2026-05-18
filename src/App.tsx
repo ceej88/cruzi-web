@@ -27,6 +27,7 @@ import PricingPage from "./pages/PricingPage";
 import DownloadPage from "./pages/DownloadPage";
 import ChesterLearnerPage from "./pages/ChesterLearnerPage";
 import ChesterStartPlaceholder from "./pages/ChesterStartPlaceholder";
+import ChesterSuccessPage from "./pages/ChesterSuccessPage";
 
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
@@ -90,6 +91,7 @@ const AppRoutes = () => {
       <Route path="/download" element={<DownloadPage />} />
       <Route path="/chester" element={<ChesterLearnerPage />} />
       <Route path="/chester/start" element={<ChesterStartPlaceholder />} />
+      <Route path="/chester/success" element={<ChesterSuccessPage />} />
 
       <Route path="/admin-login" element={
         <Suspense fallback={<LazyFallback />}>
