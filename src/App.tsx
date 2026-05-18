@@ -25,6 +25,8 @@ import EnquiryPage from "./pages/EnquiryPage";
 import FeaturesPage from "./pages/FeaturesPage";
 import PricingPage from "./pages/PricingPage";
 import DownloadPage from "./pages/DownloadPage";
+import ChesterLearnerPage from "./pages/ChesterLearnerPage";
+import ChesterStartPlaceholder from "./pages/ChesterStartPlaceholder";
 
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
@@ -86,6 +88,8 @@ const AppRoutes = () => {
       <Route path="/route/:id" element={<SharedRoutePage />} />
       <Route path="/enquire/:slug" element={<EnquiryPage />} />
       <Route path="/download" element={<DownloadPage />} />
+      <Route path="/chester" element={<ChesterLearnerPage />} />
+      <Route path="/chester/start" element={<ChesterStartPlaceholder />} />
 
       <Route path="/admin-login" element={
         <Suspense fallback={<LazyFallback />}>
