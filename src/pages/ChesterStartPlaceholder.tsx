@@ -91,6 +91,12 @@ const ChesterStartPlaceholder: React.FC = () => {
 
   const hasFunnel = !!(funnel.firstName && funnel.email);
 
+  const [canceled, setCanceled] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("canceled") === "1") setCanceled(true);
+  }, []);
+
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -164,8 +170,23 @@ const ChesterStartPlaceholder: React.FC = () => {
         sessionStorage.setItem(FUNNEL_KEY, JSON.stringify(updated));
       } catch { /* ignore */ }
 
+      // Show the continuous "Securing checkout…" state while we hit Stripe.
       setSignedUp(true);
-      // No success toast — keep the user in motion toward checkout.
+
+      // Create the Stripe Checkout Session and redirect. The user lands on
+      // /chester/success on completion, or back here with ?canceled=1.
+      const { data: checkout, error: checkoutErr } = await supabase.functions.invoke(
+        "chester-create-checkout-session",
+      );
+      if (checkoutErr || !checkout?.url) {
+        const msg = "We couldn't open secure checkout. Please try again in a moment.";
+        setErrors({ submit: msg });
+        toast.error(msg);
+        setSignedUp(false);
+        return;
+      }
+      window.location.href = checkout.url;
+      return;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setErrors({ submit: msg });
@@ -204,6 +225,21 @@ const ChesterStartPlaceholder: React.FC = () => {
         <div style={{ maxWidth: 480, margin: "0 auto" }}>
           {!hydrated ? null : !hasFunnel ? (
             <ColdLandingCard />
+          ) : canceled && !signedUp ? (
+            <CancelCard onResume={async () => {
+              setCanceled(false);
+              setSignedUp(true);
+              const { data: checkout, error: checkoutErr } =
+                await supabase.functions.invoke("chester-create-checkout-session");
+              if (checkoutErr || !checkout?.url) {
+                const msg = "We couldn't reopen secure checkout. Please try again.";
+                toast.error(msg);
+                setSignedUp(false);
+                setCanceled(true);
+                return;
+              }
+              window.location.href = checkout.url;
+            }} />
           ) : signedUp ? (
             <SuccessCard email={email} fullName={fullName} />
           ) : (
@@ -314,6 +350,26 @@ const ColdLandingCard: React.FC = () => (
     <Link to="/chester" data-testid="link-back-to-chester" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: P, color: "#fff", padding: "13px 26px", borderRadius: 9999, fontSize: 14.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif", textDecoration: "none", boxShadow: "0 0 16px rgba(115,49,223,0.28)" }}>
       Go to the Chester page
     </Link>
+  </motion.div>
+);
+
+
+const CancelCard: React.FC<{ onResume: () => void | Promise<void> }> = ({ onResume }) => (
+  <motion.div {...fadeUp} style={{ ...glassCard, padding: "clamp(24px, 5vw, 36px)", textAlign: "left" }} data-testid="status-checkout-canceled">
+    <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.4rem, 2.8vw, 1.7rem)", margin: "0 0 10px", color: TEXT, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+      No problem.
+    </h1>
+    <p style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.6, margin: "0 0 22px" }}>
+      Your account has been created. You can come back to Family Practice any time.
+    </p>
+    <button
+      type="button"
+      onClick={onResume}
+      data-testid="button-resume-checkout"
+      style={{ display: "inline-flex", alignItems: "center", gap: 8, background: P, color: "#fff", border: 0, padding: "13px 26px", borderRadius: 9999, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14.5, cursor: "pointer", boxShadow: "0 12px 28px rgba(83, 0, 183, 0.22)" }}
+    >
+      Continue to secure checkout
+    </button>
   </motion.div>
 );
 
