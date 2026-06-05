@@ -8,6 +8,7 @@ import TimeBackSection from "./savings/TimeBackSection";
 import StudentOutcomesSection from "./savings/StudentOutcomesSection";
 import { usePageTracker } from "@/hooks/usePageTracker";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import SiteNav from "@/components/landing/SiteNav";
 
 /* ─── Main Page ─── */
 const SavingsCalculator: React.FC = () => {
@@ -56,28 +57,15 @@ const SavingsCalculator: React.FC = () => {
   const hoursPresets = [1, 2, 3, 4];
   const daysOptions = [4, 5, 6];
   return <div className="min-h-screen bg-background text-foreground overflow-x-hidden overflow-y-auto">
-      {/* ─── FIXED NAV ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border pt-safe">
-        <div className="max-w-4xl mx-auto px-4 sm:px-10">
-          <div className="h-16 sm:h-20 flex items-center justify-between">
-            <button onClick={() => navigate("/")} className="font-black text-xl tracking-tight neural-gradient-text" style={{
-            animation: "text-glow 3s ease-in-out infinite"
-          }}>
-              Cruzi
-            </button>
-            <button onClick={() => navigate("/instructor")} className="min-h-[44px] px-5 py-2.5 bg-foreground text-background rounded-full font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all" style={{
-            touchAction: "manipulation"
-          }}>
-              Get Started
-            </button>
-          </div>
-        </div>
-      </nav>
+      <div className="fixed inset-0 z-0 pointer-events-none" style={{
+        background: "radial-gradient(ellipse at 15% 25%, rgba(115,49,223,0.18) 0%, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(115,49,223,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(115,49,223,0.08) 0%, transparent 45%)"
+      }} />
+      <SiteNav navigate={navigate} onGetStarted={() => navigate("/auth?role=instructor")} />
 
       {/* ═══════════════════════════════════════
           SECTION 1 — THE HOOK
        ═══════════════════════════════════════ */}
-      <section className="pt-32 pb-16 px-6 sm:px-10 min-h-[100dvh] flex flex-col items-center justify-center text-center">
+      <section className="relative z-10 pt-32 pb-16 px-6 sm:px-10 min-h-[100dvh] flex flex-col items-center justify-center text-center">
         <motion.div initial={{
         opacity: 0,
         y: 40
@@ -88,19 +76,19 @@ const SavingsCalculator: React.FC = () => {
         duration: 0.9,
         ease: [0.22, 1, 0.36, 1]
       }} className="max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary border border-border rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-secondary-foreground">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent border border-primary/30 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-accent-foreground">
             <Clock className="w-3.5 h-3.5" />
             Time &amp; Money Calculator
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-outfit tracking-[-0.03em] leading-[1.15] mb-8">
             How Much Is Admin{" "}
-            <span className="whitespace-nowrap italic text-[#7c3aed] inline-block pb-1 mx-[10px] px-[4px]">
+            <span className="whitespace-nowrap italic text-primary inline-block pb-1 mx-[10px] px-[4px]">
               Costing You?
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed font-medium mb-16 text-secondary-foreground">Most ADIs lose 1, 3 hours a day on paperwork, texts, and record-keeping. Let's see what that means for your wallet, and your life.</p>
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed font-medium mb-16 text-muted-foreground">Most ADIs lose 1-3 hours a day on paperwork, texts, and record-keeping. Let's see what that means for your wallet, and your life.</p>
 
           <motion.div animate={{
           y: [0, 8, 0]
@@ -117,10 +105,10 @@ const SavingsCalculator: React.FC = () => {
       {/* ═══════════════════════════════════════
           SECTION 2 — THE CALCULATOR
        ═══════════════════════════════════════ */}
-      <section className="py-20 px-4 sm:px-10">
+      <section className="relative z-10 py-20 px-4 sm:px-10">
         <div className="max-w-4xl mx-auto space-y-8">
           <FadeInSection>
-            <p className="text-sm font-black uppercase tracking-[0.3em] mb-3 text-center text-secondary-foreground">
+            <p className="text-sm font-black uppercase tracking-[0.3em] mb-3 text-center text-muted-foreground">
               Personalise Your Numbers
             </p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-outfit text-center mb-12">
@@ -145,7 +133,7 @@ const SavingsCalculator: React.FC = () => {
                 {hoursPresets.map(h => <button key={h} onClick={() => {
                 setHoursSaved(h);
                 haptic();
-              }} className={`min-h-[44px] px-5 py-2.5 rounded-full text-sm font-black uppercase tracking-wider transition-all active:scale-95 ${hoursSaved === h ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-secondary-foreground hover:bg-accent"}`} style={{
+              }} className={`min-h-[44px] px-5 py-2.5 rounded-full text-sm font-black uppercase tracking-wider transition-all active:scale-95 ${hoursSaved === h ? "bg-primary text-primary-foreground shadow-lg" : "bg-accent text-accent-foreground hover:bg-primary/10"}`} style={{
                 touchAction: "manipulation"
               }}>
                     {h}h
@@ -214,7 +202,7 @@ const SavingsCalculator: React.FC = () => {
                 {daysOptions.map(d => <button key={d} onClick={() => {
                 setWorkingDays(d);
                 haptic();
-              }} className={`flex-1 min-h-[56px] rounded-2xl text-lg font-black transition-all active:scale-95 ${workingDays === d ? "bg-primary text-primary-foreground shadow-lg scale-105" : "bg-secondary text-secondary-foreground hover:bg-accent"}`} style={{
+              }} className={`flex-1 min-h-[56px] rounded-2xl text-lg font-black transition-all active:scale-95 ${workingDays === d ? "bg-primary text-primary-foreground shadow-lg scale-105" : "bg-accent text-accent-foreground hover:bg-primary/10"}`} style={{
                 touchAction: "manipulation"
               }}>
                     {d} days
@@ -263,7 +251,7 @@ const SavingsCalculator: React.FC = () => {
         <FadeInSection>
           <div className="max-w-4xl mx-auto">
             <div className="relative rounded-[2rem] sm:rounded-[3rem] overflow-hidden p-8 sm:p-14 text-white" style={{
-            background: "#7c3aed",
+            background: "#5300B7",
             animation: "glow-breathe 3s ease-in-out infinite"
           }}>
               {/* Decorative blurs */}
@@ -319,7 +307,7 @@ const SavingsCalculator: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button onClick={() => {
                   haptic();
-                  navigate("/instructor");
+                  navigate("/auth?role=instructor");
                 }} className="min-h-[56px] px-10 py-4 bg-white text-foreground rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3" style={{
                   touchAction: "manipulation"
                 }}>
@@ -328,7 +316,7 @@ const SavingsCalculator: React.FC = () => {
                   </button>
                   <button onClick={() => {
                   haptic();
-                  navigate("/instructor");
+                  navigate("/auth?role=instructor");
                 }} className="min-h-[44px] px-8 py-3 bg-white/10 border border-white/30 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:bg-white/20 active:scale-95 transition-all" style={{
                   touchAction: "manipulation"
                 }}>
@@ -345,12 +333,8 @@ const SavingsCalculator: React.FC = () => {
       <style dangerouslySetInnerHTML={{
       __html: `
           @keyframes glow-breathe {
-            0%, 100% { box-shadow: 0 0 30px rgba(139,92,246,0.5), 0 0 60px rgba(45,212,191,0.3); }
-            50% { box-shadow: 0 0 50px rgba(139,92,246,0.8), 0 0 100px rgba(45,212,191,0.5); }
-          }
-          @keyframes text-glow {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(139,92,246,0.6)) drop-shadow(0 0 16px rgba(45,212,191,0.4)); }
-            50% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.9)) drop-shadow(0 0 32px rgba(45,212,191,0.6)); }
+            0%, 100% { box-shadow: 0 0 30px rgba(115,49,223,0.35), 0 0 60px rgba(115,49,223,0.18); }
+            50% { box-shadow: 0 0 50px rgba(115,49,223,0.55), 0 0 100px rgba(115,49,223,0.28); }
           }
         `
     }} />

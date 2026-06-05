@@ -42,13 +42,13 @@ const TimeBackSection: React.FC<TimeBackSectionProps> = ({
     <section className="py-20 px-4 sm:px-10">
       <div className="max-w-4xl mx-auto">
         <FadeInSection>
-          <p className="text-sm font-black uppercase tracking-[0.3em] mb-3 text-center text-secondary-foreground">
+          <p className="text-sm font-black uppercase tracking-[0.3em] mb-3 text-center text-muted-foreground">
             Beyond The Numbers
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-outfit text-center mb-4">
             It's Not Just About Money
           </h2>
-          <p className="text-lg sm:text-xl max-w-2xl mx-auto text-center leading-relaxed font-medium mb-14 text-secondary-foreground">
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto text-center leading-relaxed font-medium mb-14 text-muted-foreground">
             Those{" "}
             <span className="font-black text-foreground">
               {animWeek.toFixed(1)} hours a week
