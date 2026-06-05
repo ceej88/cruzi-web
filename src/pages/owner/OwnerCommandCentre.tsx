@@ -4,17 +4,13 @@ import { Loader2 } from 'lucide-react';
 import { AdminShell } from './_shell/AdminShell';
 import Overview from './Overview';
 
-const AdminUserManagement       = lazy(() => import('./AdminUserManagement'));
-const AdminInstructorVerification = lazy(() => import('./AdminInstructorVerification'));
-const AdminInstructorActivity   = lazy(() => import('./AdminInstructorActivity'));
-const AdminSchoolManagement     = lazy(() => import('./AdminSchoolManagement'));
-const AdminSubscriptionOverview = lazy(() => import('./AdminSubscriptionOverview'));
-const AdminMessaging            = lazy(() => import('./AdminMessaging'));
-const AdminNotificationHub      = lazy(() => import('./AdminNotificationHub'));
-const AdminFeedback             = lazy(() => import('./AdminFeedback'));
-const AdminSupportAudit         = lazy(() => import('./AdminSupportAudit'));
-const BlogAdmin                 = lazy(() => import('./BlogAdmin'));
-const GrowthLab                 = lazy(() => import('./GrowthLab'));
+const Students = lazy(() => import('./Students'));
+const Instructors = lazy(() => import('./Instructors'));
+const Payments = lazy(() => import('./Payments'));
+const Lessons = lazy(() => import('./Lessons'));
+const TestBooking = lazy(() => import('./TestBooking'));
+const Support = lazy(() => import('./Support'));
+const AdminTools = lazy(() => import('./AdminTools'));
 
 const PageFallback = () => (
   <div className="flex items-center justify-center py-20" data-testid="admin-page-fallback">
@@ -31,17 +27,23 @@ export default function OwnerCommandCentre() {
     <Routes>
       <Route element={<AdminShell />}>
         <Route index                       element={<Overview />} />
-        <Route path="users"                element={wrap(<AdminUserManagement />)} />
-        <Route path="instructors"          element={wrap(<AdminInstructorVerification />)} />
-        <Route path="instructor-activity"  element={wrap(<AdminInstructorActivity />)} />
-        <Route path="schools"              element={wrap(<AdminSchoolManagement />)} />
-        <Route path="subscriptions"        element={wrap(<AdminSubscriptionOverview />)} />
-        <Route path="messaging"            element={wrap(<AdminMessaging />)} />
-        <Route path="notifications"        element={wrap(<AdminNotificationHub />)} />
-        <Route path="feedback"             element={wrap(<AdminFeedback />)} />
-        <Route path="audit"                element={wrap(<AdminSupportAudit />)} />
-        <Route path="blog"                 element={wrap(<BlogAdmin />)} />
-        <Route path="growth"               element={wrap(<GrowthLab />)} />
+        <Route path="students"             element={wrap(<Students />)} />
+        <Route path="instructors"          element={wrap(<Instructors />)} />
+        <Route path="payments"             element={wrap(<Payments />)} />
+        <Route path="lessons"              element={wrap(<Lessons />)} />
+        <Route path="test-booking"         element={wrap(<TestBooking />)} />
+        <Route path="support"              element={wrap(<Support />)} />
+        <Route path="admin-tools"          element={wrap(<AdminTools />)} />
+        <Route path="users"                element={<Navigate to="/owner/students" replace />} />
+        <Route path="instructor-activity"  element={<Navigate to="/owner/instructors" replace />} />
+        <Route path="schools"              element={<Navigate to="/owner/admin-tools" replace />} />
+        <Route path="subscriptions"        element={<Navigate to="/owner/payments" replace />} />
+        <Route path="messaging"            element={<Navigate to="/owner/admin-tools" replace />} />
+        <Route path="notifications"        element={<Navigate to="/owner/support" replace />} />
+        <Route path="feedback"             element={<Navigate to="/owner/support" replace />} />
+        <Route path="audit"                element={<Navigate to="/owner/support" replace />} />
+        <Route path="blog"                 element={<Navigate to="/owner/admin-tools" replace />} />
+        <Route path="growth"               element={<Navigate to="/owner/admin-tools" replace />} />
         <Route path="*"                    element={<Navigate to="/owner" replace />} />
       </Route>
     </Routes>

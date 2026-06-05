@@ -1,318 +1,183 @@
-import { useNavigate } from 'react-router-dom';
 import {
-  Users, GraduationCap, BabyIcon, ShieldCheck,
-  CalendarDays, FileText, Map, Mic, Trophy,
-  Coins, BadgeAlert, AlertTriangle, CreditCard, MessageSquare, ScrollText,
-  UserPlus, ArrowRight,
+  AlertTriangle,
+  CalendarDays,
+  ClipboardCheck,
+  CreditCard,
+  GraduationCap,
+  LifeBuoy,
+  ShieldCheck,
+  Users,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { MetricCard, type MetricStatus } from './_components/MetricCard';
 import { AlertCard } from './_components/AlertCard';
+import { MetricCard, type MetricStatus } from './_components/MetricCard';
 import { SectionHeader } from './_components/SectionHeader';
-import { ActivityFeed } from './_components/ActivityFeed';
 import {
-  useTodayMetrics, useUserBaseMetrics, useProductUsageMetrics,
-  useSmsMetrics, usePendingInstructors, useSubscriptionStats,
-} from './_data/useAdminData';
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  OperationsPage,
+  ReadOnlyNotice,
+  StatusPill,
+} from './_components/OperationsUI';
+import { formatCurrency, formatDateTime, useOperationsModel } from './_data/useOperationsData';
+import { Card, CardContent } from '@/components/ui/card';
 
-function status(q: { isLoading: boolean; isError: boolean; data: unknown }): MetricStatus {
-  if (q.isLoading) return 'loading';
-  if (q.isError || q.data == null) return 'unavailable';
-  return 'value';
-}
+const valueStatus: MetricStatus = 'value';
 
 export default function Overview() {
-  const navigate = useNavigate();
-  const today    = useTodayMetrics();
-  const base     = useUserBaseMetrics();
-  const usage    = useProductUsageMetrics();
-  const sms      = useSmsMetrics();
-  const pending  = usePendingInstructors();
-  const subs     = useSubscriptionStats();
+  const { model, isLoading, isError, error } = useOperationsModel();
 
-  const moneyStatus: MetricStatus =
-    subs.isLoading ? 'loading' : (subs.isError ? 'unavailable' : 'value');
+  if (isLoading) {
+    return (
+      <OperationsPage title="Overview" description="Read-only operating snapshot of the Cruzi platform.">
+        <LoadingState />
+      </OperationsPage>
+    );
+  }
+
+  if (isError || !model) {
+    return (
+      <OperationsPage title="Overview" description="Read-only operating snapshot of the Cruzi platform.">
+        <ErrorState message={error instanceof Error ? error.message : undefined} />
+      </OperationsPage>
+    );
+  }
+
+  const recentIssues = [
+    ...model.payments.filter((payment) => payment.qualityFlags.length > 0).slice(0, 4).map((payment) => ({
+      id: payment.id,
+      label: `${payment.studentName} payment quality warning`,
+      detail: payment.qualityFlags.join(', '),
+      status: payment.status,
+      date: payment.created_at,
+    })),
+    ...model.lessons.filter((lesson) => lesson.qualityFlags.length > 0).slice(0, 4).map((lesson) => ({
+      id: lesson.id,
+      label: `${lesson.studentName} lesson warning`,
+      detail: lesson.qualityFlags.join(', '),
+      status: lesson.status,
+      date: lesson.scheduled_at,
+    })),
+    ...model.supportEvents.filter((event) => event.result !== 'success').slice(0, 4).map((event) => ({
+      id: event.id,
+      label: event.event_type,
+      detail: event.entity_type,
+      status: event.result,
+      date: event.created_at,
+    })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8);
 
   return (
-    <div className="px-4 py-6 lg:px-8 lg:py-8 max-w-[1600px] mx-auto space-y-8" data-testid="page-overview">
-      {/* Page header */}
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight" data-testid="text-page-title">
-          Overview
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Live operating snapshot of the Cruzi platform.
-        </p>
-      </div>
+    <OperationsPage title="Overview" description="Live read-only snapshot for day-to-day Cruzi operations.">
+      <ReadOnlyNotice>
+        This dashboard only reads existing production data. Dangerous account tools, broadcasts, backend changes, and cleanup work are isolated away from daily operations.
+      </ReadOnlyNotice>
 
-      {/* TODAY */}
-      <section data-testid="section-today-wrapper">
-        <SectionHeader title="Today" hint="Activity since midnight UK time." />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-          <MetricCard
-            label="New sign-ups"
-            value={today.data?.signups}
-            status={status(today)}
-            icon={UserPlus}
-          />
-          <MetricCard
-            label="Lessons scheduled"
-            value={today.data?.lessonsToday}
-            status={status(today)}
-            icon={CalendarDays}
-            hint="Lessons with scheduled_at today"
-          />
-          <MetricCard
-            label="SMS top-ups"
-            value={today.data?.smsTopUpsToday}
-            status={status(today)}
-            icon={Coins}
-            hint="Stripe credit purchases today"
-          />
-          <MetricCard
-            label="Pending instructor approvals"
-            value={pending.data}
-            status={status(pending)}
-            icon={ShieldCheck}
-            to="/owner/instructors"
-          />
-        </div>
-      </section>
-
-      {/* NEEDS ATTENTION */}
-      <section data-testid="section-needs-attention-wrapper">
-        <SectionHeader title="Needs attention" hint="Items waiting on you." />
+      <section>
+        <SectionHeader title="Needs Attention" hint="Start here before looking at general metrics." />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
           <AlertCard
-            label="Instructors awaiting approval"
-            count={pending.data ?? null}
-            loading={pending.isLoading}
+            label="Pending bank transfers"
+            count={model.counts.pendingBankTransfers}
+            severity="critical"
+            icon={CreditCard}
+            to="/owner/payments"
+          />
+          <AlertCard
+            label="Instructor approvals"
+            count={model.counts.pendingInstructors}
             severity="warn"
             icon={ShieldCheck}
             to="/owner/instructors"
-            testId="alert-pending-approvals"
           />
           <AlertCard
-            label="Instructors with low SMS credits (< 10)"
-            count={sms.data?.lowBalanceCount ?? null}
-            loading={sms.isLoading}
+            label="Lesson data warnings"
+            count={model.counts.staleScheduledLessons + model.counts.brokenLessonJoins + model.counts.missingLessonStudents}
             severity="warn"
-            icon={BadgeAlert}
-            testId="alert-low-credits"
+            icon={AlertTriangle}
+            to="/owner/lessons"
           />
           <AlertCard
-            label="Failed SMS top-ups (last 7d)"
-            count={sms.data?.txFail7d ?? null}
-            loading={sms.isLoading}
-            severity="critical"
+            label="Payment data warnings"
+            count={model.counts.paymentsWithQualityWarnings}
+            severity="warn"
             icon={AlertTriangle}
-            testId="alert-failed-topups"
+            to="/owner/payments"
+          />
+          <AlertCard
+            label="Booking approvals requested"
+            count={model.counts.requestedBookingPasses}
+            severity="warn"
+            icon={ClipboardCheck}
+            to="/owner/test-booking"
+          />
+          <AlertCard
+            label="Failed support events last 7d"
+            count={model.counts.failedEvents7d}
+            severity="critical"
+            icon={LifeBuoy}
+            to="/owner/support"
           />
         </div>
       </section>
 
-      {/* USER BASE */}
-      <section data-testid="section-user-base-wrapper">
-        <SectionHeader
-          title="User base"
-          action={{ label: 'Manage users', to: '/owner/users' }}
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
-          <MetricCard
-            label="Total profiles"
-            value={base.data?.profilesTotal}
-            status={status(base)}
-            icon={Users}
-            to="/owner/users"
-            hint={base.data ? `${base.data.profilesNew7d} new this week` : undefined}
-          />
-          <MetricCard
-            label="Instructors"
-            value={base.data?.instructors}
-            status={status(base)}
-            icon={GraduationCap}
-            to="/owner/users?role=instructor"
-          />
-          <MetricCard
-            label="Students"
-            value={base.data?.students}
-            status={status(base)}
-            icon={Users}
-            to="/owner/users?role=student"
-          />
-          <MetricCard
-            label="Parents"
-            value={base.data?.parents}
-            status={status(base)}
-            icon={BabyIcon}
-            to="/owner/users?role=parent"
-          />
-          <MetricCard
-            label="Admins"
-            value={base.data?.admins}
-            status={status(base)}
-            icon={ShieldCheck}
-            to="/owner/users?role=admin"
-          />
+      <section>
+        <SectionHeader title="Today" hint="Strictly counts records scheduled or created today, not today onward." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <MetricCard label="Lessons today" value={model.counts.lessonsToday} status={valueStatus} icon={CalendarDays} to="/owner/lessons" />
+          <MetricCard label="Upcoming lessons" value={model.counts.upcomingLessons} status={valueStatus} icon={CalendarDays} to="/owner/lessons" />
+          <MetricCard label="Pending transfer value" value={formatCurrency(model.money.pendingBankTransferAmount)} status={valueStatus} icon={CreditCard} to="/owner/payments" />
+          <MetricCard label="Active students 7d" value={model.counts.studentsActive7d} status={valueStatus} icon={Users} to="/owner/students" />
         </div>
       </section>
 
-      {/* PRODUCT USAGE */}
-      <section data-testid="section-product-usage-wrapper">
-        <SectionHeader
-          title="Product usage"
-          hint="All-time totals across the platform."
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
-          <MetricCard
-            label="Lessons"
-            value={usage.data?.lessons}
-            status={status(usage)}
-            icon={CalendarDays}
-            unavailableReason="Detail view coming next iteration"
-          />
-          <MetricCard
-            label="Lesson plans"
-            value={usage.data?.lessonPlans}
-            status={status(usage)}
-            icon={FileText}
-          />
-          <MetricCard
-            label="CoPilot sessions"
-            value={usage.data?.copilot}
-            status={status(usage)}
-            icon={Mic}
-            hint={usage.data ? `${usage.data.copilot7d} in last 7d` : undefined}
-            unavailableReason="Detail view coming next iteration"
-          />
-          <MetricCard
-            label="Practice sessions"
-            value={usage.data?.practice}
-            status={status(usage)}
-            icon={Map}
-          />
-          <MetricCard
-            label="Mock tests"
-            value={usage.data?.mockTests}
-            status={status(usage)}
-            icon={Trophy}
-          />
-          <MetricCard
-            label="Active subscriptions"
-            value={moneyStatus === 'value' ? subs.active : undefined}
-            status={moneyStatus}
-            icon={CreditCard}
-            to="/owner/subscriptions"
-            hint={
-              moneyStatus === 'value'
-                ? `${subs.paying} paying · ${subs.trialing} trialing`
-                : undefined
-            }
-          />
+      <section>
+        <SectionHeader title="User Base" hint="Role-aware counts from profiles and user_roles." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <MetricCard label="Students" value={model.counts.students} status={valueStatus} icon={Users} to="/owner/students" hint={`${model.counts.studentsLinked} linked to instructors`} />
+          <MetricCard label="Instructors" value={model.counts.instructors} status={valueStatus} icon={GraduationCap} to="/owner/instructors" hint={`${model.counts.instructorsActive7d} active in last 7d`} />
+          <MetricCard label="Onboarded students" value={model.counts.studentsOnboarded} status={valueStatus} icon={Users} to="/owner/students" />
+          <MetricCard label="Low SMS instructors" value={model.counts.lowSmsCredits} status={valueStatus} icon={AlertTriangle} to="/owner/instructors" />
         </div>
       </section>
 
-      {/* MONEY & SMS */}
-      <section data-testid="section-money-sms-wrapper">
-        <SectionHeader title="Money & SMS" hint="SMS credits and Stripe top-ups (no live SMS sends in this view)." />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
-          <MetricCard
-            label="Credits in circulation"
-            value={sms.data?.balanceTotal}
-            status={status(sms)}
-            icon={Coins}
-            hint="Sum of every instructor's current balance"
-          />
-          <MetricCard
-            label="Lifetime credits purchased"
-            value={sms.data?.lifetimePurchased}
-            status={status(sms)}
-            icon={Coins}
-          />
-          <MetricCard
-            label="Lifetime credits used"
-            value={sms.data?.lifetimeUsed}
-            status={status(sms)}
-            icon={Coins}
-          />
-          <MetricCard
-            label="Lifetime SMS revenue"
-            value={
-              sms.data
-                ? '£' + (sms.data.lifetimeRevenuePence / 100).toFixed(2)
-                : undefined
-            }
-            status={status(sms)}
-            icon={CreditCard}
-            hint="Sum of completed top-up purchases"
-          />
+      <section>
+        <SectionHeader title="Product Operations" hint="Reliable operational signals available now." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <MetricCard label="Completed lessons" value={model.counts.completedLessons} status={valueStatus} icon={CalendarDays} to="/owner/lessons" />
+          <MetricCard label="Completed purchases" value={model.counts.completedPurchases} status={valueStatus} icon={CreditCard} to="/owner/payments" hint={formatCurrency(model.money.completedPurchaseAmount)} />
+          <MetricCard label="Test-ready students" value={model.counts.testReadyStudents} status={valueStatus} icon={ClipboardCheck} to="/owner/test-booking" />
+          <MetricCard label="Support feedback" value={model.counts.supportFeedback} status={valueStatus} icon={LifeBuoy} to="/owner/support" />
         </div>
       </section>
 
-      {/* RECENT ACTIVITY + QUICK ACTIONS */}
-      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6" data-testid="section-activity-actions-wrapper">
-        <div className="xl:col-span-2">
-          <SectionHeader title="Recent activity" hint="Latest sign-ups, SMS top-ups, and subscription changes." />
-          <Card>
-            <CardContent className="p-4 lg:p-5">
-              <ActivityFeed />
-            </CardContent>
-          </Card>
-        </div>
-        <div>
-          <SectionHeader title="Quick actions" />
-          <Card>
-            <CardContent className="p-4 lg:p-5 space-y-2">
-              <Button
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => navigate('/owner/instructors')}
-                data-testid="button-quick-approve"
-              >
-                Review pending instructors
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => navigate('/owner/messaging')}
-                data-testid="button-quick-broadcast"
-              >
-                <span className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Broadcast a message
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => navigate('/owner/audit')}
-                data-testid="button-quick-audit"
-              >
-                <span className="flex items-center gap-2">
-                  <ScrollText className="h-4 w-4" />
-                  Open audit log
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => navigate('/owner/subscriptions')}
-                data-testid="button-quick-subs"
-              >
-                <span className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Subscriptions overview
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      <section>
+        <SectionHeader title="Recent Issues" hint="Filtered to useful warnings, with push-token noise removed." />
+        <Card>
+          <CardContent className="p-0">
+            {recentIssues.length === 0 ? (
+              <div className="p-4">
+                <EmptyState label="No recent operational issues found." />
+              </div>
+            ) : (
+              <div className="divide-y">
+                {recentIssues.map((issue) => (
+                  <div key={`${issue.id}-${issue.label}`} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-medium">{issue.label}</p>
+                      <p className="text-sm text-muted-foreground">{issue.detail}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <StatusPill value={issue.status} />
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDateTime(issue.date)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </section>
-    </div>
+    </OperationsPage>
   );
 }
