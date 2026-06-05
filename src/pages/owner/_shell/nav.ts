@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  LayoutDashboard, Users, ShieldCheck, Activity, School, MessageSquare, Bell,
-  CreditCard, MessageCircle, FileText, ScrollText, Sparkles
+  LayoutDashboard, Users, GraduationCap, CreditCard, CalendarDays,
+  ClipboardCheck, LifeBuoy, ShieldAlert,
 } from 'lucide-react';
 
 export interface AdminNavItem {
@@ -12,16 +12,12 @@ export interface AdminNavItem {
 }
 
 export const adminNav: AdminNavItem[] = [
-  { label: 'Overview',             to: '/owner',                     icon: LayoutDashboard, end: true },
-  { label: 'Users',                to: '/owner/users',               icon: Users },
-  { label: 'Instructor approvals', to: '/owner/instructors',         icon: ShieldCheck },
-  { label: 'Instructor activity',  to: '/owner/instructor-activity', icon: Activity },
-  { label: 'Schools',              to: '/owner/schools',             icon: School },
-  { label: 'Subscriptions',        to: '/owner/subscriptions',       icon: CreditCard },
-  { label: 'Messaging',            to: '/owner/messaging',           icon: MessageSquare },
-  { label: 'Notifications',        to: '/owner/notifications',       icon: Bell },
-  { label: 'Feedback',             to: '/owner/feedback',            icon: MessageCircle },
-  { label: 'Audit',                to: '/owner/audit',               icon: ScrollText },
-  { label: 'Blog',                 to: '/owner/blog',                icon: FileText },
-  { label: 'Growth',               to: '/owner/growth',              icon: Sparkles },
+  { label: 'Overview',     to: '/owner',              icon: LayoutDashboard, end: true },
+  { label: 'Students',     to: '/owner/students',     icon: Users },
+  { label: 'Instructors',  to: '/owner/instructors',  icon: GraduationCap },
+  { label: 'Payments',     to: '/owner/payments',     icon: CreditCard },
+  { label: 'Lessons',      to: '/owner/lessons',      icon: CalendarDays },
+  { label: 'Test Booking', to: '/owner/test-booking', icon: ClipboardCheck },
+  { label: 'Support',      to: '/owner/support',      icon: LifeBuoy },
+  { label: 'Admin Tools',  to: '/owner/admin-tools',  icon: ShieldAlert },
 ];
