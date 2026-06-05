@@ -46,6 +46,14 @@ function getErrorMessage(result: { error?: unknown }) {
   return error?.message ?? 'Failed to load admin operations data';
 }
 
+function getSafeOptionalError(result: { error?: unknown }) {
+  const message = getErrorMessage(result);
+  if (/permission denied/i.test(message)) {
+    return 'Event feed unavailable due to permissions';
+  }
+  return 'Event feed unavailable';
+}
+
 type Role = 'admin' | 'instructor' | 'student' | 'parent' | 'school_admin' | string;
 
 export interface ProfileRow {
@@ -192,6 +200,7 @@ export interface OperationsData {
   subscriptions: SubscriptionRow[];
   notifications: NotificationRow[];
   events: EventRow[];
+  eventsUnavailableReason: string | null;
   feedback: FeedbackSummaryRow[];
   testReadyEntries: TestReadyEntry[];
   bookingPasses: BookingPass[];
@@ -410,13 +419,13 @@ export function useOperationsData() {
         smsCreditsRes,
         subscriptionsRes,
         notificationsRes,
-        eventsRes,
         feedbackRes,
         testManagerRes,
         pendingInstructorsRes,
       ];
       const failed = results.find((result) => result.error);
       if (failed) throw new Error(getErrorMessage(failed));
+      const eventsUnavailableReason = eventsRes.error ? getSafeOptionalError(eventsRes) : null;
 
       const testRows = asArray<TestManagerProjectionRow>(testManagerRes.data);
       const testReadyEntries: TestReadyEntry[] = [];
@@ -472,7 +481,8 @@ export function useOperationsData() {
         smsCredits: asArray<SmsCreditRow>(smsCreditsRes.data),
         subscriptions: asArray<SubscriptionRow>(subscriptionsRes.data),
         notifications: asArray<NotificationRow>(notificationsRes.data),
-        events: asArray<EventRow>(eventsRes.data),
+        events: eventsUnavailableReason ? [] : asArray<EventRow>(eventsRes.data),
+        eventsUnavailableReason,
         feedback: asArray<FeedbackSummaryRow>(feedbackRes.data),
         testReadyEntries,
         bookingPasses,

@@ -96,7 +96,9 @@ export default function Support() {
           </div>
         </CardHeader>
         <CardContent>
-          {rows.length === 0 ? (
+          {model.raw.eventsUnavailableReason ? (
+            <EmptyState label={model.raw.eventsUnavailableReason} />
+          ) : rows.length === 0 ? (
             <EmptyState label="No support events match this filter." />
           ) : (
             <Table>
