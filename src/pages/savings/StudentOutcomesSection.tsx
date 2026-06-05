@@ -62,13 +62,13 @@ const features = [
 
 const StudentOutcomesSection: React.FC = () => {
   return (
-    <section className="py-20 px-4 sm:px-10 bg-secondary/30">
+    <section className="py-20 px-4 sm:px-10 bg-muted/50">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <FadeInSection>
           <div className="flex items-center justify-center gap-2 mb-3">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <p className="text-sm font-black uppercase tracking-[0.3em] text-secondary-foreground">
+            <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground">
               Student Success
             </p>
           </div>
@@ -76,7 +76,7 @@ const StudentOutcomesSection: React.FC = () => {
             Your Students Deserve{" "}
             <span className="whitespace-nowrap">Better Than 50/50</span>
           </h2>
-          <p className="text-lg sm:text-xl max-w-2xl mx-auto text-center leading-relaxed font-medium mb-14 text-secondary-foreground">
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto text-center leading-relaxed font-medium mb-14 text-muted-foreground">
             The UK driving test pass rate sits at just 50%. Cruzi helps you
             change those odds.
           </p>
@@ -97,7 +97,7 @@ const StudentOutcomesSection: React.FC = () => {
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-1">
                   {stat.label}
                 </p>
-                <p className="text-xs text-secondary-foreground">{stat.sub}</p>
+                <p className="text-xs text-muted-foreground">{stat.sub}</p>
               </div>
             </FadeInSection>
           ))}
@@ -107,7 +107,7 @@ const StudentOutcomesSection: React.FC = () => {
         <FadeInSection>
           <div className="flex items-center justify-center gap-2 mb-8">
             <BarChart3 className="w-4 h-4 text-primary" />
-            <p className="text-sm font-black uppercase tracking-[0.3em] text-secondary-foreground">
+            <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground">
               How Cruzi Helps
             </p>
           </div>

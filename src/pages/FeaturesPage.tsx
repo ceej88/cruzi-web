@@ -16,14 +16,14 @@ import testRoutesPhone from "@/assets/test-routes-phone.webp";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import SiteNav from "@/components/landing/SiteNav";
 
-const BG       = "#060e20";
-const GLASS    = "rgba(31, 43, 73, 0.45)";
-const GLASS_B  = "rgba(189, 157, 255, 0.12)";
-const P        = "#7c3aed";
-const P_SEC    = "#bd9dff";
-const TEXT     = "#dee5ff";
-const MUTED    = "#a3aac4";
-const GLOW     = "rgba(124,58,237,0.35)";
+const BG       = "#F8F9FF";
+const GLASS    = "rgba(255, 255, 255, 0.85)";
+const GLASS_B  = "rgba(115, 49, 223, 0.18)";
+const P        = "#5300B7";
+const P_SEC    = "#6D28D9";
+const TEXT     = "#0D1C2F";
+const MUTED    = "#4A4455";
+const GLOW     = "rgba(115,49,223,0.28)";
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -44,7 +44,7 @@ const glassCard: React.CSSProperties = {
 
 const glassCardHighlight: React.CSSProperties = {
   ...glassCard,
-  borderTop: `1px solid rgba(189,157,255,0.35)`,
+  borderTop: "1px solid rgba(115,49,223,0.35)",
 };
 
 const LazyVideo = ({ src, style, ...rest }: React.VideoHTMLAttributes<HTMLVideoElement> & { src: string; style?: React.CSSProperties }) => {
@@ -71,8 +71,8 @@ const SectionPill = ({ label }: { label: string }) => (
       display: "inline-flex",
       alignItems: "center",
       gap: 6,
-      background: "rgba(124,58,237,0.15)",
-      border: "1px solid rgba(124,58,237,0.4)",
+      background: "rgba(115,49,223,0.15)",
+      border: "1px solid rgba(115,49,223,0.4)",
       borderRadius: 9999,
       padding: "6px 16px",
       marginBottom: 20,
@@ -118,9 +118,9 @@ export default function FeaturesPage() {
       <div style={{
         position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
         background: `
-          radial-gradient(ellipse at 15% 25%, rgba(124,58,237,0.18) 0%, transparent 55%),
-          radial-gradient(ellipse at 85% 75%, rgba(189,157,255,0.10) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 90%, rgba(124,58,237,0.08) 0%, transparent 45%)
+          radial-gradient(ellipse at 15% 25%, rgba(115,49,223,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 85% 75%, rgba(115,49,223,0.10) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 90%, rgba(115,49,223,0.08) 0%, transparent 45%)
         `,
       }} />
 
@@ -132,17 +132,17 @@ export default function FeaturesPage() {
 
         <style>{`
           @keyframes heroGlow { 0%,100% { opacity:0.6; transform:scale(1) } 50% { opacity:1; transform:scale(1.08) } }
-          @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(124,58,237,0.5),0 0 32px rgba(124,58,237,0.2) } 50% { box-shadow:0 0 28px rgba(124,58,237,0.75),0 0 56px rgba(124,58,237,0.35) } }
+          @keyframes btnPulse { 0%,100% { box-shadow:0 0 16px rgba(115,49,223,0.5),0 0 32px rgba(115,49,223,0.2) } 50% { box-shadow:0 0 28px rgba(115,49,223,0.75),0 0 56px rgba(115,49,223,0.35) } }
           @keyframes gradShift { 0% { background-position:0% 50% } 50% { background-position:100% 50% } 100% { background-position:0% 50% } }
-          .hero-grad { background: linear-gradient(90deg, #7c3aed, #bd9dff, #7c3aed); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation: gradShift 4s ease infinite; }
+          .hero-grad { background: linear-gradient(90deg, #5300B7, #7331DF, #6D28D9, #5300B7); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation: gradShift 5s ease infinite; }
           .btn-pulse { animation: btnPulse 3s ease-in-out infinite; }
           .orb-a { animation: heroGlow 9s ease-in-out infinite; }
           .orb-b { animation: heroGlow 12s ease-in-out infinite reverse; }
         `}</style>
 
         {/* Background orbs */}
-        <div className="orb-a" style={{ position: "absolute", top: "15%", left: "8%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div className="orb-b" style={{ position: "absolute", bottom: "20%", right: "6%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(189,157,255,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div className="orb-a" style={{ position: "absolute", top: "15%", left: "8%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(115,49,223,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div className="orb-b" style={{ position: "absolute", bottom: "20%", right: "6%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(115,49,223,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         <motion.div {...fadeUp}>
           <SectionPill label="BUILT FOR UK ADIS" />
@@ -151,7 +151,7 @@ export default function FeaturesPage() {
         <motion.h1
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem, 6vw, 5rem)", lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 24px", maxWidth: 820, textShadow: "0 0 40px rgba(124,58,237,0.2)" }}
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem, 6vw, 5rem)", lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 24px", maxWidth: 820, textShadow: "0 0 40px rgba(115,49,223,0.2)" }}
         >
           Every Tool Your<br />
           <span className="hero-grad">Driving School</span><br />
@@ -189,13 +189,13 @@ export default function FeaturesPage() {
           <button
             onClick={() => navigate("/savings")}
             style={{
-              background: "rgba(255,255,255,0.05)", color: TEXT, border: `1px solid ${GLASS_B}`,
+              background: "rgba(255, 255, 255, 0.7)", color: TEXT, border: `1px solid ${GLASS_B}`,
               padding: "16px 36px", borderRadius: 9999, fontSize: 16, fontWeight: 600,
               cursor: "pointer", transition: "all 0.25s", backdropFilter: "blur(8px)",
               fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.09)"; e.currentTarget.style.borderColor = `rgba(189,157,255,0.3)`; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = GLASS_B; }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(115,49,223,0.10)"; e.currentTarget.style.borderColor = "rgba(115,49,223,0.3)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.7)"; e.currentTarget.style.borderColor = GLASS_B; }}
           >
             See the ROI Calculator
           </button>
@@ -233,7 +233,7 @@ export default function FeaturesPage() {
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <motion.div {...fadeUp} style={{ marginBottom: 60, textAlign: "center" }}>
             <SectionPill label="CORE FEATURES" />
-            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px", textShadow: "0 0 30px rgba(124,58,237,0.15)" }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em", margin: "0 0 16px", textShadow: "0 0 30px rgba(115,49,223,0.15)" }}>
               The tools that run your business
             </h2>
             <p style={{ color: MUTED, fontSize: 17, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
@@ -288,12 +288,12 @@ export default function FeaturesPage() {
                         marginBottom: -40,
                         zIndex: 2,
                         position: "relative",
-                        filter: "drop-shadow(0 20px 50px rgba(124,58,237,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.15))",
+                        filter: "drop-shadow(0 20px 50px rgba(115,49,223,0.4)) drop-shadow(0 0 80px rgba(115,49,223,0.15))",
                       }}
                     />
-                    <div style={{ ...glassCard, borderTop: "1px solid rgba(189,157,255,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                    <div style={{ ...glassCard, borderTop: "1px solid rgba(115,49,223,0.35)", padding: "60px 28px 32px", width: "100%", position: "relative" }}>
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                         <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
                       </div>
                       <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
@@ -305,7 +305,7 @@ export default function FeaturesPage() {
                   </>
                 ) : (
                   <div style={{ ...glassCardHighlight, display: "flex", flexDirection: "column", width: "100%" }}>
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.5), transparent)" }} />
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.5), transparent)" }} />
                     <div style={{
                       height: 200,
                       overflow: "hidden",
@@ -322,7 +322,7 @@ export default function FeaturesPage() {
                       ) : null}
                     </div>
                     <div style={{ padding: "28px 28px 32px" }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                         <f.icon style={{ color: P_SEC, width: 20, height: 20 }} />
                       </div>
                       <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 19, margin: "0 0 10px", color: TEXT, letterSpacing: "-0.01em" }}>{f.label}</h3>
@@ -343,7 +343,7 @@ export default function FeaturesPage() {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.4), transparent)" }} />
             <motion.div {...fadeUp}>
               <SectionPill label="MOCK TEST RECORDING" />
               <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(1.7rem, 3vw, 2.5rem)", letterSpacing: "-0.02em", margin: "0 0 20px", color: TEXT }}>
@@ -366,7 +366,7 @@ export default function FeaturesPage() {
                   width: "75%",
                   maxWidth: 280,
                   display: "block",
-                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                  filter: "drop-shadow(0 0 32px rgba(115,49,223,0.35))",
                 }}
               />
             </motion.div>
@@ -378,7 +378,7 @@ export default function FeaturesPage() {
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 100px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ ...glassCard, padding: "clamp(32px, 5vw, 56px) clamp(24px, 5vw, 48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.4), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.4), transparent)" }} />
             <motion.div {...fadeUp} style={{ display: "flex", justifyContent: "center", order: 1 }}>
               <img
                 src={testRoutesPhone}
@@ -388,7 +388,7 @@ export default function FeaturesPage() {
                   width: "75%",
                   maxWidth: 280,
                   display: "block",
-                  filter: "drop-shadow(0 0 32px rgba(124,58,237,0.35))",
+                  filter: "drop-shadow(0 0 32px rgba(115,49,223,0.35))",
                 }}
               />
             </motion.div>
@@ -436,11 +436,11 @@ export default function FeaturesPage() {
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
                 style={{ ...glassCard, padding: "28px 24px" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(124,58,237,0.4)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 32px rgba(124,58,237,0.12)`; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(115,49,223,0.4)"; (e.currentTarget as HTMLDivElement).style.boxShadow = "0 0 32px rgba(115,49,223,0.12)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = GLASS_B; (e.currentTarget as HTMLDivElement).style.boxShadow = "none"; }}
               >
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.35), transparent)" }} />
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(124,58,237,0.2)" }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.35), transparent)" }} />
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(115,49,223,0.18)", border: "1px solid rgba(115,49,223,0.3)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 12px rgba(115,49,223,0.2)" }}>
                   <item.icon style={{ color: P_SEC, width: 18, height: 18 }} />
                 </div>
                 <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 8px", color: TEXT }}>{item.label}</h3>
@@ -534,10 +534,10 @@ export default function FeaturesPage() {
                 {...fadeUp}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
                 style={{ ...glassCard, padding: "24px 22px" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(189,157,255,0.25)"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(115,49,223,0.25)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = GLASS_B; }}
               >
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.25), transparent)" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.25), transparent)" }} />
                 <item.icon style={{ color: P_SEC, width: 20, height: 20, marginBottom: 12 }} />
                 <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 6px", color: TEXT }}>{item.label}</h3>
                 <p style={{ color: MUTED, fontSize: 12.5, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
@@ -554,7 +554,7 @@ export default function FeaturesPage() {
             {...fadeUp}
             style={{ ...glassCard, padding: "56px 56px 48px" }}
           >
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(189,157,255,0.45), transparent)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(115,49,223,0.45), transparent)" }} />
             <div style={{ fontSize: "7rem", lineHeight: 0.8, fontFamily: "Georgia, serif", color: P_SEC, opacity: 0.25, marginBottom: 24 }}>&ldquo;</div>
             <blockquote style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.35rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.75, margin: "0 0 36px", fontWeight: 400 }}>
               I switched from TD Drive the same week I tried Cruzi. My students are more engaged between lessons than they have ever been. Parents are now messaging me asking questions they never asked before.
@@ -564,7 +564,7 @@ export default function FeaturesPage() {
                 <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, margin: "0 0 2px", color: TEXT }}>Erica Vale</p>
                 <p style={{ color: MUTED, fontSize: 13, margin: 0 }}>Independent ADI, Chester</p>
               </div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 9999, padding: "5px 12px", fontSize: 11, fontWeight: 700, color: P_SEC }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(115,49,223,0.2)", border: "1px solid rgba(115,49,223,0.4)", borderRadius: 9999, padding: "5px 12px", fontSize: 11, fontWeight: 700, color: P_SEC }}>
                 <BadgeCheck style={{ width: 12, height: 12 }} /> Verified
               </span>
             </div>
@@ -575,7 +575,7 @@ export default function FeaturesPage() {
       {/* ─── FINAL CTA ─── */}
       <section style={{ position: "relative", zIndex: 1, padding: "0 24px 120px", textAlign: "center" }}>
         <motion.div {...fadeUp} style={{ maxWidth: 640, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.02em", margin: "0 0 20px", textShadow: "0 0 40px rgba(124,58,237,0.25)" }}>
+          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.02em", margin: "0 0 20px", textShadow: "0 0 40px rgba(115,49,223,0.25)" }}>
             Start free today.<br />
             <span style={{ color: P_SEC }}>No card required.</span>
           </h2>
@@ -601,7 +601,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(189,157,255,0.08)", padding: "40px 24px" }}>
+      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(115,49,223,0.08)", padding: "40px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
           <div>
             <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>Cruzi</span>
@@ -621,7 +621,7 @@ export default function FeaturesPage() {
             ))}
           </div>
         </div>
-        <div style={{ maxWidth: 1100, margin: "24px auto 0", paddingTop: 24, borderTop: "1px solid rgba(189,157,255,0.06)", textAlign: "center" }}>
+        <div style={{ maxWidth: 1100, margin: "24px auto 0", paddingTop: 24, borderTop: "1px solid rgba(115,49,223,0.06)", textAlign: "center" }}>
           <p style={{ color: MUTED, fontSize: 12, margin: 0 }}>© {new Date().getFullYear()} Cruzi. All rights reserved.</p>
         </div>
       </footer>

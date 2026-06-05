@@ -66,7 +66,7 @@ export const StatCard: React.FC<{
     className={`rounded-2xl p-4 sm:p-5 text-center transition-all ${
       highlight
         ? "bg-primary/5 border border-primary/20"
-        : "bg-secondary/50 border border-border"
+        : "bg-muted/60 border border-border"
     } ${large ? "col-span-2 sm:col-span-1" : ""}`}
   >
     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground mb-1">
