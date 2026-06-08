@@ -60,6 +60,7 @@ export interface ProfileRow {
   user_id: string;
   email: string | null;
   full_name: string | null;
+  phone: string | null;
   instructor_id: string | null;
   status: string | null;
   credit_balance: number | null;
@@ -212,6 +213,7 @@ export interface StudentOperationRow {
   user_id: string;
   name: string;
   email: string;
+  phone: string;
   onboarded: boolean;
   linkedInstructor: boolean;
   instructorName: string;
@@ -229,6 +231,7 @@ export interface InstructorOperationRow {
   user_id: string;
   name: string;
   email: string;
+  phone: string;
   status: string;
   onboarded: boolean;
   studentCount: number;
@@ -352,6 +355,7 @@ export function useOperationsData() {
             'user_id',
             'email',
             'full_name',
+            'phone',
             'instructor_id',
             'status',
             'credit_balance',
@@ -568,6 +572,7 @@ export function useOperationsModel() {
         user_id: profile.user_id,
         name: profile.full_name || 'Unnamed student',
         email: profile.email || 'No email',
+        phone: profile.phone || 'No phone',
         onboarded: Boolean(profile.onboarded_at),
         linkedInstructor: Boolean(profile.instructor_id),
         instructorName: nameFor(profile.instructor_id, 'Unlinked'),
@@ -597,6 +602,7 @@ export function useOperationsModel() {
         user_id: profile.user_id,
         name: profile.full_name || 'Unnamed instructor',
         email: profile.email || 'No email',
+        phone: profile.phone || 'No phone',
         status: profile.status || 'unknown',
         onboarded: Boolean(profile.instructor_onboarded_at),
         studentCount: linkedStudents.length,
