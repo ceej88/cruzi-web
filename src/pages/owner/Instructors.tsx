@@ -31,6 +31,7 @@ export default function Instructors() {
       const matchesQuery = !q
         || instructor.name.toLowerCase().includes(q)
         || instructor.email.toLowerCase().includes(q)
+        || instructor.phone.toLowerCase().includes(q)
         || instructor.status.toLowerCase().includes(q);
       const matchesFilter =
         filter === 'all'
@@ -80,7 +81,7 @@ export default function Instructors() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <CardTitle>Instructor Directory</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">No private reference numbers or raw instructor metadata are shown.</p>
+              <p className="text-sm text-muted-foreground mt-1">Only basic contact details are shown. Private reference numbers and raw instructor metadata are hidden.</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <SearchBox value={query} onChange={setQuery} placeholder="Search instructors" />
@@ -123,6 +124,7 @@ export default function Instructors() {
                     <TableCell>
                       <div className="font-medium">{instructor.name}</div>
                       <div className="text-xs text-muted-foreground">{instructor.email}</div>
+                      <div className="text-xs text-muted-foreground">Phone: {instructor.phone}</div>
                     </TableCell>
                     <TableCell>
                       <StatusPill value={instructor.status} />

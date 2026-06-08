@@ -31,6 +31,7 @@ export default function Students() {
       const matchesQuery = !q
         || student.name.toLowerCase().includes(q)
         || student.email.toLowerCase().includes(q)
+        || student.phone.toLowerCase().includes(q)
         || student.instructorName.toLowerCase().includes(q);
       const matchesFilter =
         filter === 'all'
@@ -78,7 +79,7 @@ export default function Students() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <CardTitle>Student Directory</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">Sensitive profile and instructor booking data is not shown.</p>
+              <p className="text-sm text-muted-foreground mt-1">Basic contact details are shown for admin follow-up. Sensitive profile and instructor booking data is hidden.</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <SearchBox value={query} onChange={setQuery} placeholder="Search students" />
@@ -120,6 +121,7 @@ export default function Students() {
                     <TableCell>
                       <div className="font-medium">{student.name}</div>
                       <div className="text-xs text-muted-foreground">{student.email}</div>
+                      <div className="text-xs text-muted-foreground">Phone: {student.phone}</div>
                     </TableCell>
                     <TableCell>
                       {student.linkedInstructor ? student.instructorName : <StatusPill value="unlinked" tone="warn" />}
